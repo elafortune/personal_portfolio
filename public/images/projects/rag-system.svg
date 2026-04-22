@@ -1,0 +1,181 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400">
+  <defs>
+    <linearGradient id="bg3" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1a1f35"/>
+    </linearGradient>
+    <!-- Box gradients -->
+    <linearGradient id="queryGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1e3a5f"/>
+      <stop offset="100%" stop-color="#172d4a"/>
+    </linearGradient>
+    <linearGradient id="embedGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1e3a5f"/>
+      <stop offset="100%" stop-color="#172d4a"/>
+    </linearGradient>
+    <linearGradient id="vdbGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2d1f5e"/>
+      <stop offset="100%" stop-color="#1e1545"/>
+    </linearGradient>
+    <linearGradient id="llmGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3b1f0a"/>
+      <stop offset="100%" stop-color="#2a1508"/>
+    </linearGradient>
+    <linearGradient id="ansGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0c3040"/>
+      <stop offset="100%" stop-color="#082030"/>
+    </linearGradient>
+    <linearGradient id="docGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1e2932"/>
+      <stop offset="100%" stop-color="#141d24"/>
+    </linearGradient>
+    <!-- Glow filter -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <marker id="arrowBlue" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#3b82f6"/>
+    </marker>
+    <marker id="arrowSlate" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#475569"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="400" fill="url(#bg3)"/>
+
+  <!-- Subtle grid -->
+  <rect width="800" height="400" fill="none" stroke="#1e293b" stroke-width="0.5"
+    style="background-image:repeating-linear-gradient(0deg,transparent,transparent 39px,#1e293b 39px,#1e293b 40px)"/>
+
+  <!-- Title -->
+  <text x="400" y="24" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="13" font-weight="600" letter-spacing="0.3">Architecture RAG — Retrieval-Augmented Generation</text>
+  <text x="400" y="40" text-anchor="middle" fill="#475569" font-family="system-ui,sans-serif" font-size="10">Système de recherche sémantique et génération contextuelle de réponses</text>
+
+  <!-- === TOP ROW: Document pipeline (ingestion) === -->
+  <!-- Documents source box -->
+  <rect x="80" y="68" width="120" height="46" rx="8" fill="url(#docGrad)" stroke="#475569" stroke-width="1.5"/>
+  <text x="140" y="86" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="10" font-weight="600">📄 Documents</text>
+  <text x="140" y="101" text-anchor="middle" fill="#64748b" font-family="system-ui,sans-serif" font-size="9">PDF, HTML, TXT...</text>
+
+  <!-- Arrow: Documents → Chunking -->
+  <line x1="200" y1="91" x2="228" y2="91" stroke="#475569" stroke-width="1.5" marker-end="url(#arrowSlate)"/>
+
+  <!-- Chunking box -->
+  <rect x="230" y="68" width="110" height="46" rx="8" fill="url(#docGrad)" stroke="#475569" stroke-width="1.5"/>
+  <text x="285" y="86" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="10" font-weight="600">✂️ Découpage</text>
+  <text x="285" y="101" text-anchor="middle" fill="#64748b" font-family="system-ui,sans-serif" font-size="9">Chunking adaptatif</text>
+
+  <!-- Arrow: Chunking → Embedding model -->
+  <line x1="340" y1="91" x2="368" y2="91" stroke="#475569" stroke-width="1.5" marker-end="url(#arrowSlate)"/>
+
+  <!-- Embedding model box -->
+  <rect x="370" y="68" width="120" height="46" rx="8" fill="url(#embedGrad)" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="430" y="86" text-anchor="middle" fill="#93c5fd" font-family="system-ui,sans-serif" font-size="10" font-weight="600">🔢 Embeddings</text>
+  <text x="430" y="101" text-anchor="middle" fill="#60a5fa" font-family="system-ui,sans-serif" font-size="9">text-embedding-3</text>
+
+  <!-- Arrow: Embeddings → Vector DB (going down) -->
+  <line x1="430" y1="114" x2="430" y2="168" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arrowBlue)"/>
+
+  <!-- Label on that arrow -->
+  <text x="440" y="145" fill="#3b82f6" font-family="system-ui,sans-serif" font-size="9">indexation</text>
+
+  <!-- === MAIN ROW: Query processing === -->
+
+  <!-- Box 1: Query -->
+  <rect x="30" y="172" width="105" height="52" rx="8" fill="url(#queryGrad)" stroke="#3b82f6" stroke-width="1.5" filter="url(#glow)"/>
+  <text x="83" y="193" text-anchor="middle" fill="#93c5fd" font-family="system-ui,sans-serif" font-size="13">💬</text>
+  <text x="83" y="210" text-anchor="middle" fill="#93c5fd" font-family="system-ui,sans-serif" font-size="10" font-weight="600">Requête</text>
+  <text x="83" y="222" text-anchor="middle" fill="#60a5fa" font-family="system-ui,sans-serif" font-size="8.5">utilisateur</text>
+
+  <!-- Step badge 1 -->
+  <circle cx="30" cy="172" r="9" fill="#2563eb"/>
+  <text x="30" y="176" text-anchor="middle" fill="white" font-family="system-ui,sans-serif" font-size="10" font-weight="700">1</text>
+
+  <!-- Arrow 1→2 -->
+  <line x1="135" y1="198" x2="160" y2="198" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrowBlue)"/>
+
+  <!-- Box 2: Encode Query -->
+  <rect x="162" y="172" width="112" height="52" rx="8" fill="url(#embedGrad)" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="218" y="193" text-anchor="middle" fill="#93c5fd" font-family="system-ui,sans-serif" font-size="12">⚡</text>
+  <text x="218" y="209" text-anchor="middle" fill="#93c5fd" font-family="system-ui,sans-serif" font-size="10" font-weight="600">Encodage</text>
+  <text x="218" y="221" text-anchor="middle" fill="#60a5fa" font-family="system-ui,sans-serif" font-size="8.5">vectoriel</text>
+
+  <!-- Step badge 2 -->
+  <circle cx="162" cy="172" r="9" fill="#2563eb"/>
+  <text x="162" y="176" text-anchor="middle" fill="white" font-family="system-ui,sans-serif" font-size="10" font-weight="700">2</text>
+
+  <!-- Arrow 2→3 -->
+  <line x1="274" y1="198" x2="299" y2="198" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrowBlue)"/>
+
+  <!-- Box 3: Vector DB -->
+  <rect x="301" y="172" width="118" height="52" rx="8" fill="url(#vdbGrad)" stroke="#7c3aed" stroke-width="1.5"/>
+  <text x="360" y="192" text-anchor="middle" fill="#c4b5fd" font-family="system-ui,sans-serif" font-size="12">🗄️</text>
+  <text x="360" y="208" text-anchor="middle" fill="#c4b5fd" font-family="system-ui,sans-serif" font-size="10" font-weight="600">Base Vectorielle</text>
+  <text x="360" y="220" text-anchor="middle" fill="#a78bfa" font-family="system-ui,sans-serif" font-size="8.5">ChromaDB / Pinecone</text>
+
+  <!-- Step badge 3 -->
+  <circle cx="301" cy="172" r="9" fill="#7c3aed"/>
+  <text x="301" y="176" text-anchor="middle" fill="white" font-family="system-ui,sans-serif" font-size="10" font-weight="700">3</text>
+
+  <!-- Arrow 3→4 -->
+  <line x1="419" y1="198" x2="444" y2="198" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrowBlue)"/>
+
+  <!-- Box 4: LLM -->
+  <rect x="446" y="172" width="108" height="52" rx="8" fill="url(#llmGrad)" stroke="#f97316" stroke-width="1.5"/>
+  <text x="500" y="192" text-anchor="middle" fill="#fdba74" font-family="system-ui,sans-serif" font-size="12">🧠</text>
+  <text x="500" y="208" text-anchor="middle" fill="#fdba74" font-family="system-ui,sans-serif" font-size="10" font-weight="600">LLM</text>
+  <text x="500" y="220" text-anchor="middle" fill="#fb923c" font-family="system-ui,sans-serif" font-size="8.5">GPT-4 / Claude</text>
+
+  <!-- Step badge 4 -->
+  <circle cx="446" cy="172" r="9" fill="#ea580c"/>
+  <text x="446" y="176" text-anchor="middle" fill="white" font-family="system-ui,sans-serif" font-size="10" font-weight="700">4</text>
+
+  <!-- Arrow 4→5 -->
+  <line x1="554" y1="198" x2="579" y2="198" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrowBlue)"/>
+
+  <!-- Box 5: Response -->
+  <rect x="581" y="172" width="115" height="52" rx="8" fill="url(#ansGrad)" stroke="#0891b2" stroke-width="1.5" filter="url(#glow)"/>
+  <text x="639" y="192" text-anchor="middle" fill="#67e8f9" font-family="system-ui,sans-serif" font-size="12">✅</text>
+  <text x="639" y="208" text-anchor="middle" fill="#67e8f9" font-family="system-ui,sans-serif" font-size="10" font-weight="600">Réponse</text>
+  <text x="639" y="220" text-anchor="middle" fill="#22d3ee" font-family="system-ui,sans-serif" font-size="8.5">augmentée</text>
+
+  <!-- Step badge 5 -->
+  <circle cx="581" cy="172" r="9" fill="#0891b2"/>
+  <text x="581" y="176" text-anchor="middle" fill="white" font-family="system-ui,sans-serif" font-size="10" font-weight="700">5</text>
+
+  <!-- === BOTTOM: Context injection annotation === -->
+  <!-- Arrow from Vector DB down and right to LLM (context injection) -->
+  <path d="M 360,224 L 360,255 L 500,255 L 500,224" fill="none" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrowBlue)"/>
+  <rect x="380" y="250" width="100" height="16" rx="3" fill="#1e293b"/>
+  <text x="430" y="262" text-anchor="middle" fill="#a78bfa" font-family="system-ui,sans-serif" font-size="9">contexte injecté</text>
+
+  <!-- === STATS ROW === -->
+  <rect x="30" y="295" width="740" height="72" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+
+  <text x="400" y="313" text-anchor="middle" fill="#475569" font-family="system-ui,sans-serif" font-size="10" font-weight="500" letter-spacing="1">RÉSULTATS</text>
+
+  <!-- Stat 1 -->
+  <text x="120" y="338" text-anchor="middle" fill="#60a5fa" font-family="system-ui,sans-serif" font-size="20" font-weight="700">92%</text>
+  <text x="120" y="354" text-anchor="middle" fill="#64748b" font-family="system-ui,sans-serif" font-size="9">Pertinence des</text>
+  <text x="120" y="364" text-anchor="middle" fill="#64748b" font-family="system-ui,sans-serif" font-size="9">réponses</text>
+  <line x1="218" y1="308" x2="218" y2="358" stroke="#334155" stroke-width="1"/>
+
+  <!-- Stat 2 -->
+  <text x="310" y="338" text-anchor="middle" fill="#a78bfa" font-family="system-ui,sans-serif" font-size="20" font-weight="700">&lt; 1.2s</text>
+  <text x="310" y="354" text-anchor="middle" fill="#64748b" font-family="system-ui,sans-serif" font-size="9">Latence</text>
+  <text x="310" y="364" text-anchor="middle" fill="#64748b" font-family="system-ui,sans-serif" font-size="9">moyenne</text>
+  <line x1="402" y1="308" x2="402" y2="358" stroke="#334155" stroke-width="1"/>
+
+  <!-- Stat 3 -->
+  <text x="502" y="338" text-anchor="middle" fill="#34d399" font-family="system-ui,sans-serif" font-size="20" font-weight="700">50K+</text>
+  <text x="502" y="354" text-anchor="middle" fill="#64748b" font-family="system-ui,sans-serif" font-size="9">Docs indexés</text>
+  <text x="502" y="364" text-anchor="middle" fill="#64748b" font-family="system-ui,sans-serif" font-size="9">en vectoriel</text>
+  <line x1="590" y1="308" x2="590" y2="358" stroke="#334155" stroke-width="1"/>
+
+  <!-- Stat 4 -->
+  <text x="680" y="338" text-anchor="middle" fill="#fb923c" font-family="system-ui,sans-serif" font-size="20" font-weight="700">↓78%</text>
+  <text x="680" y="354" text-anchor="middle" fill="#64748b" font-family="system-ui,sans-serif" font-size="9">Hallucinations</text>
+  <text x="680" y="364" text-anchor="middle" fill="#64748b" font-family="system-ui,sans-serif" font-size="9">réduites</text>
+</svg>

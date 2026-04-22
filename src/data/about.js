@@ -21,7 +21,7 @@ export const aboutInfo = {
   phone: '+33 6 12 34 56 78',
   availability: 'Disponible pour de nouvelles opportunités',
   social: {
-    github: 'https://github.com/elafortune',
+    github: null,
     linkedin: 'https://linkedin.com/in/emerick-lafortune',
     twitter: null,
     kaggle: null,

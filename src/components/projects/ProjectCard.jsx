@@ -10,9 +10,28 @@ function ProjectCard({ project, onClick }) {
           alt={project.title}
           className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
           onError={(e) => {
-            e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%231a1a1a" width="400" height="300"/%3E%3Ctext fill="%23666" font-family="sans-serif" font-size="24" dy="10.5" font-weight="bold" x="50%25" y="50%25" text-anchor="middle"%3ENo Image%3C/text%3E%3C/svg%3E';
+            e.target.style.display = 'none';
+            const fallback = e.target.nextSibling;
+            if (fallback) fallback.style.display = 'flex';
           }}
         />
+        <div
+          className="absolute inset-0 hidden items-center justify-center"
+          style={{
+            background: project.category === 'Machine Learning'
+              ? 'linear-gradient(135deg, #1e3a5f 0%, #1d4ed8 50%, #7c3aed 100%)'
+              : project.category === 'NLP'
+              ? 'linear-gradient(135deg, #064e3b 0%, #0369a1 50%, #0ea5e9 100%)'
+              : 'linear-gradient(135deg, #1e293b 0%, #0369a1 50%, #2563eb 100%)'
+          }}
+        >
+          <div className="text-center">
+            <div className="text-5xl mb-2">
+              {project.category === 'Machine Learning' ? '🤖' : project.category === 'NLP' ? '🧠' : '📊'}
+            </div>
+            <p className="text-white text-sm font-medium opacity-70">{project.category}</p>
+          </div>
+        </div>
         {project.featured && (
           <div className="absolute top-2 right-2 bg-primary-600 text-white text-xs px-2 py-1 rounded">
             Featured

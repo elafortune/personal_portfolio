@@ -11,7 +11,6 @@ function Footer() {
   };
 
   const socialLinks = [
-    { name: 'GitHub', url: aboutInfo.social.github, icon: 'github' },
     { name: 'LinkedIn', url: aboutInfo.social.linkedin, icon: 'linkedin' },
     { name: 'Twitter', url: aboutInfo.social.twitter, icon: 'twitter' },
     { name: 'Kaggle', url: aboutInfo.social.kaggle, icon: 'kaggle' }

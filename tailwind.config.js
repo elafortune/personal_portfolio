@@ -21,9 +21,9 @@ export default {
           950: '#172554',
         },
         dark: {
-          DEFAULT: '#0a0a0a',
-          light: '#1a1a1a',
-          lighter: '#2a2a2a',
+          DEFAULT: '#0f172a',
+          light: '#1e293b',
+          lighter: '#334155',
         },
       },
     },

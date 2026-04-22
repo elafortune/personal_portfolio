@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="rocGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.03"/>
+    </linearGradient>
+    <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="barGrad2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#0369a1"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="400" fill="url(#bg2)"/>
+
+  <!-- Title -->
+  <text x="400" y="26" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="13" font-weight="600" letter-spacing="0.5">Détection de Fraudes Bancaires — Courbe ROC &amp; Métriques</text>
+
+  <!-- === LEFT PANEL: ROC Curve === -->
+  <!-- Panel label -->
+  <text x="240" y="50" text-anchor="middle" fill="#64748b" font-family="system-ui,sans-serif" font-size="11" font-weight="500">Courbe ROC (Receiver Operating Characteristic)</text>
+
+  <!-- Chart area: x 60-420, y 60-330 -->
+  <!-- Grid -->
+  <line x1="60"  y1="60"  x2="420" y2="60"  stroke="#1e293b" stroke-width="1"/>
+  <line x1="60"  y1="132" x2="420" y2="132" stroke="#1e293b" stroke-width="1"/>
+  <line x1="60"  y1="204" x2="420" y2="204" stroke="#1e293b" stroke-width="1"/>
+  <line x1="60"  y1="276" x2="420" y2="276" stroke="#1e293b" stroke-width="1"/>
+  <line x1="60"  y1="330" x2="420" y2="330" stroke="#334155" stroke-width="1"/>
+
+  <line x1="150" y1="60" x2="150" y2="330" stroke="#1e293b" stroke-width="1"/>
+  <line x1="240" y1="60" x2="240" y2="330" stroke="#1e293b" stroke-width="1"/>
+  <line x1="330" y1="60" x2="330" y2="330" stroke="#1e293b" stroke-width="1"/>
+  <line x1="420" y1="60" x2="420" y2="330" stroke="#1e293b" stroke-width="1"/>
+
+  <!-- Axes -->
+  <line x1="60" y1="58" x2="60" y2="334" stroke="#334155" stroke-width="1.5"/>
+  <line x1="57" y1="330" x2="424" y2="330" stroke="#334155" stroke-width="1.5"/>
+
+  <!-- Axis labels -->
+  <text x="240" y="356" text-anchor="middle" fill="#475569" font-family="system-ui,sans-serif" font-size="11">Taux Faux Positifs (FPR)</text>
+  <text x="14" y="200" text-anchor="middle" fill="#475569" font-family="system-ui,sans-serif" font-size="11" transform="rotate(-90,14,200)">Taux Vrais Positifs (TPR)</text>
+
+  <text x="52"  y="63"  text-anchor="end" fill="#475569" font-family="system-ui,sans-serif" font-size="10">1.0</text>
+  <text x="52"  y="135" text-anchor="end" fill="#475569" font-family="system-ui,sans-serif" font-size="10">0.75</text>
+  <text x="52"  y="207" text-anchor="end" fill="#475569" font-family="system-ui,sans-serif" font-size="10">0.50</text>
+  <text x="52"  y="279" text-anchor="end" fill="#475569" font-family="system-ui,sans-serif" font-size="10">0.25</text>
+  <text x="52"  y="333" text-anchor="end" fill="#475569" font-family="system-ui,sans-serif" font-size="10">0</text>
+
+  <text x="60"  y="346" text-anchor="middle" fill="#475569" font-family="system-ui,sans-serif" font-size="10">0</text>
+  <text x="150" y="346" text-anchor="middle" fill="#475569" font-family="system-ui,sans-serif" font-size="10">0.25</text>
+  <text x="240" y="346" text-anchor="middle" fill="#475569" font-family="system-ui,sans-serif" font-size="10">0.50</text>
+  <text x="330" y="346" text-anchor="middle" fill="#475569" font-family="system-ui,sans-serif" font-size="10">0.75</text>
+  <text x="420" y="346" text-anchor="middle" fill="#475569" font-family="system-ui,sans-serif" font-size="10">1.0</text>
+
+  <!-- Diagonal reference line -->
+  <line x1="60" y1="330" x2="420" y2="60" stroke="#334155" stroke-width="1.5" stroke-dasharray="5,4"/>
+  <text x="260" y="225" fill="#475569" font-family="system-ui,sans-serif" font-size="10" transform="rotate(-37,260,225)">Chance (AUC=0.5)</text>
+
+  <!-- ROC area fill -->
+  <!-- Points (FPR → x=60+FPR*360, TPR → y=330-TPR*270) -->
+  <!-- FPR: 0,.02,.05,.08,.12,.18,.28,.42,.62,.85,1 -->
+  <!-- TPR: 0,.50,.72,.83,.89,.93,.96,.97,.985,.995,1 -->
+  <!-- x:   60,67,78,89,103,125,161,211,283,366,420 -->
+  <!-- y:   330,195,136,106,87,79,71,68,65,62,60 -->
+  <path d="M 60,330 L 67,195 L 78,136 L 89,106 L 103,87 L 125,79 L 161,71 L 211,68 L 283,65 L 366,62 L 420,60 L 420,330 Z" fill="url(#rocGrad)"/>
+
+  <!-- ROC curve -->
+  <polyline points="60,330 67,195 78,136 89,106 103,87 125,79 161,71 211,68 283,65 366,62 420,60"
+    fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+
+  <!-- AUC badge -->
+  <rect x="130" y="140" width="110" height="44" rx="6" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="185" y="158" text-anchor="middle" fill="#93c5fd" font-family="system-ui,sans-serif" font-size="11" font-weight="500">AUC Score</text>
+  <text x="185" y="177" text-anchor="middle" fill="#60a5fa" font-family="system-ui,sans-serif" font-size="18" font-weight="700">0.97</text>
+
+  <!-- Key point highlight -->
+  <circle cx="89" cy="106" r="4" fill="#3b82f6" stroke="#93c5fd" stroke-width="1.5"/>
+  <circle cx="125" cy="79" r="5" fill="#3b82f6" stroke="#93c5fd" stroke-width="2"/>
+
+  <!-- === RIGHT PANEL: Metrics Bar Chart === -->
+  <text x="620" y="50" text-anchor="middle" fill="#64748b" font-family="system-ui,sans-serif" font-size="11" font-weight="500">Métriques de Classification (%)</text>
+
+  <!-- Metric bars -->
+  <!-- Bar chart: x 460-780, y 70-330. Bar width=55, gap=15 -->
+  <!-- 4 metrics: Précision, Rappel, F1-Score, Exactitude -->
+  <!-- Values: 96, 94, 95, 97 -->
+  <!-- Bar heights: 96%*240=230, 94%*240=226, 95%*240=228, 97%*240=233 -->
+
+  <!-- Baseline -->
+  <line x1="460" y1="330" x2="780" y2="330" stroke="#334155" stroke-width="1.5"/>
+  <line x1="460" y1="330" x2="460" y2="62" stroke="#334155" stroke-width="1.5"/>
+
+  <!-- Grid lines for bar chart -->
+  <line x1="460" y1="90"  x2="780" y2="90"  stroke="#1e293b" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="460" y1="150" x2="780" y2="150" stroke="#1e293b" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="460" y1="210" x2="210" y2="210" stroke="none"/>
+  <line x1="460" y1="210" x2="780" y2="210" stroke="#1e293b" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="460" y1="270" x2="780" y2="270" stroke="#1e293b" stroke-width="1" stroke-dasharray="4,4"/>
+
+  <!-- Y labels -->
+  <text x="452" y="93"  text-anchor="end" fill="#475569" font-family="system-ui,sans-serif" font-size="10">100</text>
+  <text x="452" y="153" text-anchor="end" fill="#475569" font-family="system-ui,sans-serif" font-size="10">75</text>
+  <text x="452" y="213" text-anchor="end" fill="#475569" font-family="system-ui,sans-serif" font-size="10">50</text>
+  <text x="452" y="273" text-anchor="end" fill="#475569" font-family="system-ui,sans-serif" font-size="10">25</text>
+  <text x="452" y="333" text-anchor="end" fill="#475569" font-family="system-ui,sans-serif" font-size="10">0</text>
+
+  <!-- Bar 1: Précision 96% → height = 96/100 * 240 = 230 → y = 330-230=100 -->
+  <rect x="480" y="100" width="55" height="230" rx="4" fill="url(#barGrad)" opacity="0.9"/>
+  <text x="507" y="94"  text-anchor="middle" fill="#93c5fd" font-family="system-ui,sans-serif" font-size="11" font-weight="700">96%</text>
+  <text x="507" y="348" text-anchor="middle" fill="#64748b" font-family="system-ui,sans-serif" font-size="10">Précision</text>
+
+  <!-- Bar 2: Rappel 94% → height=226 → y=104 -->
+  <rect x="553" y="104" width="55" height="226" rx="4" fill="url(#barGrad2)" opacity="0.9"/>
+  <text x="580" y="98"  text-anchor="middle" fill="#67e8f9" font-family="system-ui,sans-serif" font-size="11" font-weight="700">94%</text>
+  <text x="580" y="348" text-anchor="middle" fill="#64748b" font-family="system-ui,sans-serif" font-size="10">Rappel</text>
+
+  <!-- Bar 3: F1-Score 95% → height=228 → y=102 -->
+  <rect x="626" y="102" width="55" height="228" rx="4" fill="url(#barGrad)" opacity="0.9"/>
+  <text x="653" y="96"  text-anchor="middle" fill="#93c5fd" font-family="system-ui,sans-serif" font-size="11" font-weight="700">95%</text>
+  <text x="653" y="348" text-anchor="middle" fill="#64748b" font-family="system-ui,sans-serif" font-size="10">F1-Score</text>
+
+  <!-- Bar 4: Exactitude 97% → height=233 → y=97 -->
+  <rect x="699" y="97" width="55" height="233" rx="4" fill="url(#barGrad2)" opacity="0.9"/>
+  <text x="726" y="91"  text-anchor="middle" fill="#67e8f9" font-family="system-ui,sans-serif" font-size="11" font-weight="700">97%</text>
+  <text x="726" y="348" text-anchor="middle" fill="#64748b" font-family="system-ui,sans-serif" font-size="10">Exactitude</text>
+
+  <!-- Divider -->
+  <line x1="440" y1="40" x2="440" y2="380" stroke="#1e293b" stroke-width="1.5"/>
+
+  <!-- Panel titles backdrop -->
+  <rect x="0" y="0" width="800" height="36" fill="#0f172a" opacity="0.6"/>
+</svg>

@@ -6,10 +6,10 @@ export const projects = [
     fullDescription: `Projet d'analyse de données pour comprendre les comportements d'achat sur une plateforme e-commerce.
     Exploration des données clients, analyse des tendances de ventes et création de visualisations interactives
     pour identifier les opportunités d'amélioration du business.`,
-    image: '/images/projects/ecommerce-analysis.jpg',
+    image: '/images/projects/ecommerce-analysis.svg',
     technologies: ['Python', 'Pandas', 'Matplotlib', 'Seaborn', 'Jupyter'],
     category: 'Data Analysis',
-    githubUrl: 'https://github.com/elafortune/data-science-portfolio/tree/main/data_analysis/E-Commerce%20Customer%20Behaviour%20Analysis',
+    githubUrl: null,
     liveUrl: null,
     date: '2024-01',
     featured: false,
@@ -28,10 +28,10 @@ export const projects = [
     fullDescription: `Développement d'un système de détection de fraudes pour les transactions bancaires.
     Utilisation de techniques de machine learning pour identifier les comportements suspects et
     minimiser les faux positifs tout en maximisant la détection des vraies fraudes.`,
-    image: '/images/projects/fraud-detection.jpg',
+    image: '/images/projects/fraud-detection.svg',
     technologies: ['Python', 'Scikit-learn', 'XGBoost', 'Pandas', 'Imbalanced-learn'],
     category: 'Machine Learning',
-    githubUrl: 'https://github.com/elafortune/fraud-detection',
+    githubUrl: null,
     liveUrl: null,
     date: '2024-06',
     featured: true,
@@ -50,10 +50,10 @@ export const projects = [
     fullDescription: `Développement d'un système RAG (Retrieval-Augmented Generation) permettant de
     rechercher et synthétiser des informations à partir d'une base documentaire. Utilisation de LangChain
     pour orchestrer les différents composants et d'une base vectorielle pour le stockage des embeddings.`,
-    image: '/images/projects/rag-system.jpg',
+    image: '/images/projects/rag-system.svg',
     technologies: ['Python', 'LangChain', 'OpenAI', 'ChromaDB', 'FastAPI'],
     category: 'NLP',
-    githubUrl: 'https://github.com/elafortune/rag-system',
+    githubUrl: null,
     liveUrl: null,
     date: '2025-01',
     featured: true,
