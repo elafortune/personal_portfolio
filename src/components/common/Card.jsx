@@ -6,7 +6,7 @@ function Card({ children, className = '', hoverable = false, onClick }) {
   return (
     <div
       className={`
-        bg-dark-light border border-primary-500/30 rounded-lg p-6
+        bg-dark-light border border-primary-500/30 rounded-lg p-4 sm:p-6
         transition-all duration-300
         ${hoverClasses}
         ${className}

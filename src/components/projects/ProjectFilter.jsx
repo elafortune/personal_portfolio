@@ -2,7 +2,7 @@ import Button from '../common/Button';
 
 function ProjectFilter({ categories, activeFilter, onFilterChange }) {
   return (
-    <div className="flex flex-wrap justify-center gap-3 mb-12">
+    <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8 md:mb-12">
       <Button
         variant={activeFilter === 'all' ? 'primary' : 'secondary'}
         size="sm"

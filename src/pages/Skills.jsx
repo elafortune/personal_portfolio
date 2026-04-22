@@ -17,7 +17,7 @@ function Skills() {
       </div>
 
       {/* Optional: Top Skills Summary */}
-      <div className="mt-12 text-center">
+      <div className="mt-8 md:mt-12 text-center">
         <p className="text-gray-400 max-w-2xl mx-auto">
           Ces compétences ont été développées à travers {skillCategories.reduce(
             (acc, cat) => acc + cat.skills.length,

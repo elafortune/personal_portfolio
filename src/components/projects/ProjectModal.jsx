@@ -28,7 +28,7 @@ function ProjectModal({ project, isOpen, onClose }) {
       onClick={onClose}
     >
       <div
-        className="bg-dark-light border border-primary-500/30 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+        className="relative bg-dark-light border border-primary-500/30 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
@@ -43,7 +43,7 @@ function ProjectModal({ project, isOpen, onClose }) {
         </button>
 
         {/* Modal Content */}
-        <div className="p-8">
+        <div className="p-4 sm:p-6 md:p-8">
           {/* Header */}
           <div className="mb-6">
             <div className="flex items-start justify-between mb-4">
@@ -51,7 +51,7 @@ function ProjectModal({ project, isOpen, onClose }) {
                 <span className="inline-block bg-primary-600/20 text-primary-400 text-xs px-3 py-1 rounded-full mb-2">
                   {project.category}
                 </span>
-                <h2 className="text-3xl font-bold text-white mb-2">
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2">
                   {project.title}
                 </h2>
                 <p className="text-gray-400">
@@ -69,7 +69,7 @@ function ProjectModal({ project, isOpen, onClose }) {
             <img
               src={project.image}
               alt={project.title}
-              className="w-full h-64 object-cover"
+              className="w-full h-40 sm:h-52 md:h-64 object-cover"
               onError={(e) => {
                 e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="800" height="400"%3E%3Crect fill="%231a1a1a" width="800" height="400"/%3E%3Ctext fill="%23666" font-family="sans-serif" font-size="24" dy="10.5" font-weight="bold" x="50%25" y="50%25" text-anchor="middle"%3ENo Image%3C/text%3E%3C/svg%3E';
               }}

@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply bg-dark text-white min-h-screen font-sans antialiased;
+    @apply bg-dark text-white min-h-screen font-sans antialiased overflow-x-hidden;
   }
 
   h1, h2, h3, h4, h5, h6 {

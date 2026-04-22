@@ -36,7 +36,7 @@ function Navigation() {
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo/Brand */}
-          <div className="text-2xl font-bold text-white">
+          <div className="text-xl md:text-2xl font-bold text-white">
             <a
               href="#home"
               onClick={(e) => handleNavClick(e, 'home')}
@@ -87,13 +87,13 @@ function Navigation() {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden mt-4 pb-4 space-y-2">
+          <div className="md:hidden mt-4 pb-4 space-y-1">
             {NAV_LINKS.map((link) => (
               <a
                 key={link.id}
                 href={link.href}
                 onClick={(e) => handleNavClick(e, link.id)}
-                className={`block py-2 px-4 rounded transition-colors ${
+                className={`block py-3 px-4 rounded transition-colors text-sm ${
                   activeSectionId === link.id
                     ? 'bg-primary-600 text-white'
                     : 'text-gray-300 hover:bg-dark-lighter'

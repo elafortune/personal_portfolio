@@ -19,7 +19,7 @@ function Hero() {
   return (
     <section
       id="home"
-      className="relative min-h-screen flex items-center justify-center px-6 pt-16 pb-20 bg-gradient-to-b from-dark via-dark to-dark-light overflow-hidden"
+      className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 pt-16 pb-16 sm:pb-20 bg-gradient-to-b from-dark via-dark to-dark-light overflow-hidden"
     >
       {/* Subtle background glow */}
       <div
@@ -32,7 +32,7 @@ function Hero() {
       />
 
       <div className="max-w-5xl mx-auto w-full relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-16 items-center">
 
           {/* === Photo === */}
           <div className="lg:col-span-2 flex justify-center">
@@ -48,9 +48,7 @@ function Hero() {
               />
 
               {/* Photo card */}
-              <div className="relative w-52 h-68 sm:w-56 sm:h-72 rounded-2xl overflow-hidden shadow-2xl shadow-black/60"
-                style={{ width: '210px', height: '270px' }}
-              >
+              <div className="relative w-44 h-56 sm:w-52 sm:h-64 md:w-56 md:h-72 rounded-2xl overflow-hidden shadow-2xl shadow-black/60">
                 <img
                   src={aboutInfo.profileImage}
                   alt={aboutInfo.name}
@@ -81,17 +79,17 @@ function Hero() {
           <div className="lg:col-span-3 text-center lg:text-left mt-6 lg:mt-0">
 
             {/* School/institution label */}
-            <div className="inline-flex items-center gap-2 mb-6">
-              <div className="h-px w-6 bg-primary-500/50" />
-              <span className="text-slate-500 text-xs font-medium tracking-widest uppercase">Télécom SudParis · Ingénieur IA</span>
-              <div className="h-px w-6 bg-primary-500/50" />
+            <div className="inline-flex items-center gap-2 mb-4 sm:mb-6">
+              <div className="h-px w-4 sm:w-6 bg-primary-500/50" />
+              <span className="text-slate-500 text-[10px] sm:text-xs font-medium tracking-widest uppercase">Télécom SudParis · Ingénieur IA</span>
+              <div className="h-px w-4 sm:w-6 bg-primary-500/50" />
             </div>
 
             {/* Name — subtle and natural */}
             <div className="mb-4">
               <h1 className="leading-tight tracking-tight">
-                <span className="block text-[42px] sm:text-[52px] font-semibold text-white">Emerick</span>
-                <span className="block text-[42px] sm:text-[52px] font-light text-slate-400 -mt-1">Lafortune</span>
+                <span className="block text-[34px] sm:text-[42px] md:text-[52px] font-semibold text-white">Emerick</span>
+                <span className="block text-[34px] sm:text-[42px] md:text-[52px] font-light text-slate-400 -mt-1">Lafortune</span>
               </h1>
               <div className="flex items-center gap-3 mt-3 justify-center lg:justify-start">
                 <span className="text-primary-400 text-base font-medium">Data Scientist</span>
@@ -107,7 +105,7 @@ function Hero() {
             </p>
 
             {/* Stats */}
-            <div className="flex justify-center lg:justify-start gap-8 mb-8 pb-8 border-b border-white/5">
+            <div className="flex justify-center lg:justify-start gap-4 sm:gap-8 mb-6 sm:mb-8 pb-6 sm:pb-8 border-b border-white/5">
               <div className="text-center lg:text-left">
                 <div className="text-2xl font-bold text-primary-400">{yearsOfExperience}+</div>
                 <div className="text-xs text-gray-500 mt-0.5">Ans d'expérience</div>

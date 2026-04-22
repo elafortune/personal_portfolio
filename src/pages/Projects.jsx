@@ -42,7 +42,7 @@ function Projects() {
         />
 
         {filteredItems.length > 0 && (
-          <div className="text-center mt-12">
+          <div className="text-center mt-8 md:mt-12">
             <p className="text-gray-400">
               {filteredItems.length} projet{filteredItems.length > 1 ? 's' : ''} affiché{filteredItems.length > 1 ? 's' : ''}
             </p>

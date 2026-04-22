@@ -54,7 +54,7 @@ function Timeline({ items }) {
 
             {/* Content */}
             <div className="flex-1 pb-8">
-              <div className="bg-dark-light border border-primary-500/30 rounded-lg p-6 hover:border-primary-500/50 transition-colors">
+              <div className="bg-dark-light border border-primary-500/30 rounded-lg p-4 sm:p-6 hover:border-primary-500/50 transition-colors">
                 {/* Header */}
                 <div className="mb-3">
                   <h3 className="text-xl font-bold text-white mb-1">

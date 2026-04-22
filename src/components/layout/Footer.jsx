@@ -17,9 +17,9 @@ function Footer() {
   ];
 
   return (
-    <footer className="bg-dark-light border-t border-primary-500/30 py-12 px-6">
+    <footer className="bg-dark-light border-t border-primary-500/30 py-8 md:py-12 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-6 md:mb-8">
           {/* About Column */}
           <div>
             <h3 className="text-xl font-bold text-white mb-4">Portfolio</h3>

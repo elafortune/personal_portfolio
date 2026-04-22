@@ -11,7 +11,7 @@ function About() {
       subtitle="Mon parcours, mes expériences et ce qui me passionne dans la data science."
     >
       {/* Bio Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10 md:mb-16">
         {/* Profile Image & Quick Info */}
         <div className="lg:col-span-1">
           <Card>
@@ -94,8 +94,8 @@ function About() {
       </div>
 
       {/* Timeline Section */}
-      <div className="mb-16">
-        <h3 className="text-3xl font-bold text-white mb-8 text-center">
+      <div className="mb-10 md:mb-16">
+        <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-6 md:mb-8 text-center">
           Parcours Professionnel & Académique
         </h3>
         <Timeline items={timeline} />
@@ -103,8 +103,8 @@ function About() {
 
       {/* Certifications */}
       {certifications && certifications.length > 0 && (
-        <div className="mb-16">
-          <h3 className="text-3xl font-bold text-white mb-8 text-center">
+        <div className="mb-10 md:mb-16">
+          <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-6 md:mb-8 text-center">
             Certifications
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -151,7 +151,7 @@ function About() {
       {/* Interests */}
       {interests && interests.length > 0 && (
         <div>
-          <h3 className="text-3xl font-bold text-white mb-8 text-center">
+          <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-6 md:mb-8 text-center">
             Centres d&apos;Intérêt
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
