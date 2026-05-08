@@ -45,25 +45,33 @@ export const projects = [
   },
   {
     id: 'project-3',
-    title: 'Système RAG Intelligent',
-    shortDescription: 'Application de Retrieval-Augmented Generation pour la recherche documentaire',
-    fullDescription: `Développement d'un système RAG (Retrieval-Augmented Generation) permettant de
-    rechercher et synthétiser des informations à partir d'une base documentaire. Utilisation de LangChain
-    pour orchestrer les différents composants et d'une base vectorielle pour le stockage des embeddings.`,
+    title: 'Agent IA',
+    shortDescription: 'Un agent conversationnel intelligent capable de raisonner, chercher et agir de manière autonome',
+    fullDescription: `Et si une IA ne se contentait plus de répondre, mais apprenait à agir ?
+
+C'est la question qui est à l'origine de ce projet. Là où un simple chatbot récite ce qu'il a mémorisé, un agent raisonne : il décompose un problème, choisit les bons outils, interroge des sources externes, puis synthétise une réponse ancrée dans le réel.
+
+L'idée centrale est simple mais puissante — combiner la capacité de compréhension d'un grand modèle de langage avec la précision d'une recherche documentaire ciblée. Le résultat : un assistant qui ne hallucine pas, qui cite ses sources, et qui s'adapte au contexte de chaque échange.
+
+Ce projet explore l'architecture complète d'un agent IA moderne : une API backend construite avec FastAPI, un moteur RAG (Retrieval-Augmented Generation) orchestré par LangChain, une base vectorielle ChromaDB pour le stockage des embeddings, et une interface frontend pensée pour rendre l'expérience fluide et accessible.
+
+L'objectif n'était pas de construire un énième chatbot générique, mais un outil à usage réel — capable d'ingérer des documents personnalisés, de les comprendre en profondeur, et de répondre avec précision aux questions qui comptent vraiment.`,
     image: '/images/projects/rag-system.svg',
-    technologies: ['Python', 'LangChain', 'OpenAI', 'ChromaDB', 'FastAPI'],
+    technologies: ['Python', 'LangChain', 'OpenAI', 'ChromaDB', 'FastAPI', 'React'],
     category: 'NLP',
-    githubUrl: null,
+    githubUrl: 'https://github.com/elafortune/personal_agent',
     liveUrl: null,
     date: '2025-01',
     featured: true,
     outcomes: [
-      'Réponses contextuelles précises basées sur les documents',
-      'Interface API pour intégration facile',
-      'Support de multiples formats de documents'
+      'Agent capable de raisonner en plusieurs étapes avant de répondre',
+      'Réponses contextuelles précises ancrées dans les documents fournis',
+      'Réduction significative des hallucinations grâce au RAG',
+      'Interface complète frontend + backend déployable'
     ],
-    challenges: `Optimisation du chunking pour améliorer la pertinence des résultats.
-    Gestion de la qualité des réponses générées et réduction des hallucinations.`
+    challenges: `Trouver le bon équilibre entre autonomie de l'agent et contrôle des réponses.
+    Optimisation du chunking documentaire pour maximiser la pertinence des résultats.
+    Gestion de la latence end-to-end pour une expérience utilisateur fluide.`
   }
 ];
 
