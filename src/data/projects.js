@@ -60,7 +60,7 @@ L'objectif n'était pas de construire un énième chatbot générique, mais un o
     technologies: ['Python', 'LangChain', 'OpenAI', 'ChromaDB', 'FastAPI', 'React'],
     category: 'NLP',
     githubUrl: 'https://github.com/elafortune/personal_agent',
-    liveUrl: 'https://personal-agent-three.vercel.app/',
+    liveUrl: 'https://personal-agent-wk8s.onrender.com',
     date: '2025-01',
     featured: true,
     outcomes: [
