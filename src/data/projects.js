@@ -24,24 +24,32 @@ export const projects = [
   {
     id: 'project-2',
     title: 'Détection de Fraudes Bancaires',
-    shortDescription: 'Modèle de Machine Learning pour détecter les transactions frauduleuses en temps réel',
-    fullDescription: `Développement d'un système de détection de fraudes pour les transactions bancaires.
-    Utilisation de techniques de machine learning pour identifier les comportements suspects et
-    minimiser les faux positifs tout en maximisant la détection des vraies fraudes.`,
+    shortDescription: 'Pipeline ML complet pour détecter les transactions frauduleuses sur un dataset fortement déséquilibré',
+    fullDescription: `La fraude bancaire coûte des milliards chaque année — et pourtant, moins de 0.2 % des transactions sont frauduleuses. C'est précisément ce paradoxe qui rend le problème si difficile et si intéressant.
+
+Un modèle naïf qui prédit "légitime" à chaque transaction affiche 99.8 % d'accuracy. Et détecte zéro fraude. Ce projet part de ce constat pour construire quelque chose d'utile : une pipeline ML professionnelle qui sait quoi optimiser, et pourquoi.
+
+Trois modèles sont entraînés et comparés — Random Forest, Régression Logistique, XGBoost — sur un split stratifié 70/15/15 conçu pour préserver la distribution rare des fraudes. Le déséquilibre des classes est traité en amont avec SMOTE, et la sélection finale du meilleur modèle repose sur la PR-AUC, la métrique de référence quand les classes sont asymétriques.
+
+Mais le projet va plus loin : il intègre une détection de data drift par test de Kolmogorov-Smirnov. Si les nouvelles données s'éloignent significativement de la distribution d'entraînement, le système le signale et propose un réentraînement — parce qu'un bon modèle d'aujourd'hui peut devenir obsolète demain.
+
+L'ensemble est accessible via une interface web interactive : import de données, visualisations EDA, lancement de la pipeline en live, évaluation sur de nouveaux datasets, et analyse du drift feature par feature.`,
     image: '/images/projects/fraud-detection.svg',
-    technologies: ['Python', 'Scikit-learn', 'XGBoost', 'Pandas', 'Imbalanced-learn'],
+    technologies: ['Python', 'FastAPI', 'Scikit-learn', 'XGBoost', 'imbalanced-learn', 'React', 'Tailwind CSS', 'Pandas', 'SciPy'],
     category: 'Machine Learning',
-    githubUrl: null,
-    liveUrl: null,
+    githubUrl: 'https://github.com/elafortune/credit_card_fraud',
+    liveUrl: 'https://credit-card-fraud-ou77.onrender.com',
     date: '2024-06',
     featured: true,
     outcomes: [
-      'Précision de 95%+ sur la détection des fraudes',
-      'Réduction significative des faux positifs',
-      'Pipeline de traitement optimisé pour le temps réel'
+      'Comparaison automatique de 3 modèles (Random Forest, LogReg, XGBoost) avec hyperparameter search',
+      'Gestion du déséquilibre extrême (0.17 % de fraudes) via SMOTE',
+      'Détection de data drift par KS-test avec recommandation de réentraînement',
+      'Interface complète : EDA, entraînement live, évaluation et réapprentissage'
     ],
-    challenges: `Gestion d'un dataset fortement déséquilibré avec techniques de SMOTE et undersampling.
-    Optimisation du compromis précision/rappel pour minimiser l'impact sur les clients légitimes.`
+    challenges: `Optimiser le recall sans sacrifier la précision sur 284 807 transactions à 0.17 % de fraudes.
+    Construire une détection de drift générique applicable à n'importe quel nouveau dataset avec les mêmes colonnes.
+    Gérer l'état de la pipeline ML côté serveur de manière thread-safe pour l'interface live.`
   },
   {
     id: 'project-3',
