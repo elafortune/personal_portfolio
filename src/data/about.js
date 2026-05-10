@@ -137,6 +137,11 @@ export const interests = [
     description: 'Veille active sur les dernières avancées en IA générative et deep learning'
   },
   {
+    icon: '🌐',
+    title: 'Création de Sites Web',
+    description: 'Conception et développement de sites web : e-commerce, vitrines, portfolios'
+  },
+  {
     icon: '🏀',
     title: 'Basketball',
     description: 'Pratique régulière du basketball en loisir'

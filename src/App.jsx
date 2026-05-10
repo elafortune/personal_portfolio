@@ -5,6 +5,7 @@ import ScrollToTop from './components/common/ScrollToTop'
 import Hero from './pages/Hero'
 import Projects from './pages/Projects'
 import Skills from './pages/Skills'
+import WebCreation from './pages/WebCreation'
 import About from './pages/About'
 import Contact from './pages/Contact'
 
@@ -17,6 +18,7 @@ function App() {
         <Hero />
         <Projects />
         <Skills />
+        <WebCreation />
         <About />
         <Contact />
       </main>
