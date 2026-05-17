@@ -131,7 +131,11 @@ Métrique : l'objectif n'est pas l'accuracy, c'est le recall sur la classe minor
         {
           name: 'SMOTE — Oversampling synthétique de la classe minoritaire',
           latex: 'x_{\\text{new}} = x_i + \\lambda \\cdot (\\tilde{x}_{nn} - x_i), \\quad \\lambda \\sim \\mathcal{U}[0,1]',
-          description: 'Génère de nouveaux exemples minoritaires (fraudes) en interpolant entre un point x_i et l\'un de ses k plus proches voisins x̃_nn dans l\'espace des features. λ contrôle la position sur le segment entre les deux points — SMOTE crée ainsi des exemples synthétiques plausibles plutôt que de simplement dupliquer des exemples existants.'
+          description: `L'algorithme SMOTE (Synthetic Minority Over-sampling Technique) est une méthode classique pour résoudre le problème de déséquilibre de classes dans un dataset. Contrairement à la simple duplication des exemples existants — qui ne ferait qu'amplifier le surapprentissage — SMOTE génère de nouveaux exemples synthétiques inspirés des exemples minoritaires existants.
+
+Éléments de la formule : $x_{\\text{new}}$ est le nouveau point synthétique généré, sous forme d'un vecteur de caractéristiques ; $x_i$ est un point de la classe minoritaire tiré aléatoirement dans le dataset ; $\\tilde{x}_{nn}$ est l'un des $k$ plus proches voisins de $x_i$, également de la classe minoritaire ; $\\lambda$ est un scalaire aléatoire uniforme dans $[0, 1]$.
+
+Génération du point synthétique : on sélectionne $x_i$, puis on calcule ses $k$ plus proches voisins par distance euclidienne et on en choisit un aléatoirement, $\\tilde{x}_{nn}$. Le vecteur $(\\tilde{x}_{nn} - x_i)$ pointe de $x_i$ vers $\\tilde{x}_{nn}$. Multiplié par $\\lambda \\in [0, 1]$, il positionne $x_{\\text{new}}$ sur le segment entre ces deux points : si $\\lambda = 0$, on retombe sur $x_i$ ; si $\\lambda = 1$, on obtient $\\tilde{x}_{nn}$ ; pour toute valeur intermédiaire, $x_{\\text{new}}$ est un nouveau point synthétique plausible situé entre un exemple de fraude existant et l'un de ses plus proches voisins.`
         },
         {
           name: 'PR-AUC — Métrique de référence sur classes déséquilibrées',
