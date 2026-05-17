@@ -140,7 +140,9 @@ Génération du point synthétique : on sélectionne $x_i$, puis on calcule ses 
         {
           name: 'PR-AUC — Métrique de référence sur classes déséquilibrées',
           latex: '\\text{PR-AUC} = \\int_0^1 \\text{Precision}(R)\\,dR \\approx \\sum_{i} P_i \\cdot \\Delta R_i',
-          description: 'Aire sous la courbe Précision-Recall. Contrairement à la ROC-AUC, la PR-AUC est directement sensible au déséquilibre des classes — un classificateur aléatoire obtient PR-AUC ≈ 0.002 (= taux de fraude) au lieu de 0.5. Elle pénalise fortement les modèles qui sacrifient la précision pour maximiser le recall.'
+          description: `Pour construire la courbe, l'algorithme classe toutes les transactions par probabilité de fraude décroissante — de la plus suspecte à la plus sûre. Il fait ensuite glisser un seuil le long de ce classement : à chaque nouvelle transaction incluse dans les prédictions positives, il enregistre la $\\text{Précision}$ (parmi les transactions prédites frauduleuses, quelle fraction l'est vraiment ?) et le $\\text{Recall}$ (parmi toutes les fraudes réelles, quelle fraction a été détectée ?). Ces paires $P_i, R_i$ forment la courbe Précision-Recall, et l'intégrale $\\sum_i P_i \\cdot \\Delta R_i$ donne la PR-AUC.
+
+Plus le modèle maintient une $\\text{Précision}$ élevée tout en augmentant le $\\text{Recall}$ — en se rapprochant du coin supérieur droit du graphique — plus l'aire tend vers $1.0$. À l'inverse, un modèle aléatoire produit une courbe quasi plate dont l'aire vaut environ $0.002$ (le taux de fraude du dataset), contre $0.5$ pour la ROC-AUC : c'est ce qui fait de la PR-AUC une métrique bien plus exigeante sur des classes fortement déséquilibrées.`
         },
         {
           name: 'XGBoost — Fonction objectif régularisée',
