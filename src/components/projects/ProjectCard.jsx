@@ -39,6 +39,18 @@ function ProjectCard({ project, onClick }) {
         )}
       </div>
 
+      {/* Impact Badges — quantified TL;DR for a quick scan */}
+      {project.impactBadges && project.impactBadges.length > 0 && (
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-3 text-[11px] font-mono uppercase tracking-wide text-primary-300/90">
+          {project.impactBadges.map((badge, index) => (
+            <span key={badge.label} className="flex items-center gap-2">
+              {index > 0 && <span className="text-gray-600">·</span>}
+              <span>{badge.value}</span>
+            </span>
+          ))}
+        </div>
+      )}
+
       {/* Category Badge */}
       <div className="mb-3">
         <span className="inline-block bg-primary-600/20 text-primary-400 text-xs px-3 py-1 rounded-full">
