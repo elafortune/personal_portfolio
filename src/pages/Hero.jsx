@@ -101,7 +101,7 @@ function Hero() {
             {/* Description */}
             <p className="text-gray-400 leading-relaxed mb-8 max-w-lg mx-auto lg:mx-0">
               Je développe des applications de computer vision robustes à grande échelle — conçues pour
-              tenir la charge de gros volumes de données et déployées en production, pas seulement en notebook.
+              tenir la charge de gros volumes de données et déployées en production.
             </p>
 
             {/* Stats */}
