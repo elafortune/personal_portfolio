@@ -13,11 +13,6 @@ export const projects = [
     liveUrl: null,
     date: '2024-01',
     featured: false,
-    impactBadges: [
-      { label: 'Segmentation', value: 'RFM' },
-      { label: 'Scoring', value: '3–15' },
-      { label: 'Livrable', value: 'HTML autonome' }
-    ],
     outcomes: [
       'Identification des produits les plus rentables',
       'Analyse de la saisonnalité des ventes',
@@ -120,11 +115,6 @@ L'ensemble est accessible via une interface web interactive : import de données
     liveUrl: 'https://credit-card-fraud-ou77.onrender.com',
     date: '2024-06',
     featured: true,
-    impactBadges: [
-      { label: 'Dataset', value: '284K transactions' },
-      { label: 'Classe rare', value: '0.17% fraude' },
-      { label: 'Monitoring', value: 'Drift KS-test' }
-    ],
     outcomes: [
       'Comparaison automatique de 3 modèles (Random Forest, LogReg, XGBoost) avec hyperparameter search',
       'Gestion du déséquilibre extrême (0.17 % de fraudes) via SMOTE',
@@ -256,11 +246,6 @@ L'objectif n'était pas de construire un énième chatbot générique, mais un o
     liveUrl: 'https://personal-agent-wk8s.onrender.com',
     date: '2025-01',
     featured: true,
-    impactBadges: [
-      { label: 'Architecture', value: 'RAG + LangChain' },
-      { label: 'Retrieval', value: 'Top-4 chunks' },
-      { label: 'Traçabilité', value: 'Sources citées' }
-    ],
     outcomes: [
       'Agent capable de raisonner en plusieurs étapes avant de répondre',
       'Réponses contextuelles précises ancrées dans les documents fournis',

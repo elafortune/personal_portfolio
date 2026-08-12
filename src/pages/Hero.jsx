@@ -130,16 +130,6 @@ function Hero() {
               <Button variant="secondary" size="lg" onClick={handleScrollToContact}>
                 Me contacter
               </Button>
-              <a
-                href={aboutInfo.resume}
-                download
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 sm:py-4 rounded-lg border border-white/10 text-gray-300 hover:text-primary-400 hover:border-primary-500/40 transition-colors duration-300 text-base font-medium"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                </svg>
-                Télécharger mon CV
-              </a>
             </div>
           </div>
 
