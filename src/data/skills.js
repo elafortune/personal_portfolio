@@ -1,92 +1,50 @@
 export const skillCategories = [
   {
-    id: 'programming',
-    category: 'Langages de Programmation',
+    id: 'ml-dl',
+    category: 'Machine Learning & Deep Learning',
+    skills: [
+      { name: 'PyTorch', proficiency: 85, icon: '🔥' },
+      { name: 'TensorFlow', proficiency: 85, icon: '🧠' },
+      { name: 'Scikit-learn', proficiency: 95, icon: '🤖' },
+      { name: 'XGBoost/LightGBM', proficiency: 90, icon: '🌳' },
+      { name: 'Computer Vision', proficiency: 85, icon: '👁️' },
+      { name: 'NLP', proficiency: 80, icon: '📝' }
+    ]
+  },
+  {
+    id: 'big-data',
+    category: 'Big Data & Data Engineering',
+    skills: [
+      { name: 'PySpark', proficiency: 80, icon: '⚡' },
+      { name: 'Hadoop', proficiency: 70, icon: '🐘' },
+      { name: 'SQL', proficiency: 90, icon: '🗄️' },
+      { name: 'Apache Airflow', proficiency: 70, icon: '🌊' },
+      { name: 'Pandas', proficiency: 95, icon: '🐼' },
+      { name: 'NumPy', proficiency: 95, icon: '🔢' }
+    ]
+  },
+  {
+    id: 'production',
+    category: 'Production & MLOps',
+    skills: [
+      { name: 'C/C++', proficiency: 80, icon: '⚙️' },
+      { name: 'Docker', proficiency: 85, icon: '🐳' },
+      { name: 'Kubernetes', proficiency: 75, icon: '☸️' },
+      { name: 'CI/CD (Jenkins)', proficiency: 75, icon: '🔄' },
+      { name: 'MLflow', proficiency: 75, icon: '📦' },
+      { name: 'AWS (S3, EC2, SageMaker)', proficiency: 75, icon: '☁️' }
+    ]
+  },
+  {
+    id: 'software-engineering',
+    category: 'Software Engineering & Full Stack',
     skills: [
       { name: 'Python', proficiency: 95, icon: '🐍' },
-      { name: 'R', proficiency: 80, icon: '📊' },
-      { name: 'SQL', proficiency: 90, icon: '🗄️' },
-      { name: 'C', proficiency: 75, icon: '⚙️' },
-      { name: 'TypeScript', proficiency: 70, icon: '🔷' },
-      { name: 'Node.js', proficiency: 70, icon: '🟢' },
-      { name: 'Bash/Shell', proficiency: 70, icon: '💻' }
-    ]
-  },
-  {
-    id: 'ml-ai',
-    category: 'Machine Learning & IA',
-    skills: [
-      { name: 'Scikit-learn', proficiency: 95, icon: '🤖' },
-      { name: 'TensorFlow', proficiency: 85, icon: '🧠' },
-      { name: 'PyTorch', proficiency: 85, icon: '🔥' },
-      { name: 'XGBoost/LightGBM', proficiency: 90, icon: '🌳' },
-      { name: 'Keras', proficiency: 85, icon: '🎯' },
-      { name: 'Hugging Face Transformers', proficiency: 80, icon: '🤗' }
-    ]
-  },
-  {
-    id: 'data-processing',
-    category: 'Traitement de Données',
-    skills: [
-      { name: 'Pandas', proficiency: 95, icon: '🐼' },
-      { name: 'NumPy', proficiency: 95, icon: '🔢' },
-      { name: 'PySpark', proficiency: 75, icon: '⚡' }
-    ]
-  },
-  {
-    id: 'data-viz',
-    category: 'Visualisation de Données',
-    skills: [
-      { name: 'Matplotlib', proficiency: 90, icon: '📈' },
-      { name: 'Seaborn', proficiency: 90, icon: '🎨' },
-      { name: 'Plotly', proficiency: 85, icon: '📊' },
-      { name: 'Tableau', proficiency: 75, icon: '📉' },
-      { name: 'Power BI', proficiency: 70, icon: '📊' }
-    ]
-  },
-  {
-    id: 'tools-platforms',
-    category: 'Outils & Plateformes',
-    skills: [
+      { name: 'TypeScript', proficiency: 75, icon: '🔷' },
+      { name: 'React', proficiency: 75, icon: '⚛️' },
+      { name: 'FastAPI', proficiency: 80, icon: '🚀' },
       { name: 'Git/GitHub', proficiency: 90, icon: '🔧' },
-      { name: 'Docker', proficiency: 85, icon: '🐳' },
-      { name: 'AWS (S3, EC2, SageMaker)', proficiency: 75, icon: '☁️' },
-      { name: 'Jupyter/JupyterLab', proficiency: 95, icon: '📓' },
-      { name: 'MLflow', proficiency: 75, icon: '🔄' },
-      { name: 'Apache Airflow', proficiency: 70, icon: '🌊' }
-    ]
-  },
-  {
-    id: 'databases',
-    category: 'Bases de Données',
-    skills: [
-      { name: 'PostgreSQL', proficiency: 85, icon: '🐘' },
-      { name: 'MongoDB', proficiency: 75, icon: '🍃' },
-      { name: 'MySQL', proficiency: 80, icon: '🗄️' },
-      { name: 'SQLite', proficiency: 85, icon: '📁' }
-    ]
-  },
-  {
-    id: 'specializations',
-    category: 'Spécialisations',
-    skills: [
-      { name: 'Natural Language Processing', proficiency: 85, icon: '📝' },
-      { name: 'Computer Vision', proficiency: 80, icon: '👁️' },
-      { name: 'Time Series Analysis', proficiency: 85, icon: '📅' },
-      { name: 'A/B Testing', proficiency: 90, icon: '🧪' },
-      { name: 'Statistical Modeling', proficiency: 90, icon: '📐' },
-      { name: 'Deep Learning', proficiency: 85, icon: '🧬' }
-    ]
-  },
-  {
-    id: 'soft-skills',
-    category: 'Compétences Transversales',
-    skills: [
-      { name: 'Communication de résultats', proficiency: 90, icon: '💬' },
-      { name: 'Storytelling avec données', proficiency: 85, icon: '📖' },
-      { name: 'Gestion de projet Agile', proficiency: 80, icon: '🔄' },
-      { name: 'Collaboration inter-équipes', proficiency: 90, icon: '🤝' },
-      { name: 'Mentorat technique', proficiency: 75, icon: '👨‍🏫' }
+      { name: 'Linux', proficiency: 75, icon: '🐧' }
     ]
   }
 ];

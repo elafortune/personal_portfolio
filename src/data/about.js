@@ -1,24 +1,26 @@
 export const aboutInfo = {
   name: 'Emerick Lafortune',
-  title: 'Data Scientist',
-  tagline: 'Transforming data into actionable insights',
+  title: 'Ingénieur IA / Full Stack',
+  tagline: 'Du prototype de recherche à l\'application en production',
   profileImage: '/images/profile.jpg',
   bio: [
-    `Ingénieur diplômé de Télécom SudParis avec une spécialisation en Data Science et Intelligence Artificielle,
-    je suis passionné par les technologies de pointe en IA. Mon parcours m'a permis d'acquérir une solide
-    formation mathématique et une expertise pratique en machine learning, deep learning et IA générative.`,
+    `Ingénieur diplômé de Télécom SudParis, spécialisé en Data Science et Intelligence Artificielle, je conçois
+    et je livre des systèmes intelligents de bout en bout — du modèle au déploiement en production. Ma formation
+    combine une base mathématique solide et une pratique concrète du machine learning, du deep learning et de
+    l'IA générative.`,
 
-    `À travers mes expériences chez Alten Labs et Air France KLM, j'ai pu travailler sur des projets variés :
-    développement de systèmes RAG multimodaux, modèles de deep learning (LSTM, CNN, VLM), et pipelines de
-    données Big Data. Je suis particulièrement intéressé par les applications concrètes de l'IA générative.`,
+    `Chez MBDA, Alten Labs et Air France KLM, j'ai travaillé aussi bien sur des systèmes de computer vision
+    robustes à grande échelle que sur des pipelines Big Data et des interfaces full stack (Python/TypeScript).
+    Cette double casquette — data scientist et ingénieur logiciel — me permet de porter un projet du prototype
+    de recherche jusqu'à l'application en production.`,
 
     `Curieux et rigoureux, j'aime relever des défis techniques complexes et transformer des idées innovantes
-    en solutions fonctionnelles. Je suis actuellement à la recherche de nouvelles opportunités pour contribuer
-    à des projets ambitieux en Data Science et Intelligence Artificielle.`
+    en solutions fonctionnelles et robustes. Je suis actuellement à la recherche de nouvelles opportunités pour
+    contribuer à des projets ambitieux en IA et en ingénierie logicielle.`
   ],
   location: 'Paris, France',
   email: 'emerick.lafortune@gmail.com',
-  phone: '+33 6 12 34 56 78',
+  phone: '+33 6 63 73 26 77',
   availability: 'Disponible pour de nouvelles opportunités',
   social: {
     github: null,
@@ -27,45 +29,68 @@ export const aboutInfo = {
     kaggle: null,
     medium: null
   },
-  resume: '/documents/CV_Data_Scientist.pdf'
+  resume: '/documents/CV_Emerick_Lafortune.pdf'
 };
 
 export const timeline = [
   {
+    id: 'exp-mbda',
+    type: 'experience',
+    title: 'Computer Vision & Full Stack Engineer (Stage)',
+    organization: 'MBDA',
+    location: 'France',
+    startDate: '2026-01',
+    endDate: '2026-07',
+    current: false,
+    description: `Stage de fin d'études en computer vision et développement full stack au sein d'un acteur
+    majeur de la défense. Conception d'un framework d'évaluation de la fidélité des données synthétiques et
+    d'une interface d'analyse pour l'entraînement de modèles de vision.`,
+    achievements: [
+      'Création d\'un framework d\'évaluation comparant la fidélité des images réelles/synthétiques (métriques bas niveau, FID, SAM) pour réduire le domain gap',
+      'Optimisation itérative des données de synthèse pour maximiser les performances des modèles de segmentation, détection et tracking',
+      'Conception d\'une IHM d\'analyse et de scoring (Python/TypeScript) pour la validation visuelle et statistique des jeux de données générés'
+    ],
+    technologies: ['Python', 'TypeScript', 'Computer Vision', 'FID', 'Segmentation', 'Détection', 'Tracking']
+  },
+  {
     id: 'exp-1',
     type: 'experience',
-    title: 'AI Engineer (Stage)',
+    title: 'Generative AI Engineer & Computer Vision (Stage)',
     organization: 'Alten Labs',
     location: 'Paris, France',
     startDate: '2025-07',
     endDate: '2026-01',
     current: false,
-    description: `Stage de fin d'études en IA générative et computer vision. Développement de solutions
-    RAG multimodales et de modèles de deep learning pour des applications industrielles.`,
+    description: `Stage de fin d'études en IA générative et computer vision appliquée à la sécurité routière
+    des véhicules autonomes. R&D sur des approches génératives et non génératives pour la détection et le
+    tracking de piétons.`,
     achievements: [
-      'Développement d\'un système RAG multimodal avec VLM',
-      'Implémentation de modèles LSTM+CNN pour l\'analyse de séries temporelles',
-      'Contribution à des projets d\'IA générative en production'
+      'Développement d\'un pipeline CNN + LSTM pour la détection et le tracking de piétons en environnement urbain dynamique (occlusions partielles)',
+      'Implémentation d\'approches génératives basées sur le fine-tuning de VLM et un RAG multimodal',
+      'Optimisation de la mémoire GPU (offloading, fine-tuning LoRA, prétraitements NumPy optimisés pour les transferts CPU-GPU)',
+      'Benchmark comparatif des modèles en conditions réelles (milieu urbain, occlusions partielles)'
     ],
-    technologies: ['Python', 'RAG', 'VLM', 'LSTM', 'CNN', 'LangChain']
+    technologies: ['Python', 'PyTorch', 'VLM', 'LoRA', 'RAG multimodal', 'CNN', 'LSTM', 'Computer Vision']
   },
   {
     id: 'exp-2',
     type: 'experience',
-    title: 'Data Engineer (Stage)',
+    title: 'Big Data Engineer (Stage)',
     organization: 'Air France KLM',
     location: 'Paris, France',
     startDate: '2024-04',
     endDate: '2024-10',
     current: false,
-    description: `Stage de 6 mois en data engineering au sein de l'équipe data d'Air France KLM.
-    Travail sur les pipelines de données et l'optimisation des traitements Big Data.`,
+    description: `Stage de 6 mois au sein de l'équipe data d'Air France KLM. Conception de pipelines ETL à
+    grande échelle et mise en place de pratiques DevOps pour l'industrialisation des traitements de données.`,
     achievements: [
-      'Développement de pipelines de données avec PySpark',
-      'Optimisation des requêtes SQL pour le traitement de données massives',
-      'Automatisation de processus avec scripts Bash'
+      'Conception et orchestration de pipelines ETL en PySpark, Hadoop, SQL et Shell pour le traitement de données à grande échelle',
+      'Automatisation de la création de bases de données miniatures à partir de données de production pour les environnements de test',
+      'Développement de pipelines robustes pour la récupération de centaines de tables issues de services hétérogènes',
+      'Mise en place de pratiques DevOps : CI/CD (Jenkins, GitHub), automatisation des workflows, tests d\'intégration',
+      'Travail en environnement agile (Jira, Confluence, Miro) en collaboration étroite avec les équipes data et IT'
     ],
-    technologies: ['PySpark', 'SQL', 'Bash', 'Big Data']
+    technologies: ['PySpark', 'Hadoop', 'SQL', 'Bash', 'Jenkins', 'CI/CD', 'Big Data']
   },
   {
     id: 'exp-3',
@@ -168,14 +193,15 @@ export const getEducation = () => {
   return timeline.filter(item => item.type === 'education');
 };
 
-// Helper function to calculate years of experience
+// Helper function to calculate years of experience in Data Science / AI / Engineering roles
+// (excludes exp-3, a generic software internship unrelated to this track)
 export const getYearsOfExperience = () => {
-  const experiences = getExperience();
+  const experiences = getExperience().filter(item => item.id !== 'exp-3');
   if (experiences.length === 0) return 0;
 
-  const firstJob = experiences[experiences.length - 1];
-  const startYear = parseInt(firstJob.startDate.split('-')[0]);
+  const startYears = experiences.map(item => parseInt(item.startDate.split('-')[0]));
+  const earliestYear = Math.min(...startYears);
   const currentYear = new Date().getFullYear();
 
-  return currentYear - startYear;
+  return currentYear - earliestYear;
 };

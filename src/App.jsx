@@ -3,6 +3,7 @@ import './App.css'
 import Navigation from './components/layout/Navigation'
 import Footer from './components/layout/Footer'
 import ScrollToTop from './components/common/ScrollToTop'
+import TrustedBy from './components/common/TrustedBy'
 import Hero from './pages/Hero'
 import Projects from './pages/Projects'
 import ProjectDetail from './pages/ProjectDetail'
@@ -29,6 +30,7 @@ function App() {
 
       <main>
         <Hero />
+        <TrustedBy />
         <Projects onSelectProject={setSelectedProject} />
         <Skills />
         <WebCreation />

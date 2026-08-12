@@ -92,16 +92,16 @@ function Hero() {
                 <span className="block text-[34px] sm:text-[42px] md:text-[52px] font-light text-slate-400 -mt-1">Lafortune</span>
               </h1>
               <div className="flex items-center gap-3 mt-3 justify-center lg:justify-start">
-                <span className="text-primary-400 text-base font-medium">Data Scientist</span>
+                <span className="text-primary-400 text-base font-medium">Ingénieur IA</span>
                 <span className="w-1 h-1 rounded-full bg-slate-600" />
-                <span className="text-slate-500 text-base">Intelligence Artificielle</span>
+                <span className="text-slate-500 text-base">Full Stack & Computer Vision</span>
               </div>
             </div>
 
             {/* Description */}
             <p className="text-gray-400 leading-relaxed mb-8 max-w-lg mx-auto lg:mx-0">
-              Machine learning, deep learning et IA générative. Je construis des systèmes intelligents
-              qui transforment des données complexes en solutions à impact mesurable.
+              Je développe des applications de computer vision robustes à grande échelle — conçues pour
+              tenir la charge de gros volumes de données et déployées en production, pas seulement en notebook.
             </p>
 
             {/* Stats */}

@@ -62,7 +62,7 @@ function Navigation() {
                 {link.label}
               </a>
             ))}
-            <Button variant="primary" size="sm" href="/documents/CV_Data_Scientist.pdf">
+            <Button variant="primary" size="sm" href="/documents/CV_Emerick_Lafortune.pdf">
               Télécharger CV
             </Button>
           </div>
@@ -103,7 +103,7 @@ function Navigation() {
               </a>
             ))}
             <div className="pt-2">
-              <Button variant="primary" size="sm" href="/documents/CV_Data_Scientist.pdf" className="w-full">
+              <Button variant="primary" size="sm" href="/documents/CV_Emerick_Lafortune.pdf" className="w-full">
                 Télécharger CV
               </Button>
             </div>
