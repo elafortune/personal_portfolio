@@ -341,6 +341,130 @@ def ingest_documents(file_path: str, chunk_size: int = 500, overlap: int = 50):
       liveUrl: 'https://personal-agent-wk8s.onrender.com',
       liveDescription: `Interface conversationnelle déployée sur Render. Permet d'importer des documents PDF ou texte, de les ingérer dans la base vectorielle ChromaDB, puis de poser des questions en langage naturel. L'agent répond en citant les passages source utilisés pour construire sa réponse — traçabilité complète, zéro hallucination hors-document.`
     }
+  },
+  {
+    id: 'realtime-video-analysis',
+    title: 'Pipeline Vidéo Temps Réel — Détection & Tracking Aérien',
+    shortDescription: 'Détection et tracking multi-objets sur flux vidéo aérien : YOLOv10 fine-tuné, quantifié en INT8 avec TensorRT, exécuté par un moteur C++20 zero-copy à plus de 1200 FPS.',
+    fullDescription: `Un système de vision par ordinateur temps réel n'est jamais limité par la précision du modèle — il est limité par la chaîne complète qui le fait tourner. Ce projet part de ce constat pour construire un pipeline de bout en bout : de l'entraînement d'un détecteur jusqu'à son exécution en C++ à plus de 1200 images par seconde sur GPU.
+
+Trois étapes, chacune motivée par la précédente. D'abord, le fine-tuning d'un YOLOv10 sur VisDrone (détection aérienne dense — piétons, véhicules, vus depuis un drone), choisi précisément parce qu'il est NMS-free : sa sortie ne nécessite aucun post-traitement à latence variable, un détail d'architecture qui devient déterminant pour un système temps réel. Ensuite, la compression du modèle en INT8 via TensorRT, avec une perte de précision mesurée (pas supposée) et un rapport de profiling comparant trois runtimes. Enfin, un moteur d'inférence C++20 qui applique un principe simple mais exigeant : garder les données sur GPU du décodage vidéo à l'inférence, sans jamais repasser par la RAM CPU — le "zero-copy".
+
+Le résultat : un pipeline qui décode la vidéo par le décodeur matériel NVDEC, prétraite et infère entièrement sur GPU, puis track les objets détectés (ByteTrack) — le tout mesuré, profilé avec Nsight Systems, et documenté du premier échec de compilation au dernier benchmark.`,
+    image: '/images/projects/photo_results/visdrone-detections-1.jpg',
+    technologies: ['C++20', 'CUDA', 'TensorRT', 'OpenCV (CUDA)', 'PyTorch', 'Ultralytics YOLOv10', 'ONNX', 'Docker', 'CMake', 'Nsight Systems'],
+    category: 'Computer Vision',
+    githubUrl: 'https://github.com/elafortune/real_time_video_analysis',
+    liveUrl: null,
+    date: '2026-09',
+    featured: true,
+    outcomes: [
+      'Moteur TensorRT INT8 6,0× plus rapide que PyTorch natif et 4,7× plus rapide qu\'ONNXRuntime (1239 FPS vs 205/264 FPS, inférence pure)',
+      'Latence P99 mesurée à 0,81 ms — objectif du cahier des charges (≥60 FPS) dépassé d\'un facteur 20',
+      'Pipeline C++20 zero-copy validé de bout en bout : NVDEC → GPU → TensorRT → tracking, sans copie CPU intermédiaire',
+      'Perte de précision INT8 quantifiée (mAP50-95 : 0,296 → 0,259, soit -12,5 %) plutôt que supposée, avec leviers de correction identifiés (QAT, calibration entropy)',
+      'Preuve d\'exécution INT8 réelle via profiling Nsight Systems (kernels Tensor Core GEMM INT8 identifiés, pas une exécution FP32 déguisée)'
+    ],
+    challenges: `Les headers NVCUVID open-source (nv-codec-headers) ne fournissaient que des typedefs de pointeurs de fonction, pas les déclarations directement liables qu'OpenCV attend — il a fallu identifier la vraie source (NVIDIA Video Codec SDK) et la différence entre les deux approches.
+    Le fichier .engine généré par Ultralytics n'est pas un plan TensorRT brut mais un conteneur avec un en-tête JSON de métadonnées — un bug de désérialisation a nécessité d'inspecter les octets bruts du fichier pour comprendre le vrai format.
+    Le Container Disk éphémère du pod cloud a effacé l'environnement C++ entier (CUDA Toolkit, TensorRT, OpenCV compilé) à chaque redémarrage — la compilation d'OpenCV avec support CUDA/NVDEC prend 30 à 60 minutes à elle seule.`,
+    research: {
+      interest: `La question centrale d'un pipeline vidéo temps réel n'est pas "le modèle est-il précis ?" mais "la chaîne complète tient-elle la cadence, frame après frame, sans à-coups ?". C'est une distinction importante : un système peut avoir un débit moyen élevé tout en étant inutilisable si sa latence varie fortement d'une frame à l'autre — d'où l'attention portée ici à la latence P99 (le pire cas mesuré) plutôt qu'à la seule moyenne.
+
+Deux décisions d'architecture découlent directement de cette contrainte. D'abord, le choix d'un détecteur NMS-free (YOLOv10) : le NMS classique est une étape séquentielle dont le temps d'exécution dépend du nombre de boîtes candidates détectées — sur une scène aérienne dense (jusqu'à 900 objets par image sur VisDrone), ce temps devient à la fois élevé et imprévisible. Ensuite, le principe du "zero-copy" : chaque transfert de mémoire entre CPU et GPU passe par le bus PCIe, une opération lente et surtout variable en durée. En gardant les données sur GPU du décodage vidéo (NVDEC) jusqu'à l'inférence (TensorRT), cette source de variance est éliminée par construction plutôt que compensée après coup.`,
+      formulas: [
+        {
+          name: 'Quantification INT8 — de la valeur flottante à l\'entier 8 bits',
+          latex: 'x_{\\text{int8}} = \\text{round}\\!\\left(\\frac{x_{\\text{float}}}{\\text{scale}}\\right), \\quad \\text{scale} = \\frac{\\max(|x|)}{127}',
+          description: `Le passage en INT8 remplace chaque poids/activation FP32 par un entier 8 bits (256 valeurs possibles) — un gain de vitesse acquis dès qu'on quantifie, indépendamment de la valeur du $\\text{scale}$ choisi. Ce dernier n'affecte que la précision, avec deux modes d'échec symétriques : un $\\text{scale}$ trop grand écrase la résolution (des valeurs distinctes finissent arrondies au même entier), un $\\text{scale}$ trop petit sature (clippe) les valeurs extrêmes.
+
+La calibration post-training (PTQ) consiste précisément à choisir ce $\\text{scale}$ à partir de la distribution réelle des activations, observée sur des données représentatives — ici, 512 images du dataset d'entraînement VisDrone, pour que la plage calibrée corresponde au domaine réel d'inférence (scènes aériennes, pas des images génériques).`
+        },
+        {
+          name: 'Intersection-over-Union — association détections ↔ pistes',
+          latex: '\\text{IoU}(A, B) = \\frac{|A \\cap B|}{|A \\cup B|}',
+          description: `Mesure de chevauchement entre deux boîtes englobantes, utilisée à deux endroits du pipeline : en sortie du détecteur, et dans le tracker ByteTrack pour associer une détection à une piste existante (position prédite par un filtre de Kalman à vitesse constante). ByteTrack innove en associant en deux passes — d'abord les détections à haute confiance, puis les détections à basse confiance mais uniquement pour récupérer une piste déjà établie (jamais pour en créer une nouvelle), ce qui évite l'accumulation de faux positifs persistants tout en récupérant les objets momentanément flous ou partiellement occlus.`
+        }
+      ]
+    },
+    code: {
+      highlights: [
+        {
+          title: 'Fine-tuning YOLOv10 sur VisDrone (Python / Ultralytics)',
+          language: 'python',
+          snippet: `from ultralytics import YOLO
+
+model = YOLO("yolov10s.pt")  # poids pré-entraînés COCO — backbone/neck réutilisés
+results = model.train(
+    data="VisDrone.yaml",
+    epochs=50,
+    imgsz=960,      # résolution relevée pour préserver les petits objets aériens
+    batch=16,
+    device=0,
+    # backbone entièrement dégelé : le domaine aérien diffère trop de COCO
+    # pour se contenter d'entraîner la seule tête de classification
+)`,
+          description: 'Seule la tête de classification finale est réinitialisée (incompatibilité de shape avec le nombre de classes VisDrone) — backbone et neck repartent des poids COCO. Le backbone reste dégelé car le domaine aérien (vues du ciel, objets minuscules) diffère trop de COCO pour un fine-tuning partiel.'
+        },
+        {
+          title: 'Moteur d\'inférence C++ — chaîne zero-copy decode→infer',
+          language: 'cpp',
+          snippet: `cv::cuda::Stream cvStream;
+cudaStream_t stream = cv::cuda::StreamAccessor::getStream(cvStream);
+
+while (reader->nextFrame(rawFrame)) {          // NVDEC : décodage direct en VRAM
+    cv::cuda::GpuMat bgrFrame;
+    cv::cuda::cvtColor(rawFrame, bgrFrame, cv::COLOR_BGRA2BGR, 0, cvStream);
+
+    LetterboxInfo lb{};
+    cv::cuda::GpuMat inputTensor = preproc.process(bgrFrame, cvStream, lb);
+
+    // pointeur mémoire GPU direct — aucun .download()/.upload() ici
+    engine.infer(inputTensor.cudaPtr(), outputDevicePtr, stream);
+}`,
+          description: 'Décodage, conversion couleur, prétraitement et inférence partagent le même cudaStream_t : CUDA garantit alors un ordre d\'exécution séquentiel sans synchronisation bloquante — le prétraitement finit forcément avant que l\'inférence ne lise la même zone mémoire.'
+        },
+        {
+          title: 'ByteTrack simplifié — association en deux passes',
+          language: 'cpp',
+          snippet: `// Passe 1 : détections haute confiance vs toutes les pistes
+greedyMatch(allTrackIdx, highDets, matches1, unmatchedTracks1, unmatchedHighDets);
+
+// Passe 2 : détections basse confiance -- uniquement pour RÉCUPÉRER
+// des pistes déjà établies, jamais pour en créer de nouvelles
+greedyMatch(unmatchedTracks1, lowDets, matches2, unmatchedTracks2, unmatchedLowDets);
+
+// Nouvelles pistes : uniquement à partir de détections haute confiance
+for (int detI : unmatchedHighDets) {
+    Track t;
+    t.id = nextId_++;
+    t.kf = makeKalman(highDets[detI]);
+    tracks_.push_back(std::move(t));
+}`,
+          description: 'Une piste déjà établie porte un a priori (plusieurs détections haute confiance passées) : une détection basse confiance qui lui correspond est probablement un vrai objet temporairement flou. Une détection basse confiance isolée n\'a aucune preuve accumulée — l\'exclure de la création de nouvelles pistes évite l\'accumulation de faux positifs dans le temps.'
+        }
+      ]
+    },
+    transmission: {
+      liveUrl: null,
+      visualDescription: `Les deux premières images montrent le pipeline complet en action sur de vraies scènes aériennes VisDrone (piétons, véhicules, deux-roues détectés et suivis avec un identifiant de piste stable). La densité de détections correctes sur des scènes urbaines chargées est la validation la plus directe que le fine-tuning et le prétraitement sont cohérents de bout en bout.
+
+La troisième image est le rapport de profiling comparatif : PyTorch natif, ONNXRuntime et TensorRT INT8, mesurés avec la même méthodologie (inférence pure, 200 itérations, warm-up inclus) pour une comparaison honnête. Le gain de 6× n'est pas qu'un chiffre — le profiling Nsight Systems sous-jacent confirme que l'accélération vient bien de kernels Tensor Core INT8 réels, pas d'un artefact de mesure.`,
+      images: [
+        {
+          src: '/images/projects/photo_results/visdrone-detections-1.jpg',
+          caption: 'Détection et tracking sur scène aérienne dense (VisDrone) — véhicules, piétons et deux-roues, chacun avec un ID de piste stable.'
+        },
+        {
+          src: '/images/projects/photo_results/visdrone-detections-2.jpg',
+          caption: 'Même pipeline sur une scène urbaine plus chargée — la robustesse tient malgré la densité d\'objets et les occlusions partielles.'
+        },
+        {
+          src: '/images/projects/photo_results/profiling-fps-latence.jpg',
+          caption: 'Comparaison PyTorch / ONNXRuntime / TensorRT INT8 — débit, latence P99 et VRAM, mesurés avec une méthodologie identique sur les trois moteurs.'
+        }
+      ]
+    }
   }
 ];
 

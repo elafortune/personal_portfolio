@@ -5,7 +5,8 @@ function TransmissionSection({ project }) {
   const gradientMap = {
     'Machine Learning': 'from-indigo-900/60 via-blue-800/40 to-violet-900/60',
     'NLP': 'from-emerald-900/60 via-cyan-800/40 to-sky-900/60',
-    'Data Analysis': 'from-slate-900/60 via-blue-900/40 to-indigo-900/60'
+    'Data Analysis': 'from-slate-900/60 via-blue-900/40 to-indigo-900/60',
+    'Computer Vision': 'from-teal-900/60 via-emerald-800/40 to-cyan-900/60'
   };
   const gradient = gradientMap[category] || gradientMap['Data Analysis'];
 
@@ -70,6 +71,29 @@ function TransmissionSection({ project }) {
                 <p key={i}>{paragraph}</p>
               ))}
             </div>
+          </div>
+        </div>
+      )}
+
+      {transmission.images && transmission.images.length > 0 && (
+        <div className={transmission.liveUrl ? 'mt-8' : 'mt-6'}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {transmission.images.map((img, i) => (
+              <figure
+                key={i}
+                className="rounded-2xl border border-primary-500/20 bg-dark-lighter overflow-hidden"
+              >
+                <img
+                  src={img.src}
+                  alt={img.caption}
+                  className="w-full h-auto block"
+                  loading="lazy"
+                />
+                <figcaption className="px-5 py-4 text-gray-400 text-sm leading-relaxed border-t border-primary-500/10">
+                  {img.caption}
+                </figcaption>
+              </figure>
+            ))}
           </div>
         </div>
       )}

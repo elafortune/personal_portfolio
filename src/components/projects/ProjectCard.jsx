@@ -22,12 +22,14 @@ function ProjectCard({ project, onClick }) {
               ? 'linear-gradient(135deg, #1e3a5f 0%, #1d4ed8 50%, #7c3aed 100%)'
               : project.category === 'NLP'
               ? 'linear-gradient(135deg, #064e3b 0%, #0369a1 50%, #0ea5e9 100%)'
+              : project.category === 'Computer Vision'
+              ? 'linear-gradient(135deg, #0f3d3a 0%, #0e7c6e 50%, #0891b2 100%)'
               : 'linear-gradient(135deg, #1e293b 0%, #0369a1 50%, #2563eb 100%)'
           }}
         >
           <div className="text-center">
             <div className="text-5xl mb-2">
-              {project.category === 'Machine Learning' ? '🤖' : project.category === 'NLP' ? '🧠' : '📊'}
+              {project.category === 'Machine Learning' ? '🤖' : project.category === 'NLP' ? '🧠' : project.category === 'Computer Vision' ? '🎥' : '📊'}
             </div>
             <p className="text-white text-sm font-medium opacity-70">{project.category}</p>
           </div>
