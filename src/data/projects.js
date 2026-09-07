@@ -369,21 +369,43 @@ Le résultat : un pipeline qui décode la vidéo par le décodeur matériel NVDE
     Le fichier .engine généré par Ultralytics n'est pas un plan TensorRT brut mais un conteneur avec un en-tête JSON de métadonnées — un bug de désérialisation a nécessité d'inspecter les octets bruts du fichier pour comprendre le vrai format.
     Le Container Disk éphémère du pod cloud a effacé l'environnement C++ entier (CUDA Toolkit, TensorRT, OpenCV compilé) à chaque redémarrage — la compilation d'OpenCV avec support CUDA/NVDEC prend 30 à 60 minutes à elle seule.`,
     research: {
-      interest: `La question centrale d'un pipeline vidéo temps réel n'est pas "le modèle est-il précis ?" mais "la chaîne complète tient-elle la cadence, frame après frame, sans à-coups ?". C'est une distinction importante : un système peut avoir un débit moyen élevé tout en étant inutilisable si sa latence varie fortement d'une frame à l'autre — d'où l'attention portée ici à la latence P99 (le pire cas mesuré) plutôt qu'à la seule moyenne.
+      objective: `L'objectif n'est pas seulement d'entraîner un détecteur précis, mais de construire un système qui tient une cadence temps réel (≥60 FPS) de bout en bout sur un flux vidéo aérien — de l'image brute jusqu'aux objets suivis. Un modèle précis mais lent, ou rapide mais isolé dans un environnement Python mal optimisé, ne répond à aucun des deux.
 
-Deux décisions d'architecture découlent directement de cette contrainte. D'abord, le choix d'un détecteur NMS-free (YOLOv10) : le NMS classique est une étape séquentielle dont le temps d'exécution dépend du nombre de boîtes candidates détectées — sur une scène aérienne dense (jusqu'à 900 objets par image sur VisDrone), ce temps devient à la fois élevé et imprévisible. Ensuite, le principe du "zero-copy" : chaque transfert de mémoire entre CPU et GPU passe par le bus PCIe, une opération lente et surtout variable en durée. En gardant les données sur GPU du décodage vidéo (NVDEC) jusqu'à l'inférence (TensorRT), cette source de variance est éliminée par construction plutôt que compensée après coup.`,
-      formulas: [
+Le plan d'attaque suit un ordre volontaire, où chaque étape conditionne la suivante plutôt que d'être indépendante : (1) fine-tuner un détecteur sur des données aériennes réelles — un modèle générique entraîné sur COCO (photos au sol) ne reconnaît pas correctement des objets vus du ciel ; (2) compresser ce détecteur en INT8 via TensorRT — un modèle précis mais lent ne tient aucun cahier des charges temps réel, quelle que soit la qualité du moteur qui l'exécute ; (3) construire un moteur d'inférence C++ zero-copy autour de ce modèle compressé — un modèle rapide isolé ne sert à rien si le reste de la chaîne (décodage vidéo, prétraitement, tracking) réintroduit la latence qu'on vient d'éliminer.
+
+Suivre cet ordre plutôt que, par exemple, écrire le moteur C++ en premier, évite de construire une infrastructure entière autour d'un modèle qui n'est pas encore le bon — et permet de mesurer l'impact réel de chaque étape indépendamment (voir Résultats).`,
+      subsections: [
         {
-          name: 'Quantification INT8 — de la valeur flottante à l\'entier 8 bits',
-          latex: 'x_{\\text{int8}} = \\text{round}\\!\\left(\\frac{x_{\\text{float}}}{\\text{scale}}\\right), \\quad \\text{scale} = \\frac{\\max(|x|)}{127}',
-          description: `Le passage en INT8 remplace chaque poids/activation FP32 par un entier 8 bits (256 valeurs possibles) — un gain de vitesse acquis dès qu'on quantifie, indépendamment de la valeur du $\\text{scale}$ choisi. Ce dernier n'affecte que la précision, avec deux modes d'échec symétriques : un $\\text{scale}$ trop grand écrase la résolution (des valeurs distinctes finissent arrondies au même entier), un $\\text{scale}$ trop petit sature (clippe) les valeurs extrêmes.
+          title: 'Fine-tuning YOLOv10 sur VisDrone',
+          content: `Le choix du détecteur n'est pas neutre : YOLOv10 a été retenu spécifiquement parce qu'il est NMS-free — contrairement aux versions précédentes de YOLO, sa sortie ne nécessite aucun post-traitement de suppression de doublons (Non-Max Suppression). Le NMS classique est une étape séquentielle dont le temps d'exécution dépend du nombre de boîtes candidates détectées : sur une scène aérienne dense (VisDrone contient jusqu'à 900 objets par image), ce temps devient à la fois élevé et surtout imprévisible d'une frame à l'autre — exactement le genre de variance qu'un système temps réel doit éliminer plutôt que subir.
 
-La calibration post-training (PTQ) consiste précisément à choisir ce $\\text{scale}$ à partir de la distribution réelle des activations, observée sur des données représentatives — ici, 512 images du dataset d'entraînement VisDrone, pour que la plage calibrée corresponde au domaine réel d'inférence (scènes aériennes, pas des images génériques).`
+Le modèle est fine-tuné sur VisDrone (détection aérienne : piétons, véhicules, deux-roues) plutôt qu'utilisé tel quel sur COCO, backbone entièrement dégelé sur 50 epochs — le domaine aérien (vues du ciel, objets minuscules) diffère trop de COCO (photos au sol) pour se contenter d'entraîner la seule tête de classification. La résolution d'entrée est relevée à 960×960 (au lieu de 640 par défaut) pour préserver la résolution des petits objets vus du ciel.`
         },
         {
-          name: 'Intersection-over-Union — association détections ↔ pistes',
-          latex: '\\text{IoU}(A, B) = \\frac{|A \\cap B|}{|A \\cup B|}',
-          description: `Mesure de chevauchement entre deux boîtes englobantes, utilisée à deux endroits du pipeline : en sortie du détecteur, et dans le tracker ByteTrack pour associer une détection à une piste existante (position prédite par un filtre de Kalman à vitesse constante). ByteTrack innove en associant en deux passes — d'abord les détections à haute confiance, puis les détections à basse confiance mais uniquement pour récupérer une piste déjà établie (jamais pour en créer une nouvelle), ce qui évite l'accumulation de faux positifs persistants tout en récupérant les objets momentanément flous ou partiellement occlus.`
+          title: 'Export & quantification INT8 (PTQ)',
+          content: `Une fois le détecteur entraîné, l'objectif change : le rendre rapide sans repartir de zéro. Deux familles de quantification existent — le PTQ (Post-Training Quantization), qui calibre un modèle déjà entraîné sur un petit jeu de données représentatif, et le QAT (Quantization-Aware Training), qui réentraîne le modèle en simulant le bruit de quantification pendant l'entraînement. Le PTQ a été choisi ici : il ne coûte qu'une passe de calibration de quelques minutes, contre un ré-entraînement complet pour le QAT — un compromis raisonnable tant que la perte de précision reste mesurée et acceptable, ce qui a été vérifié plutôt que supposé.
+
+La calibration est effectuée sur 512 images du dataset d'entraînement VisDrone lui-même, pas des images génériques, pour que les plages de valeurs calibrées reflètent la distribution réelle rencontrée en inférence.`,
+          formulas: [
+            {
+              name: 'Quantification INT8 — de la valeur flottante à l\'entier 8 bits',
+              latex: 'x_{\\text{int8}} = \\text{round}\\!\\left(\\frac{x_{\\text{float}}}{\\text{scale}}\\right), \\quad \\text{scale} = \\frac{\\max(|x|)}{127}',
+              description: `Le passage en INT8 remplace chaque poids/activation FP32 par un entier 8 bits (256 valeurs possibles) — un gain de vitesse acquis dès qu'on quantifie, indépendamment de la valeur du $\\text{scale}$ choisi. Ce dernier n'affecte que la précision, avec deux modes d'échec symétriques : un $\\text{scale}$ trop grand écrase la résolution (des valeurs distinctes finissent arrondies au même entier), un $\\text{scale}$ trop petit sature (clippe) les valeurs extrêmes.`
+            }
+          ]
+        },
+        {
+          title: 'Moteur d\'inférence C++20 — zero-copy et tracking',
+          content: `Le moteur C++ applique un principe simple : garder les données sur GPU entre le décodage vidéo et l'inférence, pour éviter les copies mémoire CPU↔GPU (bus PCIe) — une source de latence lente et surtout variable, le même problème que le NMS qu'on cherche justement à éviter à l'étape 1. Concrètement : décodage matériel NVDEC directement en VRAM, prétraitement (letterbox + normalisation) sur GPU via OpenCV compilé avec CUDA, puis inférence TensorRT sur le même flux d'exécution (cudaStream_t) pour garantir l'ordre des opérations sans synchronisation bloquante.
+
+Le tracking multi-objets (ByteTrack simplifié) associe les détections aux pistes existantes par recouvrement géométrique, en deux passes : les détections à haute confiance d'abord, puis les détections à basse confiance uniquement pour récupérer une piste déjà établie — jamais pour en créer une nouvelle, ce qui évite l'accumulation de faux positifs persistants tout en récupérant les objets momentanément flous ou partiellement occlus.`,
+          formulas: [
+            {
+              name: 'Intersection-over-Union — association détections ↔ pistes',
+              latex: '\\text{IoU}(A, B) = \\frac{|A \\cap B|}{|A \\cup B|}',
+              description: 'Mesure de chevauchement entre deux boîtes englobantes, utilisée à deux endroits du pipeline : en sortie du détecteur, et dans le tracker ByteTrack pour associer une détection à une piste existante (position prédite par un filtre de Kalman à vitesse constante).'
+            }
+          ]
         }
       ]
     },

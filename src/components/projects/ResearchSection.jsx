@@ -5,7 +5,7 @@ function ResearchSection({ project }) {
   if (!research) return null;
 
   return (
-    <section id="recherche" className="mb-24 scroll-mt-32">
+    <section id="presentation" className="mb-24 scroll-mt-32">
       <div className="flex items-center gap-4 mb-8">
         <div className="w-10 h-10 rounded-lg bg-primary-600/20 border border-primary-500/30 flex items-center justify-center flex-shrink-0">
           <svg className="w-5 h-5 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -14,19 +14,34 @@ function ResearchSection({ project }) {
         </div>
         <div>
           <p className="text-primary-400 text-xs font-mono uppercase tracking-widest mb-0.5">01</p>
-          <h2 className="text-2xl md:text-3xl font-bold text-white">Recherche</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-white">Présentation</h2>
         </div>
         <div className="flex-1 h-px bg-gradient-to-r from-primary-500/30 to-transparent ml-4" />
       </div>
 
-      <div className="text-gray-300 leading-relaxed space-y-4 mb-12 max-w-3xl">
-        {research.interest.split('\n\n').map((paragraph, i) => (
-          <p key={i}>{paragraph}</p>
-        ))}
-      </div>
+      {research.objective && (
+        <div className="mb-12 max-w-3xl">
+          <h3 className="text-sm font-mono text-gray-500 uppercase tracking-widest mb-4">
+            Objectif &amp; plan d&apos;attaque
+          </h3>
+          <div className="text-gray-300 leading-relaxed space-y-4 border-l-2 border-primary-500/30 pl-5">
+            {research.objective.split('\n\n').map((paragraph, i) => (
+              <p key={i}>{paragraph}</p>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {research.interest && (
+        <div className="text-gray-300 leading-relaxed space-y-4 mb-12 max-w-3xl">
+          {research.interest.split('\n\n').map((paragraph, i) => (
+            <p key={i}>{paragraph}</p>
+          ))}
+        </div>
+      )}
 
       {research.formulas && research.formulas.length > 0 && (
-        <div>
+        <div className="mb-4">
           <h3 className="text-sm font-mono text-gray-500 uppercase tracking-widest mb-5">
             Formalisation mathématique
           </h3>
@@ -35,6 +50,31 @@ function ResearchSection({ project }) {
               <FormulaBlock key={i} {...formula} />
             ))}
           </div>
+        </div>
+      )}
+
+      {research.subsections && research.subsections.length > 0 && (
+        <div className="space-y-12">
+          {research.subsections.map((sub, i) => (
+            <div key={i}>
+              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-3">
+                <span className="text-primary-400 font-mono text-sm">{String(i + 1).padStart(2, '0')}</span>
+                {sub.title}
+              </h3>
+              <div className="text-gray-300 leading-relaxed space-y-4 max-w-3xl mb-6">
+                {sub.content.split('\n\n').map((paragraph, j) => (
+                  <p key={j}>{paragraph}</p>
+                ))}
+              </div>
+              {sub.formulas && sub.formulas.length > 0 && (
+                <div className="space-y-4">
+                  {sub.formulas.map((formula, j) => (
+                    <FormulaBlock key={j} {...formula} />
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       )}
     </section>

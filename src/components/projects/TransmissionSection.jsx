@@ -1,5 +1,16 @@
+import { useState, useEffect } from 'react';
+
 function TransmissionSection({ project }) {
   const { transmission, title, category } = project;
+  const [lightbox, setLightbox] = useState(null);
+
+  useEffect(() => {
+    if (!lightbox) return;
+    const onKeyDown = (e) => { if (e.key === 'Escape') setLightbox(null); };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [lightbox]);
+
   if (!transmission) return null;
 
   const gradientMap = {
@@ -11,7 +22,7 @@ function TransmissionSection({ project }) {
   const gradient = gradientMap[category] || gradientMap['Data Analysis'];
 
   return (
-    <section id="transmission" className="mb-16 scroll-mt-32">
+    <section id="resultats" className="mb-16 scroll-mt-32">
       <div className="flex items-center gap-4 mb-8">
         <div className="w-10 h-10 rounded-lg bg-primary-600/20 border border-primary-500/30 flex items-center justify-center flex-shrink-0">
           <svg className="w-5 h-5 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -20,7 +31,7 @@ function TransmissionSection({ project }) {
         </div>
         <div>
           <p className="text-primary-400 text-xs font-mono uppercase tracking-widest mb-0.5">03</p>
-          <h2 className="text-2xl md:text-3xl font-bold text-white">Transmission</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-white">Résultats</h2>
         </div>
         <div className="flex-1 h-px bg-gradient-to-r from-primary-500/30 to-transparent ml-4" />
       </div>
@@ -83,18 +94,61 @@ function TransmissionSection({ project }) {
                 key={i}
                 className="rounded-2xl border border-primary-500/20 bg-dark-lighter overflow-hidden"
               >
-                <img
-                  src={img.src}
-                  alt={img.caption}
-                  className="w-full h-auto block"
-                  loading="lazy"
-                />
+                <button
+                  type="button"
+                  onClick={() => setLightbox(img)}
+                  className="block w-full group relative cursor-zoom-in"
+                  aria-label={`Agrandir : ${img.caption}`}
+                >
+                  <img
+                    src={img.src}
+                    alt={img.caption}
+                    className="w-full h-auto block transition-transform duration-300 group-hover:scale-[1.03]"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 flex items-center justify-center">
+                    <svg className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6" />
+                    </svg>
+                  </div>
+                </button>
                 <figcaption className="px-5 py-4 text-gray-400 text-sm leading-relaxed border-t border-primary-500/10">
                   {img.caption}
                 </figcaption>
               </figure>
             ))}
           </div>
+        </div>
+      )}
+
+      {lightbox && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 md:p-10"
+          onClick={() => setLightbox(null)}
+        >
+          <button
+            type="button"
+            onClick={() => setLightbox(null)}
+            aria-label="Fermer"
+            className="absolute top-5 right-5 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <figure
+            className="max-w-5xl max-h-full flex flex-col items-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={lightbox.src}
+              alt={lightbox.caption}
+              className="max-w-full max-h-[80vh] rounded-lg object-contain"
+            />
+            <figcaption className="text-gray-300 text-sm text-center mt-4 max-w-2xl">
+              {lightbox.caption}
+            </figcaption>
+          </figure>
         </div>
       )}
     </section>

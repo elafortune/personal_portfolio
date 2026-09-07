@@ -4,13 +4,13 @@ import CodeSection from '../components/projects/CodeSection';
 import TransmissionSection from '../components/projects/TransmissionSection';
 
 const SECTIONS = [
-  { id: 'recherche', label: 'Recherche', num: '01' },
+  { id: 'presentation', label: 'Présentation', num: '01' },
   { id: 'code', label: 'Code', num: '02' },
-  { id: 'transmission', label: 'Transmission', num: '03' }
+  { id: 'resultats', label: 'Résultats', num: '03' }
 ];
 
 function ProjectDetail({ project, onBack }) {
-  const [activeSection, setActiveSection] = useState('recherche');
+  const [activeSection, setActiveSection] = useState('presentation');
   const contentRef = useRef(null);
 
   useEffect(() => {
