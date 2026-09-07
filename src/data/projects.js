@@ -395,15 +395,28 @@ La calibration est effectuée sur 512 images du dataset d'entraînement VisDrone
           ]
         },
         {
-          title: 'Moteur d\'inférence C++20 — zero-copy et tracking',
-          content: `Le moteur C++ applique un principe simple : garder les données sur GPU entre le décodage vidéo et l'inférence, pour éviter les copies mémoire CPU↔GPU (bus PCIe) — une source de latence lente et surtout variable, le même problème que le NMS qu'on cherche justement à éviter à l'étape 1. Concrètement : décodage matériel NVDEC directement en VRAM, prétraitement (letterbox + normalisation) sur GPU via OpenCV compilé avec CUDA, puis inférence TensorRT sur le même flux d'exécution (cudaStream_t) pour garantir l'ordre des opérations sans synchronisation bloquante.
+          title: 'Moteur d\'inférence C++20 — zero-copy',
+          content: `Le moteur C++ applique un principe simple : garder les données sur GPU entre le décodage vidéo et l'inférence, pour éviter les copies mémoire CPU↔GPU (bus PCIe) — une source de latence lente et surtout variable, le même problème que le NMS qu'on cherche justement à éviter à l'étape 1. Concrètement : décodage matériel NVDEC directement en VRAM, prétraitement (letterbox + normalisation) sur GPU via OpenCV compilé avec CUDA, puis inférence TensorRT sur le même flux d'exécution (cudaStream_t) pour garantir l'ordre des opérations sans synchronisation bloquante.`
+        },
+        {
+          title: 'Tracking multi-objets — filtre de Kalman et association',
+          content: `Détecter un objet frame par frame ne suffit pas : sans mécanisme de suivi, chaque détection serait un objet "nouveau", sans continuité d'identité. Le tracker (ByteTrack simplifié) résout ça avec deux mécanismes distincts qui travaillent ensemble : un filtre de Kalman pour prédire où chaque objet suivi devrait se trouver, et un algorithme d'association pour relier ces prédictions aux nouvelles détections.
 
-Le tracking multi-objets (ByteTrack simplifié) associe les détections aux pistes existantes par recouvrement géométrique, en deux passes : les détections à haute confiance d'abord, puis les détections à basse confiance uniquement pour récupérer une piste déjà établie — jamais pour en créer une nouvelle, ce qui évite l'accumulation de faux positifs persistants tout en récupérant les objets momentanément flous ou partiellement occlus.`,
+Le filtre de Kalman maintient, pour chaque piste, un état à 8 dimensions : position et taille de la boîte (cx, cy, w, h), plus leur vitesse instantanée (vcx, vcy, vw, vh) — un modèle à vitesse constante. À chaque frame, deux étapes se succèdent. La prédiction extrapole l'état précédent en utilisant la vitesse estimée, avant même de savoir si une détection va matcher cette frame — c'est ce qui permet de continuer à suivre un objet brièvement masqué. La correction ne s'exécute que si une détection est associée à la piste : elle fusionne la prédiction avec la mesure réelle, pondérée par le gain de Kalman (qui reflète la confiance relative accordée à la prédiction vs à la mesure, recalculée à chaque frame). Résultat : une position lissée, moins sensible au bruit de détection frame par frame qu'une simple copie de la dernière boîte détectée.
+
+L'association doit ensuite décider quelle détection correspond à quelle piste, à partir des chevauchements géométriques (IoU) entre positions prédites et détections réelles. Le problème formel — trouver l'affectation qui maximise l'IoU total, un-à-un — est un problème d'affectation classique, normalement résolu de façon exacte et optimale par l'algorithme hongrois (Kuhn-Munkres, complexité O(n³)) : il considère toutes les paires simultanément et garantit la meilleure solution globale. Notre implémentation C++ utilise en pratique une approximation gloutonne plus simple à coder (pas de dépendance à une bibliothèque d'affectation linéaire) : trier toutes les paires (piste, détection) valides par IoU décroissant, puis assigner greedily en retirant piste et détection au fur et à mesure. Ce choix, documenté comme un compromis délibéré, n'est pas garanti optimal globalement — une paire localement excellente peut bloquer une meilleure affectation d'ensemble — mais reste efficace à la densité d'objets observée sur VisDrone.
+
+Cette association se fait en deux passes : d'abord les détections à haute confiance contre toutes les pistes, puis les détections à basse confiance mais uniquement pour récupérer une piste déjà établie — jamais pour en créer une nouvelle, ce qui évite l'accumulation de faux positifs persistants tout en récupérant les objets momentanément flous ou partiellement occlus.`,
           formulas: [
             {
-              name: 'Intersection-over-Union — association détections ↔ pistes',
-              latex: '\\text{IoU}(A, B) = \\frac{|A \\cap B|}{|A \\cup B|}',
-              description: 'Mesure de chevauchement entre deux boîtes englobantes, utilisée à deux endroits du pipeline : en sortie du détecteur, et dans le tracker ByteTrack pour associer une détection à une piste existante (position prédite par un filtre de Kalman à vitesse constante).'
+              name: 'Filtre de Kalman — prédiction et correction',
+              latex: '\\hat{x}_{k|k-1} = F\\hat{x}_{k-1|k-1}, \\qquad \\hat{x}_{k|k} = \\hat{x}_{k|k-1} + K_k\\left(z_k - H\\hat{x}_{k|k-1}\\right)',
+              description: `$\\hat{x}$ est le vecteur d'état $(c_x, c_y, w, h, v_{c_x}, v_{c_y}, v_w, v_h)$, $F$ la matrice de transition (modèle à vitesse constante : position $\\mathrel{+}=$ vitesse $\\times\\, dt$), et $z_k$ la mesure (la détection appariée). $K_k$, le gain de Kalman, pondère la confiance accordée à la prédiction par rapport à la mesure — il est recalculé à chaque frame à partir des covariances de bruit de processus et de mesure. La prédiction s'exécute pour toutes les pistes à chaque frame ; la correction seulement pour celles qui trouvent une détection associée.`
+            },
+            {
+              name: 'Problème d\'affectation — IoU et algorithme hongrois',
+              latex: '\\min_{x} \\sum_{i,j} c_{ij}\\, x_{ij} \\quad \\text{s.c.} \\sum_j x_{ij} \\le 1,\\ \\sum_i x_{ij} \\le 1,\\ c_{ij} = 1 - \\text{IoU}(i, j)',
+              description: `Formulation exacte du problème résolu par l'algorithme hongrois : trouver l'affectation un-à-un piste↔détection qui minimise le coût total (donc maximise l'IoU total), sous contrainte qu'une piste et une détection ne servent chacune qu'une seule fois. Le vrai ByteTrack le résout de façon optimale via Kuhn-Munkres ; notre implémentation C++ utilise une approximation gloutonne (tri par IoU décroissant, assignation itérative) — plus simple, non garantie optimale globalement, mais suffisante à la densité observée.`
             }
           ]
         }
@@ -447,7 +460,32 @@ while (reader->nextFrame(rawFrame)) {          // NVDEC : décodage direct en VR
           description: 'Décodage, conversion couleur, prétraitement et inférence partagent le même cudaStream_t : CUDA garantit alors un ordre d\'exécution séquentiel sans synchronisation bloquante — le prétraitement finit forcément avant que l\'inférence ne lise la même zone mémoire.'
         },
         {
-          title: 'ByteTrack simplifié — association en deux passes',
+          title: 'Filtre de Kalman — état, prédiction et correction',
+          language: 'cpp',
+          snippet: `// Etat : [cx, cy, w, h, vcx, vcy, vw, vh] -- modele a vitesse constante
+cv::KalmanFilter ByteTracker::makeKalman(const Detection& d) {
+    cv::KalmanFilter kf(8, 4, 0, CV_32F);
+    cv::setIdentity(kf.transitionMatrix);
+    for (int i = 0; i < 4; ++i)
+        kf.transitionMatrix.at<float>(i, i + 4) = 1.f;  // position += vitesse * dt
+
+    kf.measurementMatrix = cv::Mat::zeros(4, 8, CV_32F);
+    for (int i = 0; i < 4; ++i) kf.measurementMatrix.at<float>(i, i) = 1.f;
+
+    cv::setIdentity(kf.processNoiseCov, cv::Scalar::all(1e-2));
+    cv::setIdentity(kf.measurementNoiseCov, cv::Scalar::all(1e-1));
+    return kf;
+}
+
+// A chaque frame : predire AVANT de savoir si une detection va matcher
+for (auto& t : tracks_) t.kf.predict();
+
+// Correction uniquement si une detection est associee a la piste
+tracks_[trackI].kf.correct(measurement);`,
+          description: 'La prédiction tourne pour toutes les pistes à chaque frame, indépendamment du résultat de l\'association — c\'est elle qui permet de garder une estimation de position même sans détection matchée (objet momentanément masqué). La correction ne s\'applique qu\'aux pistes effectivement associées, et fusionne prédiction + mesure pondérées par le gain de Kalman (calculé en interne par OpenCV à partir de processNoiseCov/measurementNoiseCov).'
+        },
+        {
+          title: 'Association gloutonne — approximation de l\'algorithme hongrois',
           language: 'cpp',
           snippet: `// Passe 1 : détections haute confiance vs toutes les pistes
 greedyMatch(allTrackIdx, highDets, matches1, unmatchedTracks1, unmatchedHighDets);
@@ -463,7 +501,7 @@ for (int detI : unmatchedHighDets) {
     t.kf = makeKalman(highDets[detI]);
     tracks_.push_back(std::move(t));
 }`,
-          description: 'Une piste déjà établie porte un a priori (plusieurs détections haute confiance passées) : une détection basse confiance qui lui correspond est probablement un vrai objet temporairement flou. Une détection basse confiance isolée n\'a aucune preuve accumulée — l\'exclure de la création de nouvelles pistes évite l\'accumulation de faux positifs dans le temps.'
+          description: 'greedyMatch trie les paires (piste, détection) par IoU décroissant et assigne itérativement — une approximation de l\'algorithme hongrois, plus simple qu\'un vrai solveur d\'affectation linéaire mais non garantie optimale globalement. Par ailleurs : une piste déjà établie porte un a priori (plusieurs détections haute confiance passées), donc une détection basse confiance qui lui correspond est probablement un vrai objet temporairement flou — alors qu\'une détection basse confiance isolée n\'a aucune preuve accumulée, d\'où son exclusion de la création de nouvelles pistes.'
         }
       ]
     },
@@ -471,7 +509,7 @@ for (int detI : unmatchedHighDets) {
       liveUrl: null,
       visualDescription: `Les deux premières images montrent le pipeline complet en action sur de vraies scènes aériennes VisDrone (piétons, véhicules, deux-roues détectés et suivis avec un identifiant de piste stable). La densité de détections correctes sur des scènes urbaines chargées est la validation la plus directe que le fine-tuning et le prétraitement sont cohérents de bout en bout.
 
-La troisième image est le rapport de profiling comparatif : PyTorch natif, ONNXRuntime et TensorRT INT8, mesurés avec la même méthodologie (inférence pure, 200 itérations, warm-up inclus) pour une comparaison honnête. Le gain de 6× n'est pas qu'un chiffre — le profiling Nsight Systems sous-jacent confirme que l'accélération vient bien de kernels Tensor Core INT8 réels, pas d'un artefact de mesure.`,
+Les deux images suivantes forment le rapport de profiling comparatif complet : PyTorch natif, ONNXRuntime et TensorRT INT8, mesurés avec la même méthodologie (inférence pure, 200 itérations, warm-up inclus) pour une comparaison honnête, puis le détail chiffré par moteur (FPS, latence moyenne et P99, VRAM). Le gain de 6× n'est pas qu'un chiffre — le profiling Nsight Systems sous-jacent (dernière image) confirme que l'accélération vient bien de kernels Tensor Core INT8 réels, pas d'un artefact de mesure.`,
       images: [
         {
           src: '/images/projects/photo_results/visdrone-detections-1.jpg',
@@ -483,7 +521,11 @@ La troisième image est le rapport de profiling comparatif : PyTorch natif, ONNX
         },
         {
           src: '/images/projects/photo_results/profiling-fps-latence.jpg',
-          caption: 'Comparaison PyTorch / ONNXRuntime / TensorRT INT8 — débit, latence P99 et VRAM, mesurés avec une méthodologie identique sur les trois moteurs.'
+          caption: 'Comparaison PyTorch / ONNXRuntime / TensorRT INT8 — débit et latence P99, mesurés avec une méthodologie identique sur les trois moteurs.'
+        },
+        {
+          src: '/images/projects/photo_results/profiling-detail-nsight.jpg',
+          caption: 'Détail chiffré par moteur (FPS, latence moyenne/P99, VRAM) et preuve d\'exécution INT8 réelle : le kernel GPU dominant est une convolution Tensor Core INT8 explicite, identifiée via Nsight Systems.'
         }
       ]
     }
