@@ -576,14 +576,24 @@ Limite découverte : Florence-2 renvoie parfois plusieurs boîtes pour une descr
           ]
         },
         {
-          title: 'Segmentation SAM 2 et biais de forme du masque',
-          content: `SAM 2 convertit la boîte retenue en masque pixel-précis (score de confiance 0,989 sur le cas de test, contours nets). Mais un masque trop fidèle, en forme d'objet reconnaissable, entre en compétition avec le guidage textuel pendant le débruitage : le modèle de diffusion "voit" la silhouette dans le masque et tend à régénérer un objet similaire malgré le prompt de remplacement — un biais découvert empiriquement, pas anticipé.
-
-Fix retenu : dilatation morphologique du masque, qui casse la silhouette reconnaissable sans perdre la localisation de la zone à éditer.`
+          title: 'Segmentation SAM 2',
+          content: `SAM 2 convertit la boîte retenue en masque pixel-précis (score de confiance 0,989 sur le cas de test, contours nets) — la partie du pipeline la plus directement fiable, mais dont un usage naïf du résultat s'est révélé insuffisant (voir méthode de diagnostic ci-dessous).`
         },
         {
-          title: 'Génération conditionnée : negative_prompt et classifier-free guidance',
-          content: `Les encodeurs de texte CLIP (utilisés par Stable Diffusion) ne traitent pas correctement la négation sémantique — inclure "no animal" dans le prompt positif ne supprime rien à la génération. Le negative_prompt agit selon un mécanisme entièrement différent, actif au niveau du calcul de guidance plutôt que sémantique au niveau du texte.`,
+          title: 'Diagnostiquer un pipeline de diffusion : trois blocages, une méthode',
+          content: `Un pipeline génératif qui produit un résultat plausible mais faux échoue silencieusement — contrairement à une erreur de code qui plante, ici tout "fonctionne", juste pas comme prévu. Trois blocages distincts, rencontrés dans cet ordre en construisant l'étape de génération, illustrent une méthode plus large : vérifier une hypothèse concrètement plutôt que la supposer.
+
+Premier blocage : le checkpoint stabilityai/stable-diffusion-2-inpainting renvoyait une erreur 401 à chaque tentative de chargement. Plutôt que de supposer un problème de configuration locale, une requête directe à l'API Hugging Face a confirmé le vrai statut ("Invalid username or password") — un accès effectivement restreint (gated), pas un bug côté pipeline. Fix : bascule vers un mirror public équivalent, dont le statut gated:false et la structure de fichiers ont été vérifiés avant usage plutôt qu'assumés.
+
+Deuxième blocage : ajouter "no animal" au prompt positif ne supprimait rien à la génération — l'objet ciblé restait présent. Plutôt que de reformuler le prompt par tâtonnement, la question posée a été mécanique : comment un encodeur de texte traite-t-il réellement la négation ? Les encodeurs CLIP utilisés par Stable Diffusion n'ont aucun mécanisme sémantique pour ça — "no animal" et "animal" activent des directions proches dans l'espace d'embedding. Fix : negative_prompt, un mécanisme actif au niveau du calcul de guidance plutôt qu'une correction sémantique du texte (formule détaillée ci-dessous).
+
+Troisième blocage, le plus contre-intuitif : même avec negative_prompt en place, l'objet retiré était remplacé par un motif incohérent (un empiècement façon chaussure, puis un imprimé animal) plutôt que par le tissu attendu. Hypothèse testée : le masque SAM 2, pixel-précis, dessine une silhouette reconnaissable — dans une zone dont le contexte visuel adjacent contient un objet similaire dans une pose proche, cette forme agit comme un indice géométrique fort, en concurrence directe avec le guidage textuel pendant le débruitage. Vérifiée en dilatant le masque (cassant la silhouette sans changer la zone couverte) : le résultat devient immédiatement cohérent, confirmant l'hypothèse plutôt que de la tenir pour acquise.
+
+Le point commun aux trois : dans un pipeline génératif, la cause d'un résultat incorrect est rarement là où l'intuition la place en premier (erreur de configuration, mauvais prompt, mauvais modèle). Isoler la variable réelle — un appel API direct, un test du mécanisme du negative_prompt seul, une dilatation du masque isolant sa forme du reste du pipeline — a systématiquement été plus rapide que d'itérer sur des hypothèses non vérifiées.`
+        },
+        {
+          title: 'Génération conditionnée : classifier-free guidance',
+          content: `Le negative_prompt agit selon un mécanisme entièrement différent d'une correction sémantique du texte, actif directement dans le calcul de guidance à chaque étape de débruitage.`,
           formulas: [
             {
               name: 'Classifier-Free Guidance',
