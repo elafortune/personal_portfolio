@@ -65,7 +65,7 @@ function TransmissionSection({ project }) {
           </div>
           <div className="bg-dark-lighter px-6 py-4 flex items-center gap-2 border-t border-primary-500/10">
             <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-            <span className="text-gray-400 text-xs">Déployé sur Render</span>
+            <span className="text-gray-400 text-xs">{transmission.hostLabel || 'Déployé sur Render'}</span>
           </div>
         </div>
       ) : (

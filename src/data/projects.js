@@ -529,6 +529,212 @@ Les deux images suivantes forment le rapport de profiling comparatif complet : P
         }
       ]
     }
+  },
+  {
+    id: 'object-removal-diffusion',
+    title: 'Suppression d\'Objet Zero-Shot par VLM et Diffusion',
+    shortDescription: 'Décrire un objet en langage naturel suffit à le faire disparaître d\'une image, remplacé par un contenu généré cohérent — pipeline zero-shot combinant Florence-2, CLIP, SAM 2 et Stable Diffusion, déployé sur Hugging Face Spaces (ZeroGPU).',
+    fullDescription: `Et si retirer un objet d'une photo ne demandait rien de plus qu'une phrase ? Ce projet répond à cette question sans jamais entraîner de modèle sur cette tâche précise : trois modèles pré-entraînés, chacun utilisé zero-shot dans son rôle, assemblés en un pipeline unique.
+
+Un VLM (Florence-2) localise l'objet décrit en langage libre, CLIP désambiguïse quand plusieurs objets correspondent à la description, SAM 2 convertit la localisation en masque pixel-précis, puis Stable Diffusion régénère un contenu cohérent dans la zone masquée. Chaque étape a révélé une limite propre — désambiguïsation spatiale, biais de forme du masque, négation impossible à exprimer dans un prompt — corrigée une par une et documentée comme telle.
+
+Le projet ne s'arrête pas au notebook : le pipeline est optimisé (quantification, compilation), servi par un microservice FastAPI/WebSocket, puis déployé réellement sur Hugging Face Spaces avec hardware ZeroGPU (GPU partagé, serverless) — un environnement dont les contraintes (processus éphémères, arguments sérialisables, émulation CUDA) ont demandé six corrections distinctes, chacune diagnostiquée à partir des logs de production, pas devinée.`,
+    image: '/images/projects/object-removal-app-ui.jpg',
+    technologies: ['Python', 'PyTorch', 'Florence-2', 'CLIP', 'SAM 2', 'Diffusers', 'FastAPI', 'WebSocket', 'Gradio', 'Hugging Face Spaces (ZeroGPU)'],
+    category: 'Computer Vision',
+    githubUrl: 'https://github.com/elafortune/image_correction_project',
+    liveUrl: 'https://huggingface.co/spaces/emericklaf/diffusion_model_app',
+    date: '2026-09',
+    featured: true,
+    outcomes: [
+      'Suppression d\'objet totalement zero-shot (Florence-2 → CLIP → SAM 2 → SD 2 Inpainting), sans fine-tuning sur la tâche',
+      'Désambiguïsation par reclassement CLIP validée à 75 %/25 % de confiance sur qualificatif spatial ambigu, généralisable à tout type de qualificatif',
+      'Succès sémantique de la suppression mesuré quantitativement : score CLIP de présence de l\'objet passant de 0,987 à 0,001',
+      'torch.compile (UNet, reduce-overhead) : -88 % de latence en régime stable sur GPU dédié (6,02 s → 0,63 s pour 30 pas)',
+      'Benchmark qualité en 4 cas distincts (préservation du fond, plausibilité, succès sémantique, dérive de quantification), chacun avec sa métrique et sa référence propres',
+      'Déployé et validé de bout en bout sur Hugging Face Spaces + ZeroGPU après diagnostic et correction de 6 incompatibilités réelles de cet environnement serverless'
+    ],
+    challenges: `La quantification poids-seuls (bitsandbytes puis torchao, testé spécifiquement pour dépasser la limite du premier) sur le modèle de diffusion ne couvre que les couches Linear — 34,8 % des paramètres du UNet. Les deux bibliothèques butent sur la même restriction face à une architecture majoritairement convolutive : une limite d'écosystème, pas un choix d'outil malheureux.
+
+Le passage d'un GPU dédié (développement) à ZeroGPU (production, GPU partagé alloué par appel) a révélé 6 incompatibilités réelles : permissions du cache modèle entre build et runtime, dépendances manquantes, construction de SAM 2 échouant sous l'émulation CUDA (un premier correctif a discrètement introduit un bug plus profond avant la bonne solution), conflit de port du serveur de rendu de Gradio, cycle de vie du process incompatible avec le superviseur ZeroGPU, et callbacks de progression non sérialisables entre processus workers.`,
+    research: {
+      objective: `L'objectif : retirer n'importe quel objet d'une image à partir d'une simple description en langage naturel, sans jamais entraîner de modèle sur cette tâche précise — trois modèles pré-entraînés, chacun zero-shot dans son rôle, assemblés en pipeline plutôt qu'un modèle unique fine-tuné de bout en bout.
+
+Le plan suit un ordre volontaire, où chaque étape corrige une limite découverte à l'étape précédente plutôt que d'être conçue à l'avance dans son ensemble : (1) localiser l'objet décrit par un VLM plutôt qu'un détecteur à classes fixes — condition nécessaire pour accepter n'importe quelle description libre ; (2) désambiguïser quand plusieurs objets correspondent à la description ; (3) convertir la localisation en masque pixel-précis, puis corriger le biais de forme qu'un masque trop fidèle introduit dans la génération ; (4) générer un remplacement cohérent, en vérifiant que le mécanisme de guidage textuel utilisé fonctionne réellement comme attendu ; (5) déployer ce pipeline multi-modèles sur une infrastructure serverless réelle, où les hypothèses valables en développement (GPU dédié, persistant) ne tiennent plus.`,
+      subsections: [
+        {
+          title: 'Localisation zero-shot avec Florence-2',
+          content: `Florence-2 encode les coordonnées de boîte comme des tokens de position dans le même vocabulaire que le texte — un seul objectif d'entraînement (prédiction du prochain token) couvre captioning, détection et grounding selon le tag de tâche fourni (\`<CAPTION_TO_PHRASE_GROUNDING>\`). C'est ce qui permet de localiser n'importe quelle description en langage naturel, zero-shot, sans classes prédéfinies — condition nécessaire pour un outil piloté par texte libre plutôt qu'un catalogue fermé d'objets détectables.
+
+Limite découverte : Florence-2 renvoie parfois plusieurs boîtes pour une description avec qualificatif spatial ("le chat de droite") sans les distinguer par lui-même. Une heuristique sur les coordonnées x/y aurait fonctionné pour ce cas précis mais ne généralise pas ("le plus petit", "à côté de la lampe"...).`,
+          formulas: [
+            {
+              name: 'Similarité contrastive CLIP — désambiguïsation',
+              latex: '\\text{score}_i = \\frac{\\exp(\\cos(e_{\\text{img}_i}, e_{\\text{text}}) / \\tau)}{\\sum_j \\exp(\\cos(e_{\\text{img}_j}, e_{\\text{text}}) / \\tau)}',
+              description: 'Chaque boîte candidate est recadrée puis encodée par CLIP ($e_{\\text{img}_i}$), comparée par similarité cosinus à l\'embedding du texte complet ($e_{\\text{text}}$), $\\tau$ étant la température apprise du modèle. Le softmax sur l\'ensemble des candidats produit une distribution de confiance directement interprétable — validé à 75 %/25 % sur le cas testé, une marge nette. Généralise à tout qualificatif, pas seulement spatial, contrairement à une heuristique sur les coordonnées.'
+            }
+          ]
+        },
+        {
+          title: 'Segmentation SAM 2 et biais de forme du masque',
+          content: `SAM 2 convertit la boîte retenue en masque pixel-précis (score de confiance 0,989 sur le cas de test, contours nets). Mais un masque trop fidèle, en forme d'objet reconnaissable, entre en compétition avec le guidage textuel pendant le débruitage : le modèle de diffusion "voit" la silhouette dans le masque et tend à régénérer un objet similaire malgré le prompt de remplacement — un biais découvert empiriquement, pas anticipé.
+
+Fix retenu : dilatation morphologique du masque, qui casse la silhouette reconnaissable sans perdre la localisation de la zone à éditer.`
+        },
+        {
+          title: 'Génération conditionnée : negative_prompt et classifier-free guidance',
+          content: `Les encodeurs de texte CLIP (utilisés par Stable Diffusion) ne traitent pas correctement la négation sémantique — inclure "no animal" dans le prompt positif ne supprime rien à la génération. Le negative_prompt agit selon un mécanisme entièrement différent, actif au niveau du calcul de guidance plutôt que sémantique au niveau du texte.`,
+          formulas: [
+            {
+              name: 'Classifier-Free Guidance',
+              latex: '\\epsilon_{\\text{final}} = \\epsilon_{\\text{neg}} + s \\cdot (\\epsilon_{\\text{pos}} - \\epsilon_{\\text{neg}})',
+              description: 'À chaque étape de débruitage, le bruit prédit sous conditionnement negative_prompt ($\\epsilon_{\\text{neg}}$) remplace la base "non conditionnée" habituelle de la formule de guidance. Le résultat final s\'éloigne activement de $\\epsilon_{\\text{neg}}$ en direction de $\\epsilon_{\\text{pos}}$, avec une intensité pondérée par $s$ (guidance scale) — un mécanisme actif de répulsion, pas une simple absence de mention dans le texte.'
+            }
+          ]
+        },
+        {
+          title: 'Quantification : un résultat honnête, pas seulement positif',
+          content: `La quantification 4 bits (bitsandbytes) de Florence-2 réduit la VRAM de 37 % mais ralentit l'inférence de 48 % — le coût de déquantification à la volée n'est rentable que si la bande passante mémoire est le vrai goulot d'étranglement, ce qui suppose un modèle assez volumineux. Florence-2-base (0,23 milliard de paramètres) est déjà petit : la quantification n'apporte ici aucun bénéfice réel, juste un surcoût.
+
+Sur le UNet de diffusion, deux bibliothèques différentes (bitsandbytes, puis torchao testé spécifiquement pour dépasser cette limite) convergent vers la même restriction : elles ne quantifient que les couches Linear (34,8 % des paramètres du UNet), jamais les couches Conv2d (65,2 %) — une contrainte structurelle de l'écosystème de quantification actuel, construit autour du cas d'usage dominant des LLM/transformers, pas un choix d'outil malheureux.`
+        },
+        {
+          title: 'torch.compile, et sa limite sous infrastructure serverless',
+          content: `torch.compile (mode reduce-overhead) sur le UNet donne -88 % de latence en régime stable sur GPU dédié (6,02 s → 0,63 s pour 30 pas de débruitage), le coût de compilation initial étant payé une seule fois via un warmup au démarrage du process plutôt que sur la première requête utilisateur.
+
+Mais ce gain est incompatible avec Hugging Face Spaces ZeroGPU (GPU partagé, alloué par des processus éphémères à chaque appel) : le cache de compilation ne survit jamais d'un appel à l'autre, donc torch.compile y recompilerait à chaque requête au lieu d'une seule fois — plus lent qu'en mode eager, jamais amorti. Détecté et désactivé automatiquement selon l'environnement de déploiement : le même code se comporte différemment selon la cible d'hébergement, une décision explicite plutôt qu'un compromis subi.`
+        }
+      ]
+    },
+    code: {
+      highlights: [
+        {
+          title: 'Grounding Florence-2 + désambiguïsation CLIP',
+          language: 'python',
+          snippet: `task_prompt = "<CAPTION_TO_PHRASE_GROUNDING>"
+inputs = florence_processor(
+    text=task_prompt + text_query, images=image, return_tensors="pt"
+).to(DEVICE, torch.float16)
+generated_ids = florence_model.generate(
+    input_ids=inputs["input_ids"],
+    pixel_values=inputs["pixel_values"],
+    max_new_tokens=1024,
+    num_beams=3,
+)
+boxes = florence_processor.post_process_generation(
+    florence_processor.batch_decode(generated_ids, skip_special_tokens=False)[0],
+    task=task_prompt, image_size=(image.width, image.height),
+)[task_prompt]["bboxes"]
+
+if len(boxes) == 1:
+    best_box, confidence = boxes[0], 1.0
+else:
+    # Reclassement CLIP : similarite image-texte de chaque boite candidate
+    # contre la description complete - generalise a tout qualificatif,
+    # pas seulement spatial.
+    crops = [image.crop(box) for box in boxes]
+    clip_inputs = clip_processor(
+        text=[text_query], images=crops, return_tensors="pt", padding=True
+    ).to(DEVICE)
+    with torch.no_grad():
+        scores = clip_model(**clip_inputs).logits_per_image.squeeze(-1)
+    probs = scores.softmax(dim=0)
+    best_idx = scores.argmax().item()
+    best_box, confidence = boxes[best_idx], probs[best_idx].item()`,
+          description: 'Florence-2 propose des boîtes candidates pour la description textuelle ; si plusieurs boîtes reviennent (ambiguïté), CLIP les reclasse par similarité contre le texte complet.'
+        },
+        {
+          title: 'SAM 2 paresseux (compatibilité ZeroGPU) + dilatation du masque',
+          language: 'python',
+          snippet: `def _get_sam2_predictor() -> SAM2ImagePredictor:
+    # Construction paresseuse sous ZeroGPU : le chargement Hydra de SAM2
+    # echoue sous l'emulation CUDA hors @spaces.GPU. A l'interieur de cette
+    # fonction decoree, un vrai GPU est deja attache normalement.
+    global sam2_predictor
+    if sam2_predictor is None:
+        sam2_predictor = SAM2ImagePredictor.from_pretrained(SAM2_ID, device=DEVICE)
+    return sam2_predictor
+
+def _dilate_mask(mask_np: np.ndarray, size: int = 31) -> np.ndarray:
+    # Casse la silhouette reconnaissable du masque : un masque pixel-precis
+    # en forme d'objet entre en concurrence avec le guidage textuel
+    # pendant le debruitage (biais de forme identifie empiriquement).
+    try:
+        import cv2
+        kernel = np.ones((size, size), np.uint8)
+        return cv2.dilate(mask_np, kernel, iterations=1)
+    except ImportError:
+        mask_img = Image.fromarray(mask_np)
+        return np.array(mask_img.filter(ImageFilter.MaxFilter(size=size)))`,
+          description: 'SAM2 est chargé à l\'intérieur de la fonction GPU — contournement d\'une incompatibilité ZeroGPU découverte en production. Le masque produit est ensuite dilaté avant transmission à la diffusion.'
+        },
+        {
+          title: 'Inpainting conditionné : negative_prompt + cache d\'embeddings',
+          language: 'python',
+          snippet: `def _get_text_embeddings(prompt: str, negative_prompt: str):
+    # negative_prompt fixe + prompt souvent reutilise -> cache par (prompt, negative_prompt)
+    # plutot que ré-encoder a chaque generation.
+    key = (prompt, negative_prompt)
+    if key not in _text_embed_cache:
+        _text_embed_cache[key] = sd_pipe.encode_prompt(
+            prompt=prompt, device=DEVICE, num_images_per_prompt=1,
+            do_classifier_free_guidance=True, negative_prompt=negative_prompt,
+        )
+    return _text_embed_cache[key]
+
+@GPU
+def generate_inpaint(image, dilated_mask, prompt, negative_prompt,
+                      steps=30, guidance_scale=7.5, seed=42, step_callback=None):
+    generator = torch.Generator(device=DEVICE).manual_seed(seed)
+    prompt_embeds, negative_prompt_embeds = _get_text_embeddings(prompt, negative_prompt)
+
+    result = sd_pipe(
+        prompt_embeds=prompt_embeds,
+        negative_prompt_embeds=negative_prompt_embeds,
+        image=image.convert("RGB"),
+        mask_image=dilated_mask.convert("L"),
+        num_inference_steps=steps,
+        guidance_scale=guidance_scale,
+        generator=generator,
+    ).images[0]
+    return result`,
+          description: 'negative_prompt agit dans la formule de classifier-free guidance — contrairement à une négation dans le prompt positif, qui n\'a aucun effet (les encodeurs CLIP ne traitent pas la négation).'
+        },
+        {
+          title: 'torch.compile conditionné à l\'environnement de déploiement',
+          language: 'python',
+          snippet: `# torch.compile recompilerait a CHAQUE requete sous ZeroGPU (processus
+# ephemeres, cache de compilation non persistant) - detecte et desactive
+# automatiquement. Gain mesure sur GPU dedie : -88% en regime stable.
+if IS_ZERO_GPU:
+    print("[pipeline] ZeroGPU detecte : torch.compile desactive.")
+else:
+    sd_pipe.unet = torch.compile(sd_pipe.unet, mode="reduce-overhead")`,
+          description: 'Découvert en confrontant la documentation officielle ZeroGPU à nos propres mesures : le même code doit se comporter différemment selon la cible d\'hébergement.'
+        }
+      ]
+    },
+    transmission: {
+      liveUrl: 'https://huggingface.co/spaces/emericklaf/diffusion_model_app',
+      liveDescription: `Application complète déployée sur Hugging Face Spaces (hardware ZeroGPU, GPU partagé alloué à la demande). Dépose une image, décris l'objet à retirer, valide le masque proposé, puis génère — pipeline réel, pas une simulation.
+
+Premier chargement à froid de quelques secondes possible ; quota GPU gratuit de 2 minutes par jour et par visiteur (indépendant des autres visiteurs).`,
+      hostLabel: 'Hébergé sur Hugging Face Spaces (ZeroGPU)',
+      images: [
+        {
+          src: '/images/projects/object-removal-app-ui.jpg',
+          caption: 'Interface réelle en fonctionnement : image source, masque SAM 2 proposé (confiance CLIP 72 %) et résultat généré, les trois panneaux visibles simultanément.'
+        },
+        {
+          src: '/images/projects/object-removal-mask.png',
+          caption: 'Masque SAM 2 superposé sur l\'objet ciblé (score de confiance 0,989), avant dilatation morphologique.'
+        },
+        {
+          src: '/images/projects/object-removal-result.png',
+          caption: 'Résultat final : l\'objet ciblé a disparu, remplacé par un contenu généré cohérent ; le reste de l\'image est préservé.'
+        }
+      ]
+    }
   }
 ];
 
