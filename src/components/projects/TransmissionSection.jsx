@@ -121,6 +121,25 @@ function TransmissionSection({ project }) {
         </div>
       )}
 
+      {transmission.liveUrl && (
+        <div className={`mt-10 rounded-2xl border border-primary-500/20 bg-gradient-to-br ${gradient} p-8 md:p-12 flex flex-col items-center text-center gap-5`}>
+          <p className="text-white/70 text-sm md:text-base max-w-xl">
+            Le pipeline complet, pas une simulation — à tester directement.
+          </p>
+          <a
+            href={transmission.liveUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-3 px-8 py-4 md:px-10 md:py-5 rounded-2xl bg-white text-dark text-base md:text-lg font-bold shadow-lg shadow-black/20 transition-all duration-200 hover:scale-105 hover:shadow-xl"
+          >
+            <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+            Voir le projet en direct
+          </a>
+        </div>
+      )}
+
       {lightbox && (
         <div
           className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 md:p-10"
