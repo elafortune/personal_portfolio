@@ -745,6 +745,184 @@ Premier chargement à froid de quelques secondes possible ; quota GPU gratuit de
         }
       ]
     }
+  },
+  {
+    id: 'rag-finance-hybrid',
+    title: 'Pipeline RAG Avancé — Fine-Tuning et Re-ranking sur Documents Financiers',
+    shortDescription: 'Un embedding généraliste retrouve le bon passage financier moins d\'une fois sur trois. Fine-tuning contrastif, recherche hybride BM25+dense et re-ranking font passer ce chiffre à plus de trois sur quatre — chaque gain mesuré indépendamment, jamais supposé.',
+    fullDescription: `Interroger des rapports financiers (10-K) en langage naturel semble simple jusqu'à ce qu'on mesure vraiment un embedding généraliste dessus : moins de 41 % des questions retrouvent leur bon passage dans le top-10. Ce projet part de ce chiffre bas, le diagnostique avant de le corriger, puis construit un pipeline complet — fine-tuning d'embedding, recherche hybride, re-ranking, génération — où chaque composant est mesuré séparément contre le même jeu de questions tenu à l'écart.
+
+Deux découvertes structurent le projet plus que prévu à l'origine. D'abord, un diagnostic initial du score bas s'est révélé faux une fois vérifié plus rigoureusement — pas juste corrigé, documenté avec l'erreur incluse. Ensuite, un reranker pré-entraîné censé améliorer les résultats les a en réalité dégradés sur une partie du corpus — mesuré avant de fine-tuner, pas après.
+
+Le pipeline final (embedder et cross-encoder fine-tunés, recherche hybride BM25+dense fusionnée par RRF, génération par un LLM local ancré aux passages récupérés) est déployé sur Hugging Face Spaces avec hardware ZeroGPU, et évalué formellement (Ragas) contre un RAG naïf pour quantifier l'apport réel de chaque étape.`,
+    image: '/images/projects/rag-finance-app-ui.jpg',
+    technologies: ['Python', 'PyTorch', 'sentence-transformers', 'BM25', 'Qdrant', 'Qwen2.5-7B-Instruct', 'Ragas', 'Langfuse', 'Gradio', 'Hugging Face Spaces (ZeroGPU)'],
+    category: 'NLP',
+    githubUrl: 'https://github.com/elafortune/financial_data_rag',
+    liveUrl: 'https://huggingface.co/spaces/emericklaf/rag-finance-finqa-tatqa',
+    date: '2026-09',
+    featured: true,
+    outcomes: [
+      'Diagnostic corrigé en cours de route : un corpus dédupliqué (71 % de doublons exacts trouvés et retirés) fait passer le Recall@10 baseline de 26,8 % à 40,5 % — la vraie cause dominante, pas l\'hypothèse initiale',
+      'Fine-tuning contrastif de l\'embedder (MultipleNegativesRankingLoss) : Recall@10 40,5 % → 72,0 %, vérifié par une chute mesurée des scores cosinus absolus (effet uniformity) et un rang qui passe de 96 à 10 sur un cas ciblé',
+      'Recherche hybride BM25 + dense (fusion RRF) : 72,0 % → 77,0 % — BM25 seul rivalise avec le dense fine-tuné sur les identifiants exacts (montants, dates), la fusion capture le meilleur des deux systèmes',
+      'Un reranker pré-entraîné dégradait les résultats sur une partie du corpus (77,0 % → 71,8 %) — mesuré avant de conclure ; le fine-tuning sur négatifs difficiles minés du pipeline lui-même corrige la régression (77,6 % final)',
+      'Évaluation finale Ragas (RAG naïf vs. pipeline complet, 100 questions) : Answer Relevancy +0,261, Context Precision +0,126 — et un recul apparent de Faithfulness expliqué et quantifié (taux de refus 2,8× plus élevé côté naïf), pas ignoré',
+      'Déployé sur Hugging Face Spaces (ZeroGPU), 3 blocages réels de production diagnostiqués et corrigés (version PyTorch, quota de stockage, version Python) à partir des logs, jamais devinés'
+    ],
+    challenges: `Contextual Retrieval et Parent-Child Chunking (prévus dans le plan initial) se sont révélés infaisables sur ce corpus spécifique — vérifié empiriquement (0,4 % des passages seulement contiennent une métadonnée société/année exploitable) avant d'être abandonnés, plutôt que contournés par une solution de façade qui aurait fait semblant de fonctionner.
+
+L'API de la librairie d'évaluation Ragas s'est révélée incompatible avec un LLM local (conçue autour de clients à sorties structurées de type API), nécessitant d'épingler une version antérieure. Une fois débloqué, un premier run d'évaluation a échoué à 78 % par timeout — la concurrence par défaut (16 requêtes simultanées) supposait une API distante rapide, pas un unique modèle GPU local traitant les requêtes une par une.`,
+    research: {
+      objective: `L'objectif : construire un moteur de question-réponse sur documents financiers avec une précision quasi déterministe — pas un "chat with your PDF" générique, un cas d'usage production-plausible où chaque composant (embedder, retriever hybride, reranker, générateur) est fine-tuné et mesuré séparément plutôt que déployé tel quel.
+
+Le fil conducteur : ne jamais accepter un chiffre ou une hypothèse sans le vérifier concrètement, y compris quand une première conclusion se révèle fausse — corrigée alors explicitement plutôt que réécrite en silence.`,
+      subsections: [
+        {
+          title: 'Un diagnostic corrigé en cours de route : doublons de corpus, pas seulement cône d\'embedding',
+          content: `Le baseline (embedding généraliste, recherche dense pure) plafonnait à 26,8 % de Recall@10. Investigation sur des cas d'échec réels : dans plusieurs cas, les 3 premiers résultats retournés étaient le même texte identique, avec le même score cosinus à la décimale près — signe de doublons dans le corpus, pas seulement d'un mauvais classement.
+
+Premier test (compter les doublons comme corrects après coup) ne donnait que +1,7 point — conclusion initiale : "effet mineur". Cette conclusion s'est révélée fausse une fois testée plus rigoureusement : un passage dupliqué mal classé en tête occupe plusieurs rangs du top-10 simultanément, gaspillant des emplacements qui auraient pu faire remonter le bon passage — un problème structurel, pas un artefact de comptage. Dédupliquer le corpus avant le classement (plutôt que de recompter après coup) a donné +13,7 points — la duplication (71 % du corpus) était en réalité la cause dominante, pas un effet mineur comme conclu au premier passage.`,
+        },
+        {
+          title: 'Fine-tuning contrastif : pourquoi ça ne contredit pas le principe du RAG',
+          content: `RAG évite de fine-tuner *le générateur* pour lui injecter des faits dans ses poids — coûteux, risque d'oubli catastrophique, à refaire à chaque mise à jour de la base documentaire. Fine-tuner un bi-encoder de recherche est d'une autre nature : aucun fait n'est mémorisé dans les poids, seule la géométrie de similarité est recalibrée pour le domaine. Le savoir factuel continue de vivre dans les documents récupérés, textuels et citables — un investissement ponctuel, pas à refaire à chaque nouveau document ajouté au corpus.`,
+          formulas: [
+            {
+              name: 'MultipleNegativesRankingLoss — négatifs in-batch (InfoNCE)',
+              latex: '\\mathcal{L} = -\\frac{1}{B}\\sum_{i=1}^{B} \\log \\frac{\\exp(s \\cdot \\cos(a_i, p_i))}{\\sum_{j=1}^{B} \\exp(s \\cdot \\cos(a_i, p_j))}',
+              description: 'Pour un batch de $B$ paires (question $a_i$, bon passage $p_i$), chaque autre passage du batch sert de négatif gratuit. La perte pousse la vraie paire ($i=j$) vers le haut et repousse toutes les autres — corrige directement la propriété d\'uniformité qui manque à un encodeur pré-entraîné généraliste, dont les embeddings se tassent dans un cône étroit à cosinus élevé, peu discriminant.'
+            }
+          ]
+        },
+        {
+          title: 'Recherche hybride : BM25 et dense se trompent sur des cas différents',
+          content: `Un embedding dense compresse tout en sens général et peut rater un identifiant exact (montant précis, date, nom de société) — exactement le point faible du cône d'embedding. BM25 le retrouve immédiatement par correspondance lexicale exacte. Mesuré : BM25 seul est étonnamment compétitif avec le dense fine-tuné, et même légèrement meilleur sur une partie du corpus aux questions riches en identifiants numériques. La fusion RRF améliore les deux composants pris séparément — pas juste leur moyenne — parce qu'ils se trompent sur des questions différentes.`,
+          formulas: [
+            {
+              name: 'Reciprocal Rank Fusion',
+              latex: '\\text{score}_{\\text{RRF}}(d) = \\sum_{i} \\frac{1}{k + \\text{rang}_i(d)}',
+              description: 'Fusionne les classements de plusieurs systèmes (BM25, dense) en ne regardant que le rang de chaque document, pas son score brut — nécessaire car un score cosinus (0-1) et un score BM25 (non borné) ne sont pas sur la même échelle et ne peuvent pas s\'additionner directement.'
+            }
+          ]
+        },
+        {
+          title: 'Un reranker pré-entraîné peut dégrader les résultats — mesuré avant de fine-tuner',
+          content: `Avant même de fine-tuner un reranker, mesurer l'effet d'un modèle pré-entraîné tout prêt a révélé un résultat inattendu : amélioration nette sur une partie du corpus, mais dégradation nette sur l'autre — le reranker généraliste, entraîné sur des données de pertinence générales, était mal calibré pour le vocabulaire financier spécifique d'une des deux sources. Effet net légèrement négatif sur l'ensemble.
+
+C'est cette régression concrète, mesurée avant toute conclusion, qui a motivé le fine-tuning du reranker sur des négatifs difficiles minés depuis le pipeline lui-même (les candidats que la recherche hybride retourne actuellement à tort pour les mêmes questions) — pas un exercice académique. Le fine-tuning répare la régression et ramène la performance globale au-dessus du niveau sans reranker, avec un bilan qui reste nuancé : le gain n'est pas uniforme sur les deux sources documentaires, documenté tel quel plutôt qu'enjolivé.`
+        },
+        {
+          title: 'Limites reconnues avant d\'être forcées : Contextual Retrieval et Parent-Child Chunking',
+          content: `Le plan initial prévoyait aussi du chunking contextuel avancé. Deux techniques (Contextual Retrieval, Parent-Child Chunking) nécessitent toutes deux l'accès au document source complet pour situer chaque passage extrait — un contexte que le corpus utilisé ne fournit pas (passages déjà extraits, sans référence au document d'origine).
+
+Plutôt que de supposer l'impossibilité, vérification empirique : recherche d'une métadonnée société/année exploitable directement dans chaque passage — trouvée dans seulement 0,4 % des cas. Sans document source ni métadonnée exploitable dans l'immense majorité des passages, toute tentative de génération de contexte (par un LLM ou une heuristique) reviendrait à halluciner une société ou une période. Écarté pour cette raison explicite, documenté comme une limite du corpus plutôt que contourné par une solution de façade.`
+        },
+        {
+          title: 'Évaluation finale : un résultat contre-intuitif vérifié, pas accepté tel quel',
+          content: `L'évaluation Ragas finale (RAG naïf vs. pipeline complet, jugée par le LLM local lui-même) a produit un résultat qui aurait pu être accepté sans creuser : la fidélité (Faithfulness) du pipeline naïf dépassait celle du pipeline complet — contre-intuitif puisque son retrieval est nettement meilleur.
+
+Vérification par comptage des refus dans les réponses générées : le pipeline naïf, retrouvant un contexte pertinent bien moins souvent, refuse de répondre 2,8 fois plus souvent. Un refus ne contient aucune affirmation à vérifier — il obtient donc mécaniquement une fidélité élevée tout en étant totalement inutile (pertinence de réponse proche de zéro). En neutralisant cet effet (fidélité des réponses non-refus uniquement), l'écart se réduit fortement sans disparaître complètement : le pipeline complet, parce qu'il répond effectivement aux questions au lieu de se réfugier dans le refus, expose davantage de surface à une imprécision partielle — un compromis honnête, pas une régression cachée.`
+        }
+      ]
+    },
+    code: {
+      highlights: [
+        {
+          title: 'Fine-tuning contrastif de l\'embedder (négatifs in-batch)',
+          language: 'python',
+          snippet: `model = SentenceTransformer(BASE_MODEL, device="cuda")
+loss = losses.MultipleNegativesRankingLoss(model)
+
+args = SentenceTransformerTrainingArguments(
+    output_dir=OUT_DIR,
+    num_train_epochs=4,
+    per_device_train_batch_size=64,
+    # Garantit qu'aucun batch tire aleatoirement ne contient deux
+    # "positive" textuellement identiques - securite en plus du
+    # dedup corpus, contre les faux negatifs in-batch.
+    batch_sampler=BatchSamplers.NO_DUPLICATES,
+    learning_rate=2e-5,
+    warmup_ratio=0.1,
+    fp16=True,
+)
+
+trainer = SentenceTransformerTrainer(
+    model=model, args=args,
+    train_dataset=train_dataset,  # paires (question, bon passage)
+    loss=loss,
+)
+trainer.train()`,
+          description: 'Fine-tuning en 87 secondes sur un RTX 4090 (4 epochs, 8 457 paires) — Recall@10 40,5% → 72,0% sur le même jeu d\'évaluation tenu à l\'écart.'
+        },
+        {
+          title: 'Fusion RRF (codée à la main, pas une fonction toute faite)',
+          language: 'python',
+          snippet: `def rrf_fuse(rank_lists, k=60):
+    # Ne regarde que le RANG, jamais le score brut - un cosinus (0-1)
+    # et un score BM25 (non borne) ne sont pas sur la meme echelle.
+    scores = {}
+    for ranked in rank_lists:
+        for rank, doc_id in enumerate(ranked, start=1):
+            scores[doc_id] = scores.get(doc_id, 0.0) + 1.0 / (k + rank)
+    return [d for d, _ in sorted(scores.items(), key=lambda x: -x[1])]
+
+fused = rrf_fuse([dense_results, bm25_results])`,
+          description: 'BM25 seul rivalise avec le dense fine-tuné sur les identifiants exacts ; la fusion RRF améliore les deux composants pris séparément, pas juste leur moyenne.'
+        },
+        {
+          title: 'Minage de négatifs difficiles pour le reranker (depuis le pipeline lui-même)',
+          language: 'python',
+          snippet: `for query in train_queries:
+    dense_hits = qdrant_client.query_points(COLLECTION, query=embed(query), limit=50)
+    bm25_hits = bm25_retriever.retrieve(tokenize(query), k=50)
+    fused = rrf_fuse([dense_hits, bm25_hits])
+
+    # Negatifs difficiles = candidats que NOTRE pipeline retourne
+    # actuellement a tort - pas des negatifs aleatoires, les vraies
+    # erreurs que le reranker doit apprendre a corriger.
+    hard_negatives = [d for d in fused if d != gold_passage][:4]
+    pairs.append({"query": query, "response": gold_text, "label": 1.0})
+    for neg in hard_negatives:
+        pairs.append({"query": query, "response": neg.text, "label": 0.0})`,
+          description: 'Un reranker pré-entraîné dégradait les résultats sur une partie du corpus ; le fine-tuning sur ces négatifs réels (pas aléatoires) corrige la régression.'
+        },
+        {
+          title: 'Chargement paresseux du générateur quantifié (compatibilité ZeroGPU)',
+          language: 'python',
+          snippet: `# La quantification bitsandbytes execute du vrai calcul CUDA a la
+# construction - incompatible avec l'emulation CUDA hors fonction
+# @spaces.GPU. Construit au premier appel reel, pas au chargement du module.
+_gen_model = None
+
+def _get_gen_model():
+    global _gen_model
+    if _gen_model is None:
+        bnb_config = BitsAndBytesConfig(
+            load_in_4bit=True, bnb_4bit_quant_type="nf4",
+            bnb_4bit_compute_dtype=torch.bfloat16,
+        )
+        _gen_model = AutoModelForCausalLM.from_pretrained(
+            GEN_MODEL, quantization_config=bnb_config, device_map="cuda"
+        )
+    return _gen_model`,
+          description: 'Pattern appliqué préventivement (pas redécouvert) — la quantification à la construction déclenche la même classe d\'incompatibilité ZeroGPU rencontrée sur un projet précédent avec un autre modèle.'
+        }
+      ]
+    },
+    transmission: {
+      liveUrl: 'https://huggingface.co/spaces/emericklaf/rag-finance-finqa-tatqa',
+      liveDescription: `Application complète déployée sur Hugging Face Spaces (hardware ZeroGPU, GPU partagé alloué à la demande). Pose une question sur les documents financiers indexés (rapports 10-K), le pipeline hybride récupère, reclasse et cite les passages sources avant de générer une réponse ancrée.
+
+Premier appel plus lent (cold start ZeroGPU + construction du générateur quantifié, ~40s) ; quota GPU gratuit par visiteur (indépendant des autres visiteurs).`,
+      hostLabel: 'Hébergé sur Hugging Face Spaces (ZeroGPU)',
+      images: [
+        {
+          src: '/images/projects/rag-finance-app-ui.jpg',
+          caption: 'Interface réelle en fonctionnement : question posée, réponse générée avec calcul explicite et citation de passage, les 5 passages sources affichés avec leurs identifiants.'
+        }
+      ]
+    }
   }
 ];
 
