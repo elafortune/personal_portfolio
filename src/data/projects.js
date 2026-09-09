@@ -920,6 +920,14 @@ Premier appel plus lent (cold start ZeroGPU + construction du générateur quant
         {
           src: '/images/projects/rag-finance-app-ui.jpg',
           caption: 'Interface réelle en fonctionnement : question posée, réponse générée avec calcul explicite et citation de passage, les 5 passages sources affichés avec leurs identifiants.'
+        },
+        {
+          src: '/images/projects/rag-finance-chart-recall.png',
+          caption: 'Progression du Recall@10 mesurée à chaque étape sur le même jeu de 1 492 questions tenu à l\'écart : 40,5 % (baseline) → 72,0 % (fine-tuning embedder) → 77,0 % (recherche hybride RRF) → 77,6 % (reranker fine-tuné).'
+        },
+        {
+          src: '/images/projects/rag-finance-chart-ragas.png',
+          caption: 'Évaluation finale Ragas (100 questions, juge Qwen2.5-7B local) : RAG naïf vs. pipeline complet sur les 4 métriques. Le recul apparent de Faithfulness s\'explique par un taux de refus 2,8× plus élevé côté naïf, pas une perte de rigueur — détail dans la section Présentation.'
         }
       ]
     }
