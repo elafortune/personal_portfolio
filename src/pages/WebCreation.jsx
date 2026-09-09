@@ -44,25 +44,26 @@ function WebCreation() {
   return (
     <Section
       id="web-creation"
-      title="Création de Sites Web"
-      subtitle="Sites web conçus et développés pour des clients et projets personnels — e-commerce, vitrines et portfolios."
+      title="Réalisations Web"
+      subtitle="Sites livrés en production pour des clients — preuve d'une capacité full stack à porter un projet du backend jusqu'à l'interface."
+      className="!py-8 md:!py-10"
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="flex gap-4 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory">
         {websites.map((site) => (
           <a
             key={site.id}
             href={site.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="group block"
+            className="group block flex-shrink-0 w-64 snap-start"
           >
-            <Card hoverable className="h-full flex flex-col">
+            <Card hoverable className="h-full flex flex-col !p-4">
               {/* Preview area */}
-              <div className={`h-36 rounded-lg mb-4 flex items-center justify-center bg-gradient-to-br ${site.gradientFrom} ${site.gradientTo} border border-white/10 relative overflow-hidden`}>
-                <span className="text-5xl select-none">{site.icon}</span>
-                <div className="absolute top-3 right-3">
+              <div className={`h-20 rounded-lg mb-3 flex items-center justify-center bg-gradient-to-br ${site.gradientFrom} ${site.gradientTo} border border-white/10 relative overflow-hidden`}>
+                <span className="text-3xl select-none">{site.icon}</span>
+                <div className="absolute top-2 right-2">
                   <svg
-                    className="w-4 h-4 text-white/40 group-hover:text-white/70 transition-colors duration-300"
+                    className="w-3.5 h-3.5 text-white/40 group-hover:text-white/70 transition-colors duration-300"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -73,22 +74,17 @@ function WebCreation() {
               </div>
 
               {/* Category badge */}
-              <span className={`inline-block self-start text-xs font-medium px-2.5 py-1 rounded-full ${site.badge} mb-3`}>
+              <span className={`inline-block self-start text-[10px] font-medium px-2 py-0.5 rounded-full ${site.badge} mb-2`}>
                 {site.category}
               </span>
 
               {/* Title */}
-              <h3 className={`text-lg font-bold text-white mb-2 group-hover:${site.accent} transition-colors duration-300`}>
+              <h3 className={`text-sm font-bold text-white mb-2 line-clamp-1 group-hover:${site.accent} transition-colors duration-300`}>
                 {site.title}
               </h3>
 
-              {/* Description */}
-              <p className="text-sm text-gray-400 leading-relaxed mb-4 flex-1">
-                {site.description}
-              </p>
-
               {/* URL */}
-              <p className={`text-xs ${site.accent} truncate font-mono`}>
+              <p className={`text-xs ${site.accent} truncate font-mono mt-auto`}>
                 {site.url.replace('https://', '').replace(/\/$/, '')}
               </p>
             </Card>

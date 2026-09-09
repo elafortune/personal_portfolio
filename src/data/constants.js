@@ -3,9 +3,9 @@ export const NAV_LINKS = [
   { id: 'home', label: 'Accueil', href: '#home' },
   { id: 'projects', label: 'Projets', href: '#projects' },
   { id: 'skills', label: 'Compétences', href: '#skills' },
-  { id: 'web-creation', label: 'Sites Web', href: '#web-creation' },
   { id: 'about', label: 'À propos', href: '#about' },
-  { id: 'contact', label: 'Contact', href: '#contact' }
+  { id: 'contact', label: 'Contact', href: '#contact' },
+  { id: 'web-creation', label: 'Sites Web', href: '#web-creation' }
 ];
 
 // Animation durations (in milliseconds)

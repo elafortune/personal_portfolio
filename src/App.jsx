@@ -33,9 +33,9 @@ function App() {
         <TrustedBy />
         <Projects onSelectProject={setSelectedProject} />
         <Skills />
-        <WebCreation />
         <About />
         <Contact />
+        <WebCreation />
       </main>
 
       <Footer />
