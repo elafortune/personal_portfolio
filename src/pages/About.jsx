@@ -3,7 +3,7 @@ import Timeline from '../components/about/Timeline';
 import Card from '../components/common/Card';
 import { aboutInfo, timeline, certifications, interests } from '../data/about';
 
-function About() {
+function About({ onSelectExperience }) {
   return (
     <Section
       id="about"
@@ -98,7 +98,7 @@ function About() {
         <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-6 md:mb-8 text-center">
           Parcours Professionnel & Académique
         </h3>
-        <Timeline items={timeline} />
+        <Timeline items={timeline} onSelect={onSelectExperience} />
       </div>
 
       {/* Certifications */}

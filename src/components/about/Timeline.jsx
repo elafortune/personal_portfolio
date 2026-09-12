@@ -1,4 +1,4 @@
-function Timeline({ items }) {
+function Timeline({ items, onSelect }) {
   const getIcon = (type) => {
     if (type === 'experience') {
       return (
@@ -37,7 +37,7 @@ function Timeline({ items }) {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {items.map((item, index) => (
         <div key={item.id} className="relative">
           {/* Timeline Line */}
@@ -52,64 +52,51 @@ function Timeline({ items }) {
               {getIcon(item.type)}
             </div>
 
-            {/* Content */}
-            <div className="flex-1 pb-8">
-              <div className="bg-dark-light border border-primary-500/30 rounded-lg p-4 sm:p-6 hover:border-primary-500/50 transition-colors">
-                {/* Header */}
-                <div className="mb-3">
-                  <h3 className="text-xl font-bold text-white mb-1">
-                    {item.title}
-                  </h3>
-                  <p className="text-primary-400 font-medium mb-1">
-                    {item.organization}
-                  </p>
-                  <div className="flex flex-wrap gap-3 text-sm text-gray-400">
-                    <span>{formatDate(item.startDate, item.endDate, item.current)}</span>
-                    {item.location && (
-                      <>
-                        <span>•</span>
-                        <span>{item.location}</span>
-                      </>
-                    )}
+            {/* Compact clickable card */}
+            <button
+              type="button"
+              onClick={() => onSelect(item)}
+              className="flex-1 pb-2 text-left group"
+            >
+              <div className="bg-dark-light border border-primary-500/30 rounded-lg p-4 sm:p-6 hover:border-primary-400 hover:shadow-lg hover:shadow-primary-500/10 hover:-translate-y-0.5 transition-all duration-300">
+                <div className="flex items-start justify-between gap-3 mb-2">
+                  <div>
+                    <h3 className="text-lg sm:text-xl font-bold text-white mb-1 group-hover:text-primary-300 transition-colors">
+                      {item.title}
+                    </h3>
+                    <p className="text-primary-400 font-medium text-sm">
+                      {item.organization}
+                    </p>
                   </div>
+                  <svg
+                    className="w-5 h-5 text-gray-600 group-hover:text-primary-400 group-hover:translate-x-0.5 transition-all flex-shrink-0 mt-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
                 </div>
 
-                {/* Description */}
-                <p className="text-gray-300 mb-4 leading-relaxed">
-                  {item.description}
+                <div className="flex flex-wrap gap-3 text-xs text-gray-500 mb-3">
+                  <span>{formatDate(item.startDate, item.endDate, item.current)}</span>
+                  {item.location && (
+                    <>
+                      <span>•</span>
+                      <span>{item.location}</span>
+                    </>
+                  )}
+                </div>
+
+                <p className="text-gray-400 text-sm leading-relaxed line-clamp-2">
+                  {item.summary || item.description}
                 </p>
 
-                {/* Achievements */}
-                {item.achievements && item.achievements.length > 0 && (
-                  <div className="mb-4">
-                    <ul className="space-y-1">
-                      {item.achievements.map((achievement, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-sm text-gray-400">
-                          <svg className="w-4 h-4 text-primary-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                          </svg>
-                          <span>{achievement}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Technologies */}
-                {item.technologies && item.technologies.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {item.technologies.map((tech, idx) => (
-                      <span
-                        key={idx}
-                        className="text-xs bg-dark text-primary-300 px-2 py-1 rounded"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                )}
+                <span className="inline-flex items-center gap-1 text-xs font-medium text-primary-400 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                  Voir le détail
+                </span>
               </div>
-            </div>
+            </button>
           </div>
         </div>
       ))}

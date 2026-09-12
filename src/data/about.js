@@ -42,6 +42,7 @@ export const timeline = [
     startDate: '2026-01',
     endDate: '2026-07',
     current: false,
+    summary: 'Mesurer le fossé entre données réelles et synthétiques pour fiabiliser l\'entraînement de modèles de vision en contexte défense.',
     description: `Stage de fin d'études en computer vision et développement full stack au sein d'un acteur
     majeur de la défense. Conception d'un framework d'évaluation de la fidélité des données synthétiques et
     d'une interface d'analyse pour l'entraînement de modèles de vision.`,
@@ -50,7 +51,26 @@ export const timeline = [
       'Optimisation itérative des données de synthèse pour maximiser les performances des modèles de segmentation, détection et tracking',
       'Conception d\'une IHM d\'analyse et de scoring (Python/TypeScript) pour la validation visuelle et statistique des jeux de données générés'
     ],
-    technologies: ['Python', 'TypeScript', 'Computer Vision', 'FID', 'Segmentation', 'Détection', 'Tracking']
+    technologies: ['Python', 'TypeScript', 'Computer Vision', 'FID', 'Segmentation', 'Détection', 'Tracking'],
+    caseStudy: {
+      context: `Un acteur majeur de la défense entraîne ses modèles de vision (segmentation, détection, tracking) en
+      partie sur des données synthétiques — moins coûteuses à produire que des données réelles annotées, mais dont
+      la fidélité au monde réel n'est jamais garantie a priori. Sans méthode pour mesurer cet écart (domain gap),
+      impossible de savoir si les gains observés en synthèse se traduisent réellement en production.`,
+      contribution: `J'ai conçu un framework d'évaluation comparant systématiquement images réelles et synthétiques
+      sur des métriques bas niveau et des métriques perceptuelles (FID, SAM), puis une interface d'analyse
+      (Python/TypeScript) permettant aux équipes de scorer visuellement et statistiquement chaque nouveau lot de
+      données synthétiques avant de l'utiliser pour l'entraînement.`,
+      challenge: `Le vrai risque n'était pas de produire un chiffre de fidélité, mais un chiffre qui corrèle
+      réellement avec la performance des modèles en aval. J'ai croisé itérativement les métriques de fidélité avec
+      les gains effectifs en segmentation, détection et tracking, pour m'assurer que le framework guidait de
+      vraies décisions plutôt qu'un proxy trompeur.`,
+      impact: [
+        'Framework d\'évaluation réel/synthétique combinant métriques bas niveau et perceptuelles (FID, SAM), utilisé pour réduire le domain gap',
+        'Optimisation itérative des données de synthèse guidée par les gains mesurés en segmentation, détection et tracking — pas par intuition',
+        'IHM d\'analyse et de scoring (Python/TypeScript) adoptée pour la validation visuelle et statistique de chaque nouveau jeu de données généré'
+      ]
+    }
   },
   {
     id: 'exp-1',
@@ -61,6 +81,7 @@ export const timeline = [
     startDate: '2025-07',
     endDate: '2026-01',
     current: false,
+    summary: 'Détecter et suivre des piétons en milieu urbain dense — même partiellement masqués — pour la sécurité des véhicules autonomes.',
     description: `Stage de fin d'études en IA générative et computer vision appliquée à la sécurité routière
     des véhicules autonomes. R&D sur des approches génératives et non génératives pour la détection et le
     tracking de piétons.`,
@@ -70,7 +91,24 @@ export const timeline = [
       'Optimisation de la mémoire GPU (offloading, fine-tuning LoRA, prétraitements NumPy optimisés pour les transferts CPU-GPU)',
       'Benchmark comparatif des modèles en conditions réelles (milieu urbain, occlusions partielles)'
     ],
-    technologies: ['Python', 'PyTorch', 'VLM', 'LoRA', 'RAG multimodal', 'CNN', 'LSTM', 'Computer Vision']
+    technologies: ['Python', 'PyTorch', 'VLM', 'LoRA', 'RAG multimodal', 'CNN', 'LSTM', 'Computer Vision'],
+    caseStudy: {
+      context: `La détection de piétons pour les véhicules autonomes doit rester fiable en environnement urbain
+      dense, avec des occlusions partielles fréquentes — exactement le cas où les approches de détection
+      classiques échouent le plus souvent, avec des conséquences directes sur la sécurité routière.`,
+      contribution: `J'ai développé un pipeline CNN + LSTM pour le tracking de piétons, puis exploré des approches
+      génératives complémentaires (fine-tuning de VLM, RAG multimodal) pour renforcer la robustesse aux
+      occlusions, avant de comparer l'ensemble par benchmark en conditions réelles.`,
+      challenge: `Le compromis central était mémoire vs performance : les VLM et approches génératives sont
+      gourmands en VRAM, incompatibles avec un fine-tuning naïf sur le matériel disponible. J'ai optimisé les
+      prétraitements (transferts CPU-GPU en NumPy) et utilisé l'offloading et le fine-tuning LoRA pour garder un
+      entraînement viable sans exploser la consommation mémoire.`,
+      impact: [
+        'Pipeline CNN + LSTM pour la détection et le tracking de piétons robuste aux occlusions partielles en environnement urbain dynamique',
+        'Approches génératives (fine-tuning VLM, RAG multimodal) intégrées malgré une contrainte mémoire GPU forte, via offloading et LoRA',
+        'Benchmark comparatif des modèles en conditions réelles pour objectiver le choix d\'approche plutôt que le supposer'
+      ]
+    }
   },
   {
     id: 'exp-2',
@@ -81,6 +119,7 @@ export const timeline = [
     startDate: '2024-04',
     endDate: '2024-10',
     current: false,
+    summary: 'Industrialiser la récupération de centaines de tables hétérogènes en pipelines ETL fiables, avec CI/CD de bout en bout.',
     description: `Stage de 6 mois au sein de l'équipe data d'Air France KLM. Conception de pipelines ETL à
     grande échelle et mise en place de pratiques DevOps pour l'industrialisation des traitements de données.`,
     achievements: [
@@ -90,7 +129,24 @@ export const timeline = [
       'Mise en place de pratiques DevOps : CI/CD (Jenkins, GitHub), automatisation des workflows, tests d\'intégration',
       'Travail en environnement agile (Jira, Confluence, Miro) en collaboration étroite avec les équipes data et IT'
     ],
-    technologies: ['PySpark', 'Hadoop', 'SQL', 'Bash', 'Jenkins', 'CI/CD', 'Big Data']
+    technologies: ['PySpark', 'Hadoop', 'SQL', 'Bash', 'Jenkins', 'CI/CD', 'Big Data'],
+    caseStudy: {
+      context: `L'équipe data d'Air France KLM avait besoin de pipelines ETL fiables pour traiter des données de
+      production à grande échelle, tout en donnant aux équipes de test un accès à des jeux de données
+      représentatifs sans exposer les données de production complètes.`,
+      contribution: `J'ai conçu et orchestré des pipelines ETL en PySpark, Hadoop, SQL et Shell pour récupérer des
+      centaines de tables issues de services hétérogènes, et automatisé la création de bases de données
+      miniatures à partir des données de production pour les environnements de test — le tout intégré dans une
+      chaîne CI/CD (Jenkins, GitHub).`,
+      challenge: `La difficulté n'était pas algorithmique mais d'échelle et d'hétérogénéité : des centaines de
+      tables issues de systèmes différents, avec des schémas et volumétries incohérents, à industrialiser dans
+      une chaîne robuste unique plutôt qu'en scripts ad hoc par source.`,
+      impact: [
+        'Pipelines ETL (PySpark, Hadoop, SQL, Shell) industrialisés pour traiter des centaines de tables issues de services hétérogènes',
+        'Génération automatisée de bases de données miniatures représentatives de la production pour les environnements de test',
+        'Pratiques DevOps mises en place (CI/CD Jenkins/GitHub, tests d\'intégration) pour fiabiliser les déploiements en environnement agile'
+      ]
+    }
   },
   {
     id: 'exp-3',
@@ -101,6 +157,7 @@ export const timeline = [
     startDate: '2022-06',
     endDate: '2022-08',
     current: false,
+    summary: 'Développement d\'interfaces web et automatisation de workflows no-code pour une startup.',
     description: `Stage en développement logiciel dans une startup. Développement d'applications
     web et mise en place de workflows automatisés avec des outils no-code.`,
     achievements: [
@@ -119,6 +176,7 @@ export const timeline = [
     startDate: '2021-09',
     endDate: '2025-09',
     current: false,
+    summary: 'Formation d\'ingénieur en mathématiques, statistiques et intelligence artificielle appliquée.',
     description: `Formation d'ingénieur avec spécialisation en mathématiques, statistiques et
     intelligence artificielle. Projets appliqués en machine learning, deep learning et data engineering.`,
     achievements: [
@@ -137,6 +195,7 @@ export const timeline = [
     startDate: '2018-09',
     endDate: '2021-06',
     current: false,
+    summary: 'Classes préparatoires scientifiques — rigueur mathématique et méthode d\'analyse.',
     description: `Classes préparatoires aux grandes écoles en filière Mathématiques-Physique.
     Formation intensive en mathématiques, physique et informatique.`,
     achievements: [

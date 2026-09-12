@@ -1,7 +1,7 @@
 import { aboutInfo, getYearsOfExperience } from '../data/about';
 import { useSmoothScroll } from '../hooks/useSmoothScroll';
 import Button from '../components/common/Button';
-import NeuralNetworkBackground from '../components/common/NeuralNetworkBackground';
+import AuroraBackground from '../components/common/AuroraBackground';
 
 function Hero() {
   const scrollTo = useSmoothScroll();
@@ -22,8 +22,8 @@ function Hero() {
       id="home"
       className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 pt-16 pb-16 sm:pb-20 bg-gradient-to-b from-dark via-dark to-dark-light overflow-hidden"
     >
-      {/* WebGL neural network background */}
-      <NeuralNetworkBackground />
+      {/* WebGL aurora background */}
+      <AuroraBackground />
 
       {/* Subtle background glow */}
       <div

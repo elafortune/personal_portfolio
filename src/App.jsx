@@ -10,16 +10,27 @@ import ProjectDetail from './pages/ProjectDetail'
 import Skills from './pages/Skills'
 import WebCreation from './pages/WebCreation'
 import About from './pages/About'
+import ExperienceDetail from './pages/ExperienceDetail'
 import Contact from './pages/Contact'
 
 function App() {
   const [selectedProject, setSelectedProject] = useState(null);
+  const [selectedExperience, setSelectedExperience] = useState(null);
 
   if (selectedProject) {
     return (
       <ProjectDetail
         project={selectedProject}
         onBack={() => setSelectedProject(null)}
+      />
+    );
+  }
+
+  if (selectedExperience) {
+    return (
+      <ExperienceDetail
+        experience={selectedExperience}
+        onBack={() => setSelectedExperience(null)}
       />
     );
   }
@@ -33,7 +44,7 @@ function App() {
         <TrustedBy />
         <Projects onSelectProject={setSelectedProject} />
         <Skills />
-        <About />
+        <About onSelectExperience={setSelectedExperience} />
         <Contact />
         <WebCreation />
       </main>

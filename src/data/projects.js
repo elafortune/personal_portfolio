@@ -931,6 +931,150 @@ Premier appel plus lent (cold start ZeroGPU + construction du générateur quant
         }
       ]
     }
+  },
+  {
+    id: 'multimodal-rag-colpali',
+    title: 'Multimodal RAG — ColPali vs OCR+RAG vs LLM seul',
+    shortDescription: 'Un pipeline RAG classique (OCR → texte → retrieval) peut être pire que l\'absence de RAG sur du contenu visuel. Comparaison à 3 paliers sur des documents FDA réels : LLM seul, OCR+RAG texte, ColPali natif — et le diagnostic de pourquoi le retrieval visuel natif gagne vraiment.',
+    fullDescription: `Un OCR classique, même correct la plupart du temps, peut activement nuire à un pipeline RAG plutôt que l'aider. C'est le résultat contre-intuitif — mesuré, pas supposé — au cœur de ce projet : sur des documents FDA réels contenant tableaux, infographies et mises en page complexes, injecter du texte OCR dégradé dans le prompt d'un LLM fait chuter la justesse des réponses en dessous du niveau obtenu sans aucun retrieval.
+
+Trois architectures sont comparées sur le même corpus (ViDoRe v3 pharmaceuticals, 2313 pages, 6 langues) : un LLM seul sans document, un pipeline RAG texte classique (OCR Tesseract → BM25+dense hybride → reranking → génération), et ColPali — un retriever visuel natif qui indexe directement les pixels de chaque page sans jamais passer par une extraction de texte.
+
+Le résultat central répond à une question plus précise que "ColPali est-il meilleur ?" : *pourquoi* l'est-il ? La réponse, vérifiée par un jugement de correction identique appliqué aux 3 paliers sur 328 questions, est un gain de lecture — pas de retrieval. Le Recall@3 de ColPali ne progresse que modestement (+0,05) et de façon comparable sur le contenu visuel et textuel. Mais à qualité de retrieval quasi égale, remplacer le texte OCR par l'image brute fait chuter le taux de réponses incorrectes sur le contenu visuel de 20,4 % à 6,5 % — parce que lire correctement une page une fois trouvée compte davantage que la retrouver un peu mieux.`,
+    image: '/images/projects/multimodal-rag-app-ui.jpg',
+    technologies: ['Python', 'PyTorch', 'ColPali (ColQwen2.5)', 'Qwen2.5-VL-7B-Instruct', 'Qwen2.5-7B-Instruct', 'Tesseract OCR', 'bge-m3', 'Qdrant', 'bm25s', 'Ragas', 'Langfuse', 'Gradio', 'Hugging Face Spaces (ZeroGPU)'],
+    category: 'Multimodal / NLP',
+    githubUrl: 'https://github.com/elafortune/multimodal_rag_pharmaceutical',
+    liveUrl: 'https://huggingface.co/spaces/emericklaf/multimodal-rag-pharma',
+    date: '2026-09',
+    featured: true,
+    outcomes: [
+      'Diagnostic contre-intuitif vérifié, pas accepté sur un chiffre isolé : le RAG texte classique dégrade la justesse sur le contenu visuel (13,0 % → 20,4 % d\'incorrect) par rapport à l\'absence totale de retrieval — un OCR dégradé induit le modèle en erreur avec confiance',
+      'ColPali corrige cette dégradation et va au-delà (20,4 % → 6,5 % d\'incorrect sur le visuel), tout en n\'apportant qu\'un gain de Recall@3 modeste (+0,048) — la preuve que l\'avantage est un gain de lecture, pas de retrieval',
+      'Sur les questions texte-only, le taux d\'incorrect reste stable (~22-23 %) quel que soit le palier — le vrai goulot d\'étranglement identifié est le retrieval lui-même (Recall@3 plafonné à ~0,55), pas le choix de modalité',
+      'Dataset ViDoRe vérifié à la main avant usage : un premier sous-ensemble (healthcare_industry) écarté après inspection directe des images (texte pur + une page mal étiquetée), multilinguisme du corpus retenu (6 langues) découvert empiriquement et non supposé',
+      'Juge maison construit pour évaluer la fidélité visuelle (Ragas ne gère pas un contexte image) : verdict catégoriel simple plutôt qu\'un JSON décomposé, 100 % de couverture contre 40 % pour l\'équivalent Ragas sur le pipeline texte',
+      'Déployé sur Hugging Face Spaces (ZeroGPU) : 5 modèles de tailles différentes cohabitant sur un budget de 120s par appel GPU, 7 blocages de production réels diagnostiqués et corrigés (versions, backend de téléchargement, verrou multi-process, plafond de durée)'
+    ],
+    challenges: `Ragas — la librairie d'évaluation RAG standard — ne sait juger que du texte : sa métrique de fidélité décompose la réponse en affirmations et les vérifie contre un contexte texte, incompatible avec le contexte image du pipeline ColPali. Réutiliser le texte OCR comme substitut aurait réintroduit artificiellement le biais que ce palier cherche justement à éviter.
+
+Comparer 3 architectures sur un pied d'égalité demandait un jugement de correction identique appliqué aux 3 paliers — les métriques déjà calculées (pertinence, fidélité au contexte) mesurent autre chose que "qui répond juste", la question qui compte vraiment pour trancher entre les architectures.
+
+Le déploiement ZeroGPU a révélé qu'un appel GPU est plafonné à 120 secondes (non documenté explicitement) et qu'un client Qdrant en mode local ne supporte qu'un seul processus à la fois — deux contraintes qui ont forcé une restructuration du chargement des modèles une fois le comportement réel observé en production, pas anticipées à la conception.`,
+    research: {
+      objective: `L'objectif n'était pas seulement de mesurer si ColPali bat un pipeline OCR+RAG classique, mais de comprendre le mécanisme réel de son avantage — au risque de découvrir que l'intuition de départ ("ColPali retrouve mieux les pages visuelles") était incomplète ou fausse.
+
+Le plan suit un ordre délibéré : (1) vérifier que le corpus choisi contient vraiment du contenu visuellement riche, à la main, pas sur la foi du nom du dataset ; (2) poser la théorie de la fusion multimodale et justifier chaque choix d'architecture avant de coder ; (3) construire les 3 paliers avec la même contrainte (aucun fine-tuning, pour isoler l'effet architecture) ; (4) appliquer un jugement de correction identique aux 3 paliers, pas seulement les métriques propres à chacun, pour permettre une vraie comparaison.`,
+      subsections: [
+        {
+          title: 'Vérifier le corpus à la main avant de bâtir dessus',
+          content: `Un premier sous-ensemble ViDoRe (healthcare_industry) semblait prometteur sur la description — l'inspection directe de 5 pages échantillon a révélé que 4 étaient du texte pur (aucun intérêt pour un test multimodal) et que la 5e "page visuelle" était en réalité hors-sujet, une planche de physique mal étiquetée. Écarté avant tout investissement de temps supplémentaire.
+
+Le sous-ensemble finalement retenu (pharmaceuticals, documents FDA réels) a été vérifié de la même façon — 2 pages marquées visuelles inspectées directement, confirmant un contenu authentiquement riche (mockup d'étiquette de médicament en cartes, chronologie réglementaire avec flux causal entre extraits). Une découverte supplémentaire, non anticipée au départ : le corpus est multilingue par construction (6 langues parfaitement équilibrées), ce qui a changé les choix de modèles pour le pipeline texte (embedder et reranker multilingues plutôt qu'anglais-only).`
+        },
+        {
+          title: 'Late-interaction : pourquoi ColPali plutôt qu\'un embedding classique',
+          content: `Un encodeur classique (CLIP, SigLIP) résume une page entière en un seul vecteur — rapide à indexer, mais qui perd la granularité fine d'une page dense en tableaux et texte. ColPali procède différemment : chaque page est découpée en patches visuels, chacun encodé séparément (731 vecteurs par page ici), et le score requête↔page se calcule par MaxSim — pour chaque mot de la question, le meilleur patch correspondant, sommé sur tous les mots. Chaque terme de la requête peut ainsi "aller chercher" sa propre région de l'image, indépendamment des autres.`,
+          formulas: [
+            {
+              name: 'MaxSim — scoring par interaction tardive (late-interaction)',
+              latex: '\\text{score}(q, d) = \\sum_{i=1}^{|q|} \\max_{j=1}^{|d|} \\big(E_q[i] \\cdot E_d[j]\\big)',
+              description: 'Pour chaque vecteur-token de la requête $E_q[i]$, on prend le maximum de similarité avec tous les vecteurs-patch du document $E_d[j]$, puis on somme sur tous les tokens de la requête. Contrairement à un produit scalaire entre deux vecteurs uniques (fusion tardive classique), aucune information n\'est compressée avant le scoring — la granularité par patch est préservée jusqu\'au bout.'
+            }
+          ]
+        },
+        {
+          title: 'La dégradation OCR n\'est pas aléatoire — vérifiée, pas supposée',
+          content: `Avant de blâmer l'OCR pour la dégradation observée, comparaison quantitative entre l'extraction Tesseract et le champ de référence du dataset (similarité de séquence, page par page) : 220 pages sur 2313 tombent sous 0,3 de similarité. Ces pages à faible similarité sont 2,4 fois plus souvent des pages visuellement complexes que la moyenne du corpus (18,6 % contre 7,8 % de base) — la dégradation OCR est concentrée précisément là où l'information est portée par la mise en page, pas répartie uniformément.`
+        },
+        {
+          title: 'Le résultat contre-intuitif : un gain de lecture, pas de retrieval',
+          content: `Le Recall@3 de ColPali progresse peu (+0,048 sur le contenu visuel) et de façon comparable aux questions texte-only — en apparence, ça n'explique pas un tel écart de performance. La réponse vient du taux de réponses incorrectes, pas du retrieval : sur le visuel, il passe de 13,0 % (LLM seul) à 20,4 % (OCR+RAG — le texte dégradé induit le modèle en erreur avec confiance, pire que l'absence de contexte) à 6,5 % (ColPali). Sur le texte-only, ce taux ne bouge quasiment pas d'un palier à l'autre (~22-23 %) — cohérent avec un retrieval plafonné à 0,55 de Recall@3 même pour ColPali : si la bonne page n'est retrouvée qu'une fois sur deux, aucune architecture de génération ne peut compenser. L'avantage de ColPali est donc un gain de lecture une fois la page trouvée, pas un gain de recherche.`
+        }
+      ]
+    },
+    code: {
+      highlights: [
+        {
+          title: 'Scoring MaxSim via Qdrant multi-vecteur (pas de calcul manuel)',
+          language: 'python',
+          snippet: `from qdrant_client.models import VectorParams, Distance, MultiVectorConfig, MultiVectorComparator
+
+# Chaque page = un ensemble de vecteurs-patch (731 x 128 dims ici),
+# pas un vecteur unique - Qdrant calcule le MaxSim nativement au scoring.
+qdrant.create_collection(
+    collection_name="colpali_corpus",
+    vectors_config=VectorParams(
+        size=embedding_dim, distance=Distance.COSINE,
+        multivector_config=MultiVectorConfig(comparator=MultiVectorComparator.MAX_SIM),
+    ),
+)
+
+# La requete (vecteurs-tokens) est comparee a chaque page (vecteurs-patchs)
+hits = qdrant.query_points(
+    collection_name="colpali_corpus", query=query_token_vectors, limit=3
+).points`,
+          description: 'Aucune boucle Python pour le MaxSim : Qdrant le calcule nativement dès que la collection est configurée en mode multi-vecteur avec ce comparateur.'
+        },
+        {
+          title: 'Juge maison pour la fidélité visuelle (contourne la limite texte-only de Ragas)',
+          language: 'python',
+          snippet: `JUDGE_SYSTEM = (
+    "Tu es un juge impartial. On te montre des pages de documents (images) et "
+    "une reponse generee a partir de ces pages. Verifie si la reponse est "
+    "fidele a ce qui est reellement visible/ecrit sur ces pages. "
+    "Reponds par UN SEUL mot parmi : FIDELE, PARTIEL, NON_FIDELE, REFUS."
+)
+
+def judge_visual_faithfulness(query, corpus_ids, answer):
+    images = [Image.open(corpus_id_to_image[cid]) for cid in corpus_ids]
+    # Le juge regarde les MEMES images que celles utilisees pour generer
+    # la reponse - pas de texte OCR intermediaire qui reintroduirait le biais.
+    messages = [{"role": "system", "content": JUDGE_SYSTEM},
+                {"role": "user", "content": [{"type": "image", "image": img} for img in images]
+                    + [{"type": "text", "text": f"Question: {query}\\n\\nReponse: {answer}\\n\\nVerdict:"}]}]
+    raw = vlm_model.generate(...)  # verdict en un seul mot, pas de JSON decompose
+    return re.search(r"FIDELE|PARTIEL|NON_FIDELE|REFUS", raw.upper()).group(0)`,
+          description: 'Verdict catégoriel simple plutôt qu\'un JSON décomposé — leçon tirée d\'un échec précédent (60 % d\'erreurs de parsing sur la métrique Ragas équivalente côté texte). Résultat : 100 % de couverture, 0 erreur de parsing.'
+        },
+        {
+          title: 'Jugement de correction identique appliqué aux 3 paliers (comparaison sur un pied d\'égalité)',
+          language: 'python',
+          snippet: `# Le meme juge, le meme prompt, appliques aux generations des 3 paliers -
+# les metriques propres a chaque palier (Recall@3, AnswerRelevancy...)
+# ne repondent pas a "qui repond juste", la question qui compte vraiment.
+for label, (in_file, out_file) in FILES.items():  # palier2, palier3
+    df = pd.read_parquet(DATA / in_file)
+    verdicts = [judge(row.query, row.reference_answer, row.generated_answer)
+                for _, row in df.iterrows()]
+    df["verdict"] = verdicts
+    df.to_parquet(DATA / out_file)
+
+# Comparable directement au verdict deja calcule pour le Palier 1 (LLM seul)
+incorrect_rate = df.groupby("has_visual_qrel")["verdict"].apply(
+    lambda v: (v == "incorrect").mean()
+)`,
+          description: 'C\'est cette comparaison à métrique identique, pas les métriques individuelles de chaque palier, qui a révélé le vrai mécanisme de l\'avantage de ColPali.'
+        }
+      ]
+    },
+    transmission: {
+      liveUrl: 'https://huggingface.co/spaces/emericklaf/multimodal-rag-pharma',
+      liveDescription: `Application déployée sur Hugging Face Spaces (ZeroGPU) comparant les 3 paliers en direct sur n'importe quelle question posée. Cinq modèles cohabitent (bge-m3, bge-reranker-v2-m3, ColQwen2.5, Qwen2.5-7B-Instruct, Qwen2.5-VL-7B-Instruct) — la comparaison affiche la réponse et les sources de chaque palier côte à côte, texte OCR pour le Palier 2 et images réelles des pages récupérées pour le Palier 3.
+
+Espace en ZeroGPU (quota GPU gratuit partagé) : le premier appel est plus lent (chargement à froid), et le nombre de comparaisons possibles par jour est limité — un compromis assumé pour un déploiement gratuit plutôt qu'un défaut caché.`,
+      hostLabel: 'Hébergé sur Hugging Face Spaces (ZeroGPU)',
+      images: [
+        {
+          src: '/images/projects/multimodal-rag-app-ui.jpg',
+          caption: 'Comparaison réelle en direct sur une question posée à l\'application : les 3 paliers répondent côte à côte, avec les pages sources (texte OCR pour le Palier 2, images réelles pour le Palier 3, visible en faisant défiler).'
+        },
+        {
+          src: '/images/projects/multimodal-rag-chart-incorrect-rate.png',
+          caption: 'Le résultat central : taux de réponses incorrectes par palier, scindé par type de contenu. Le RAG texte classique dégrade la justesse sur le visuel (13,0 % → 20,4 %) là où ColPali l\'améliore nettement (→ 6,5 %) ; sur le texte-only, aucune architecture ne progresse — le goulot d\'étranglement est ailleurs.'
+        }
+      ]
+    }
   }
 ];
 
