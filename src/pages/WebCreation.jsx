@@ -30,7 +30,7 @@ const websites = [
     id: 'neyaura-photography',
     title: 'Neyaura Photography',
     description: 'Portfolio photographique minimaliste et élégant. Galerie immersive mettant en valeur les clichés avec une navigation fluide et une présentation épurée.',
-    url: 'https://neyaura-photography.vercel.app/',
+    url: 'https://neyaura-photography.com/',
     category: 'Portfolio',
     gradientFrom: 'from-violet-600/25',
     gradientTo: 'to-purple-700/25',
