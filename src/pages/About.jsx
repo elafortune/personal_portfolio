@@ -118,15 +118,19 @@ function About({ onSelectExperience }) {
                 >
                   <div className="text-center">
                     <div className="w-16 h-16 mx-auto mb-3 rounded-lg bg-primary-600/20 flex items-center justify-center overflow-hidden">
-                      <img
-                        src={cert.logo}
-                        alt={cert.issuer}
-                        className="w-full h-full object-contain p-2"
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                          e.target.parentElement.innerHTML = '<span class="text-2xl">🏆</span>';
-                        }}
-                      />
+                      {cert.logo ? (
+                        <img
+                          src={cert.logo}
+                          alt={cert.issuer}
+                          className="w-full h-full object-contain p-2"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.parentElement.innerHTML = '<span class="text-2xl">🏆</span>';
+                          }}
+                        />
+                      ) : (
+                        <span className="text-2xl">🏆</span>
+                      )}
                     </div>
                     <h4 className="text-sm font-semibold text-white mb-1 line-clamp-2">
                       {cert.name}
@@ -134,12 +138,14 @@ function About({ onSelectExperience }) {
                     <p className="text-xs text-primary-400 mb-1">
                       {cert.issuer}
                     </p>
-                    <p className="text-xs text-gray-500">
-                      {new Date(cert.date).toLocaleDateString('fr-FR', {
-                        year: 'numeric',
-                        month: 'short'
-                      })}
-                    </p>
+                    {cert.date && (
+                      <p className="text-xs text-gray-500">
+                        {new Date(cert.date).toLocaleDateString('fr-FR', {
+                          year: 'numeric',
+                          month: 'short'
+                        })}
+                      </p>
+                    )}
                   </div>
                 </a>
               </Card>

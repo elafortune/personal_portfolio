@@ -42,33 +42,37 @@ export const timeline = [
     startDate: '2026-01',
     endDate: '2026-07',
     current: false,
-    summary: 'Mesurer le fossé entre données réelles et synthétiques pour fiabiliser l\'entraînement de modèles de vision en contexte défense.',
+    summary: 'Comparer méthodes de génération et métriques de fidélité réel/synthèse pour réduire le domain gap sur des données de vision défense.',
     description: `Stage de fin d'études en computer vision et développement full stack au sein d'un acteur
-    majeur de la défense. Conception d'un framework d'évaluation de la fidélité des données synthétiques et
-    d'une interface d'analyse pour l'entraînement de modèles de vision.`,
+    majeur de la défense. Comparaison de méthodologies d'évaluation de la qualité d'images de synthèse et de
+    plusieurs méthodes de génération d'images, avec une application full stack pour l'analyse à grande échelle
+    des datasets générés.`,
     achievements: [
-      'Création d\'un framework d\'évaluation comparant la fidélité des images réelles/synthétiques (métriques bas niveau, FID, SAM) pour réduire le domain gap',
-      'Optimisation itérative des données de synthèse pour maximiser les performances des modèles de segmentation, détection et tracking',
-      'Conception d\'une IHM d\'analyse et de scoring (Python/TypeScript) pour la validation visuelle et statistique des jeux de données générés'
+      'Comparaison de méthodologies d\'évaluation de la qualité d\'images de synthèse par rapport au réel : métriques qualitatives de traitement d\'image (PSD, SIFT, entropy), métriques de scoring deep learning et modèles de fondation (DA2, DINOv2, DSiNE) pour réduire le domain gap',
+      'Études approfondies de plusieurs méthodes de génération d\'images : Gaussian splatting (3DGS), Unreal Engine, transfer learning RGB → IR',
+      'Comparaison des méthodes de génération en espace latent : détermination des métadonnées optimales de synthèse et des meilleures images des datasets générés',
+      'Développement fullstack (Python/TypeScript) d\'une application optimisée en production (multi-GPU, datasets de +10 000 images) pour l\'analyse et le scoring, permettant la validation visuelle et statistique des datasets de synthèse'
     ],
-    technologies: ['Python', 'TypeScript', 'Computer Vision', 'FID', 'Segmentation', 'Détection', 'Tracking'],
+    technologies: ['Python', 'TypeScript', 'Computer Vision', 'Gaussian Splatting', 'Unreal Engine', 'DINOv2', 'Multi-GPU'],
     caseStudy: {
-      context: `Un acteur majeur de la défense entraîne ses modèles de vision (segmentation, détection, tracking) en
-      partie sur des données synthétiques — moins coûteuses à produire que des données réelles annotées, mais dont
-      la fidélité au monde réel n'est jamais garantie a priori. Sans méthode pour mesurer cet écart (domain gap),
-      impossible de savoir si les gains observés en synthèse se traduisent réellement en production.`,
-      contribution: `J'ai conçu un framework d'évaluation comparant systématiquement images réelles et synthétiques
-      sur des métriques bas niveau et des métriques perceptuelles (FID, SAM), puis une interface d'analyse
-      (Python/TypeScript) permettant aux équipes de scorer visuellement et statistiquement chaque nouveau lot de
-      données synthétiques avant de l'utiliser pour l'entraînement.`,
-      challenge: `Le vrai risque n'était pas de produire un chiffre de fidélité, mais un chiffre qui corrèle
-      réellement avec la performance des modèles en aval. J'ai croisé itérativement les métriques de fidélité avec
-      les gains effectifs en segmentation, détection et tracking, pour m'assurer que le framework guidait de
-      vraies décisions plutôt qu'un proxy trompeur.`,
+      context: `Un acteur majeur de la défense entraîne ses modèles de vision en partie sur des données
+      synthétiques — moins coûteuses à produire que des données réelles annotées, mais dont la fidélité au monde
+      réel n'est jamais garantie a priori. Sans méthode pour mesurer cet écart (domain gap) ni pour comparer les
+      méthodes de génération entre elles, impossible de savoir quelles données de synthèse valent la peine d'être
+      utilisées pour l'entraînement.`,
+      contribution: `J'ai comparé systématiquement plusieurs méthodologies d'évaluation de la fidélité réel/synthèse
+      (métriques bas niveau PSD/SIFT/entropy, scoring deep learning, modèles de fondation DA2/DINOv2/DSiNE) et
+      plusieurs méthodes de génération d'images (Gaussian splatting, Unreal Engine, transfer learning RGB → IR),
+      puis développé une application fullstack (Python/TypeScript) optimisée multi-GPU pour scorer visuellement
+      et statistiquement des datasets de plus de 10 000 images générées.`,
+      challenge: `Le vrai risque n'était pas de produire un chiffre de fidélité, mais un chiffre qui reste
+      exploitable à l'échelle et qui guide un vrai choix de métadonnées de synthèse. Comparer les méthodes de
+      génération en espace latent pour déterminer les métadonnées optimales, sur des datasets de plus de 10 000
+      images, imposait une application optimisée multi-GPU plutôt qu'un notebook d'analyse ponctuel.`,
       impact: [
-        'Framework d\'évaluation réel/synthétique combinant métriques bas niveau et perceptuelles (FID, SAM), utilisé pour réduire le domain gap',
-        'Optimisation itérative des données de synthèse guidée par les gains mesurés en segmentation, détection et tracking — pas par intuition',
-        'IHM d\'analyse et de scoring (Python/TypeScript) adoptée pour la validation visuelle et statistique de chaque nouveau jeu de données généré'
+        'Comparaison rigoureuse de méthodologies d\'évaluation (métriques bas niveau, scoring deep learning, modèles de fondation) pour réduire le domain gap réel/synthèse',
+        'Étude comparative de plusieurs méthodes de génération d\'images (Gaussian splatting, Unreal Engine, transfer learning RGB → IR)',
+        'Application fullstack (Python/TypeScript) optimisée multi-GPU, adoptée pour l\'analyse et le scoring de datasets de synthèse de plus de 10 000 images'
       ]
     }
   },
@@ -81,32 +85,35 @@ export const timeline = [
     startDate: '2025-07',
     endDate: '2026-01',
     current: false,
-    summary: 'Détecter et suivre des piétons en milieu urbain dense — même partiellement masqués — pour la sécurité des véhicules autonomes.',
-    description: `Stage de fin d'études en IA générative et computer vision appliquée à la sécurité routière
-    des véhicules autonomes. R&D sur des approches génératives et non génératives pour la détection et le
-    tracking de piétons.`,
+    summary: 'Détecter l\'intention de traversée des piétons pour la sécurité des véhicules autonomes, via une approche générative et une approche non générative comparées en conditions réelles.',
+    description: `Stage de fin d'études en R&D IA générative et non générative appliquée à la sécurité routière
+    des véhicules autonomes. Détection de piéton et tracking, avec deux approches complémentaires comparées sur
+    trois contextes d'évaluation distincts.`,
     achievements: [
-      'Développement d\'un pipeline CNN + LSTM pour la détection et le tracking de piétons en environnement urbain dynamique (occlusions partielles)',
-      'Implémentation d\'approches génératives basées sur le fine-tuning de VLM et un RAG multimodal',
-      'Optimisation de la mémoire GPU (offloading, fine-tuning LoRA, prétraitements NumPy optimisés pour les transferts CPU-GPU)',
-      'Benchmark comparatif des modèles en conditions réelles (milieu urbain, occlusions partielles)'
+      'Approche générative : benchmark de modèles VLM suivi d\'un fine-tuning via LoRA (+11 % de recall) pour la détermination de l\'intention de traversée',
+      'Approche non générative : pipeline de segmentation, depth estimation, optical flow et keypoint tracking',
+      'RAG multimodal (texte + image) basé sur des vision transformers (Mask2Former, PixelFormer, Cotracker3)',
+      'Optimisation GPU du pipeline ViT : offloading, checkpointing, transfert NumPy CPU-GPU, downcasting',
+      'Évaluation des modèles sur 3 contextes distincts : détection pure, détection de piétons en occlusion, détermination de l\'intention piéton'
     ],
-    technologies: ['Python', 'PyTorch', 'VLM', 'LoRA', 'RAG multimodal', 'CNN', 'LSTM', 'Computer Vision'],
+    technologies: ['Python', 'PyTorch', 'VLM', 'LoRA', 'RAG multimodal', 'Vision Transformers', 'Optical Flow', 'Computer Vision'],
     caseStudy: {
       context: `La détection de piétons pour les véhicules autonomes doit rester fiable en environnement urbain
-      dense, avec des occlusions partielles fréquentes — exactement le cas où les approches de détection
-      classiques échouent le plus souvent, avec des conséquences directes sur la sécurité routière.`,
-      contribution: `J'ai développé un pipeline CNN + LSTM pour le tracking de piétons, puis exploré des approches
-      génératives complémentaires (fine-tuning de VLM, RAG multimodal) pour renforcer la robustesse aux
-      occlusions, avant de comparer l'ensemble par benchmark en conditions réelles.`,
-      challenge: `Le compromis central était mémoire vs performance : les VLM et approches génératives sont
-      gourmands en VRAM, incompatibles avec un fine-tuning naïf sur le matériel disponible. J'ai optimisé les
-      prétraitements (transferts CPU-GPU en NumPy) et utilisé l'offloading et le fine-tuning LoRA pour garder un
-      entraînement viable sans exploser la consommation mémoire.`,
+      dense, y compris pour anticiper l'intention de traversée — pas seulement détecter une présence — avec des
+      conséquences directes sur la sécurité routière.`,
+      contribution: `J'ai comparé deux approches complémentaires : une approche générative (benchmark de modèles
+      VLM puis fine-tuning LoRA, +11 % de recall) et une approche non générative par pipeline classique
+      (segmentation, depth estimation, optical flow, keypoint tracking), complétées par un RAG multimodal basé
+      sur des vision transformers (Mask2Former, PixelFormer, Cotracker3) pour enrichir le contexte texte + image.`,
+      challenge: `Faire tenir un pipeline de vision transformers multi-modèles sur le budget GPU disponible a
+      demandé une optimisation fine à chaque étape du passage des images (offloading, checkpointing, transfert
+      NumPy CPU-GPU, downcasting) — puis évaluer les deux approches sur 3 contextes distincts (détection pure,
+      occlusion, intention) plutôt qu'une seule métrique globale, pour ne pas masquer les cas d'échec spécifiques
+      à chaque approche.`,
       impact: [
-        'Pipeline CNN + LSTM pour la détection et le tracking de piétons robuste aux occlusions partielles en environnement urbain dynamique',
-        'Approches génératives (fine-tuning VLM, RAG multimodal) intégrées malgré une contrainte mémoire GPU forte, via offloading et LoRA',
-        'Benchmark comparatif des modèles en conditions réelles pour objectiver le choix d\'approche plutôt que le supposer'
+        'Approche générative : +11 % de recall via benchmark VLM et fine-tuning LoRA sur la détermination de l\'intention de traversée',
+        'RAG multimodal (texte + image) sur vision transformers intégré pour enrichir la détection et le tracking',
+        'Pipeline GPU optimisé (offloading, checkpointing, downcasting) permettant l\'évaluation sur 3 contextes distincts sans compromis matériel'
       ]
     }
   },
@@ -157,34 +164,54 @@ export const timeline = [
     startDate: '2022-06',
     endDate: '2022-08',
     current: false,
-    summary: 'Développement d\'interfaces web et automatisation de workflows no-code pour une startup.',
-    description: `Stage en développement logiciel dans une startup. Développement d'applications
-    web et mise en place de workflows automatisés avec des outils no-code.`,
+    summary: 'Automatiser les processus métiers internes (prospection, comptabilité) via des pipelines de données et des workflows low-code/no-code.',
+    description: `Stage en développement logiciel dans une startup. Automatisation de processus métiers
+    internes et mise en place de pipelines d'ingestion de données, depuis les API métiers jusqu'au stockage
+    applicatif.`,
     achievements: [
-      'Développement d\'interfaces utilisateur en JavaScript',
-      'Mise en place de workflows automatisés avec n8n',
-      'Création d\'applications internes avec Budibase'
+      'Automatisation de processus métiers en interne (prospection, gestion de projet)',
+      'Mise en place de pipelines d\'ingestion de données automatisés, depuis des API métiers jusqu\'au stockage applicatif',
+      'Développement de workflows low-code/no-code (n8n, Budibase) pour l\'orchestration et la synchronisation de données inter-outils',
+      'Automatisation de processus métiers (projet, comptabilité) réduisant les tâches manuelles et les risques d\'erreur'
     ],
-    technologies: ['JavaScript', 'Budibase', 'n8n', 'No-Code']
+    technologies: ['JavaScript', 'Budibase', 'n8n', 'No-Code', 'API']
   },
   {
     id: 'edu-1',
     type: 'education',
-    title: 'Diplôme d\'Ingénieur - Spécialisation Data Science & IA',
-    organization: 'Télécom SudParis',
+    title: 'Diplôme d\'Ingénieur — Mathématiques et statistiques appliquées : IA et Machine Learning',
+    organization: 'Télécom SudParis — Institut Polytechnique de Paris',
     location: 'Évry, France',
     startDate: '2021-09',
     endDate: '2025-09',
     current: false,
     summary: 'Formation d\'ingénieur en mathématiques, statistiques et intelligence artificielle appliquée.',
-    description: `Formation d'ingénieur avec spécialisation en mathématiques, statistiques et
-    intelligence artificielle. Projets appliqués en machine learning, deep learning et data engineering.`,
+    description: `Formation d'ingénieur avec spécialisation en mathématiques et statistiques appliquées à
+    l'intelligence artificielle et au machine learning, au sein de l'Institut Polytechnique de Paris.`,
     achievements: [
-      'Spécialisation en Data Science et Intelligence Artificielle',
-      'Projets en machine learning, NLP et computer vision',
-      'Formation solide en mathématiques et statistiques appliquées'
+      'Statistiques → Machine Learning → data science : apprentissage supervisé et non supervisé, statistiques paramétriques et non paramétriques, modèles graphiques',
+      'Big Data & Data Engineering : pipelines ETL, SQL, PySpark et Shell',
+      'Développement Python avancé : programmation orientée objet appliquée au deep learning, au reinforcement learning et à la computer vision'
     ],
-    technologies: ['Python', 'TensorFlow', 'PyTorch', 'SQL', 'Spark']
+    technologies: ['Python', 'TensorFlow', 'PyTorch', 'SQL', 'PySpark']
+  },
+  {
+    id: 'edu-vilnius',
+    type: 'education',
+    title: 'Échange universitaire',
+    organization: 'Vilnius University',
+    location: 'Vilnius, Lituanie',
+    startDate: '2023-02',
+    endDate: '2023-06',
+    current: false,
+    summary: 'Semestre d\'échange académique — développement web full stack et cours de technologies financières.',
+    description: `Semestre d'échange dans le cadre de la formation d'ingénieur à Télécom SudParis. Projet de
+    développement web full stack et cours de programmation bas niveau et de finance.`,
+    achievements: [
+      'Programmation web full stack en MERN (MongoDB, Express, React, Node) : interface utilisateur de commande de livres (HTML, CSS, back-end JavaScript)',
+      'Cours de Windows API (C#) et de technologies financières, dispensés en anglais'
+    ],
+    technologies: ['MongoDB', 'Express', 'React', 'Node.js', 'C#', 'JavaScript']
   },
   {
     id: 'edu-2',
@@ -207,7 +234,24 @@ export const timeline = [
   }
 ];
 
-export const certifications = [];
+export const certifications = [
+  {
+    id: 'cert-toeic',
+    name: 'TOEIC — 965 / 990',
+    issuer: 'ETS Global'
+  },
+  {
+    id: 'cert-dlai-data-eng',
+    name: 'Introduction to Data Engineering',
+    issuer: 'DeepLearning.AI'
+  }
+];
+
+export const languages = [
+  { name: 'Français', level: 'Langue maternelle', proficiency: 100 },
+  { name: 'Anglais', level: 'Langue maternelle', proficiency: 100 },
+  { name: 'Espagnol', level: 'Avancé', proficiency: 70 }
+];
 
 export const interests = [
   {
