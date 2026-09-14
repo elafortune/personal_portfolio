@@ -1075,6 +1075,169 @@ Espace en ZeroGPU (quota GPU gratuit partagé) : le premier appel est plus lent 
         }
       ]
     }
+  },
+  {
+    id: 'rlhf-ppo-grpo-dpo',
+    title: 'RLHF Post-Training — PPO vs GRPO vs DPO sur RAG Pharma',
+    shortDescription: 'Post-entraînement de Qwen2.5-7B-Instruct par trois familles d\'algorithmes RLHF pour corriger une hallucination confiante mesurée sur un pipeline RAG réel. Résultat : la méthode la mieux notée par le reward model d\'entraînement est la pire une fois jugée sur la vérité de référence — une démonstration empirique, non provoquée, de la loi de Goodhart.',
+    fullDescription: `Ce projet ne part pas d'une tâche de préférence générique (résumé, toxicité) — il prolonge directement un résultat mesuré du projet Multimodal RAG associé : un texte OCR corrompu fait chuter la justesse du générateur en l'induisant en erreur avec confiance (13,0 % → 20,4 % d'incorrect) plutôt qu'en le faisant douter. La tâche retenue ici : apprendre au générateur à reconnaître un contexte récupéré non fiable et à nuancer plutôt qu'à halluciner — avec un garde-fou symétrique dans le dataset de préférence (contexte fiable → confiance attendue, contexte non fiable → nuance attendue) pour détecter si la politique apprend à toujours refuser plutôt qu'à vraiment juger la fiabilité du contexte.
+
+Trois familles d'algorithmes RLHF sont entraînées et comparées sur le même modèle de départ, le même jeu de préférences et la même configuration LoRA : PPO, GRPO et DPO. La comparaison n'est pas restée théorique — PPOTrainer s'est révélé absent de la version de TRL utilisée, ce qui a forcé la reconstruction complète d'une boucle PPO à la main (tête de valeur, GAE, ratio clippé, pénalité KL) plutôt que de risquer une régression sur l'environnement partagé avec une librairie legacy.
+
+Le résultat central n'était pas celui attendu au départ. Le reward model d'entraînement classe DPO nettement en tête (signal d'apprentissage net, taux de hedge multiplié sur contexte non fiable). Mais face à un juge de correction indépendant — le même que celui utilisé pour mesurer le 20,4 % de référence du projet Multimodal, ancré sur la vraie réponse plutôt que sur le jugement du reward model — ce classement s'inverse complètement : DPO devient le pire des quatre modèles testés (25,0 % d'incorrect contre 20,0 % pour la politique de base) et développe un sur-refus mesurable (15,0 %) que PPO et GRPO ne produisent pas. La cause, vérifiée plutôt que supposée : le reward model, entraîné sur seulement 113 paires, note en moyenne les réponses incorrectes ou refusées plus haut que les réponses correctes — pour les trois modèles entraînés, pas seulement DPO. DPO n'a pas un défaut propre ; c'est simplement la seule des trois méthodes à avoir optimisé assez fort contre ce signal biaisé pour transformer une miscalibration latente en dégradation de comportement mesurable.`,
+    image: '/images/projects/rlhf-demo-reward-hacking.jpg',
+    technologies: ['Python', 'PyTorch', 'TRL', 'PEFT (LoRA)', 'Qwen2.5-7B-Instruct', 'bitsandbytes', 'Gradio'],
+    category: 'Reinforcement Learning',
+    githubUrl: 'https://github.com/elafortune/rl_multimodal_rag_alignment',
+    liveUrl: null,
+    date: '2026-09',
+    featured: true,
+    outcomes: [
+      'Résultat contre-intuitif vérifié à l\'échelle (40 questions, 4 modèles, juge de correction indépendant) : DPO, meilleur au reward model d\'entraînement, est le pire sur la justesse réelle (25,0 % d\'incorrect contre 20,0 % pour la base) et développe un sur-refus mesurable (15,0 %) que PPO et GRPO ne produisent pas',
+      'Preuve quantifiée du mécanisme, pas seulement l\'observation : le reward model note en moyenne les réponses incorrectes/refusées plus haut que les réponses correctes, pour les 3 modèles entraînés — une miscalibration générale du RM, pas un défaut propre à DPO',
+      'PPOTrainer et AutoModelForCausalLMWithValueHead absents de la version de TRL utilisée : boucle PPO complète reconstruite à la main (tête de valeur, GAE, ratio clippé, pénalité KL) plutôt que de risquer une régression avec une librairie legacy sur l\'environnement partagé',
+      'Hypothèse alternative testée avant d\'être écartée : un budget d\'entraînement x4 et un learning rate x5 pour GRPO ont été testés spécifiquement pour vérifier si le manque de signal de PPO/GRPO venait du budget — la norme des poids LoRA après entraînement (0,14 à 0,40 contre 0,90 pour DPO) confirme que le signal on-policy reste structurellement plus faible, pas juste sous-entraîné',
+      '14 pièges méthodologiques rencontrés et corrigés en cours de route (troncature invisible qui inverse une accuracy de reward model, biais de langue en cascade dataset→RM→DPO, script de vérification portant le même bug que le code qu\'il vérifie), chacun documenté symptôme → hypothèse → vérification → diagnostic → fix',
+      'Démo Gradio comparant les 4 politiques sur les 40 questions d\'évaluation, avec détection automatique et affichage du signal de reward hacking quand il se produit sur un exemple donné'
+    ],
+    challenges: `PPOTrainer et AutoModelForCausalLMWithValueHead ont été retirés de la version de TRL utilisée, sans que rien ne l'indique avant l'échec de l'import. Deux options existaient : installer une version antérieure de TRL dans un environnement isolé (testé, jugé trop risqué pour l'environnement partagé sans supervision continue), ou reconstruire la boucle PPO à la main à partir de la théorie déjà posée — c'est cette seconde option qui a été retenue.
+
+Un biais de langue dans le dataset de préférence (les personas de synthèse utilisés pour générer les contre-exemples, rédigés en français, produisaient des réponses dans la mauvaise langue 75 % du temps) a d'abord semblé résolu une fois le dataset corrigé et vérifié à 0 % de contamination. Il a pourtant persisté côté DPO après réentraînement — la vraie cause était ailleurs : le system prompt d'entraînement, resté fixe en français indépendamment de la langue de la question posée, une variable jamais isolée jusque-là.
+
+Le résultat le plus significatif du projet est né d'une vérification qui n'était pas prévue au plan initial : comparer le classement obtenu via le reward model d'entraînement à celui d'un juge indépendant ancré sur la vérité de référence, plutôt que de considérer le premier comme suffisant pour conclure.`,
+    research: {
+      objective: `L'objectif n'était pas de faire tourner trois \`trainer.train()\` sur la même tâche, mais de comprendre, en implémentant et en comparant honnêtement PPO, GRPO et DPO, ce que chaque famille d'algorithme optimise réellement — et où chacune peut se tromper silencieusement.
+
+Le plan suit un ordre délibéré : (1) construire un dataset de préférence à partir d'une faiblesse déjà mesurée plutôt qu'une tâche générique, avec un garde-fou symétrique contre le sur-refus ; (2) entraîner un reward model et vérifier sa calibration sur les deux fronts (accuracy held-out et cohérence directe) avant de lui faire confiance pour la suite ; (3) entraîner les trois politiques sur la même base et la même config LoRA, pour une comparaison honnête ; (4) évaluer avec un juge indépendant de la vérité de référence plutôt qu'avec le seul reward model d'entraînement — l'étape qui a renversé la conclusion attendue.`,
+      subsections: [
+        {
+          title: 'PPO : reconstruire la boucle plutôt que risquer une régression',
+          content: `\`PPOTrainer\` a été retiré de la version de TRL utilisée dans ce projet, tout comme l'utilitaire \`AutoModelForCausalLMWithValueHead\` qui permettait historiquement de construire une boucle PPO à la main sans lui. Installer une version antérieure de TRL dans l'environnement partagé risquait de casser silencieusement la compatibilité des scripts déjà validés (reward model, notamment) ; un environnement isolé avec un nouveau téléchargement de PyTorch a été jugé trop risqué à exécuter sans supervision continue.
+
+La boucle PPO a donc été reconstruite directement à partir de la théorie : une tête de valeur ajoutée sur les hidden states de la politique, l'avantage estimé par GAE (Generalized Advantage Estimation), et l'objectif clippé qui approxime à faible coût la contrainte de région de confiance de TRPO. Un garde-fou mémoire a aussi été nécessaire : calculer le ratio de probabilités sur la totalité du contexte récupéré (jusqu'à ~2000 tokens) plutôt que sur la seule fenêtre des tokens générés (~300) saturait 32 Go de VRAM avec deux modèles 7B chargés simultanément.`,
+          formulas: [
+            {
+              name: 'GAE — estimation d\'avantage généralisée',
+              latex: '\\hat{A}_t = \\sum_{l=0}^{\\infty} (\\gamma\\lambda)^l \\delta_{t+l}, \\quad \\delta_t = r_t + \\gamma V(s_{t+1}) - V(s_t)',
+              description: 'λ règle le compromis biais/variance de l\'estimation. Sur des séquences de 150 à 300 tokens avec une récompense appliquée uniquement au dernier token, le facteur d\'actualisation (γλ)ⁿ rend l\'avantage quasi nul pour la grande majorité des tokens antérieurs — un signal dilué qui s\'est avéré être la limite pratique la plus probable du PPO entraîné dans ce projet.'
+            },
+            {
+              name: 'Objectif clippé PPO',
+              latex: 'L^{\\text{CLIP}}(\\theta) = \\mathbb{E}_t\\left[\\min\\left(r_t(\\theta)\\hat{A}_t,\\ \\text{clip}(r_t(\\theta), 1-\\epsilon, 1+\\epsilon)\\hat{A}_t\\right)\\right]'
+              ,
+              description: 'r_t(θ) est le ratio de probabilité entre la politique courante et l\'ancienne politique. Le clipping empêche une mise à jour trop large en un seul pas — une approximation peu coûteuse de la contrainte de région de confiance de TRPO.'
+            }
+          ]
+        },
+        {
+          title: 'GRPO : une baseline de groupe plutôt qu\'un critic appris',
+          content: `Contrairement à PPO, GRPO ne nécessite aucune tête de valeur : pour un même prompt, un groupe de rollouts est généré, et chaque rollout est comparé aux autres membres de son propre groupe plutôt qu'à une valeur apprise séparément. Ceci élimine toute une classe de pièges mémoire et de risques de divergence (une tête de valeur qui n'apprend pas à prédire les retours peut faire dériver tout l'entraînement, ce qui s'est produit avec le PPO de ce projet) — au prix d'un budget de calcul déplacé vers le nombre de rollouts générés par prompt.
+
+Un test complémentaire à budget d'entraînement x4 et learning rate x5 a été mené spécifiquement pour vérifier si le manque de signal d'apprentissage observé initialement venait du budget alloué. Le reward est resté quasiment plat même à budget x4 ; à LR x5, la norme des poids LoRA après entraînement a bien augmenté (confirmant que le LR limitait réellement l'ampleur des mises à jour), mais reste restée loin de celle atteinte par DPO sur un budget comparable — le signal on-policy reste structurellement plus bruité que le signal supervisé direct de DPO à LR équivalent.`,
+          formulas: [
+            {
+              name: 'Avantage group-relative',
+              latex: '\\hat{A}_i = \\frac{r_i - \\text{mean}(r_1, \\ldots, r_G)}{\\text{std}(r_1, \\ldots, r_G)}',
+              description: 'La moyenne du groupe de G rollouts sert de baseline empirique, remplaçant une tête de valeur apprise. Limite théorique directe : si tous les rollouts d\'un groupe reçoivent le même reward, l\'avantage devient nul pour tout le groupe — aucun signal d\'apprentissage n\'en sort.'
+            }
+          ]
+        },
+        {
+          title: 'DPO : de l\'objectif KL-régularisé à une perte supervisée sur paires',
+          content: `L'objectif RLHF complet (maximiser le reward sous une pénalité KL vis-à-vis d'une politique de référence) admet une solution optimale en forme fermée : une distribution de Boltzmann qui « incline » la référence vers les réponses à haut reward. DPO exploite cette forme fermée en sens inverse — au lieu de cherche le reward puis d'en déduire la politique optimale par une boucle RL, il réexprime le reward directement à partir du ratio de la politique et de la référence, puis l'injecte dans la perte Bradley-Terry déjà utilisée pour le reward model.
+
+Le résultat : un problème de RL se résout comme un problème de classification binaire supervisée sur des paires — sans rollout, sans reward model séparé à l'entraînement, et sans jamais avoir besoin de calculer la fonction de partition (normalement intraitable, elle s'annule algébriquement dans la différence des deux termes de la perte). C'est ce qui explique la simplicité et la stabilité d'entraînement observées pour DPO dans ce projet — mais aussi sa limite structurelle : DPO ne peut jamais découvrir une réponse meilleure que celles déjà présentes dans le dataset de préférence, contrairement à PPO et GRPO qui explorent par génération.`,
+          formulas: [
+            {
+              name: 'Politique optimale en forme fermée',
+              latex: '\\pi^*(y|x) = \\frac{1}{Z(x)}\\, \\pi_{\\text{ref}}(y|x) \\cdot \\exp\\!\\left(\\frac{r(x,y)}{\\beta}\\right)',
+              description: 'Solution de l\'objectif KL-régularisé : la référence, tiltée vers les réponses à haut reward. β règle l\'intensité du basculement — petit, il autorise un fort écart à la référence pour un même gain de reward ; grand, il maintient la politique proche de la référence.'
+            },
+            {
+              name: 'Perte DPO — la fonction de partition s\'annule',
+              latex: '\\mathcal{L}_{\\text{DPO}}(\\theta) = -\\log \\sigma\\!\\left(\\beta \\log \\frac{\\pi_\\theta(y_w|x)}{\\pi_{\\text{ref}}(y_w|x)} - \\beta \\log \\frac{\\pi_\\theta(y_l|x)}{\\pi_{\\text{ref}}(y_l|x)}\\right)',
+              description: 'Obtenue en substituant le reward réexprimé dans la perte Bradley-Terry : le terme β·log Z(x), identique pour y_w et y_l puisqu\'il ne dépend que de x, s\'annule dans la soustraction — jamais besoin de le calculer, alors qu\'il est en général intraitable (somme sur tout l\'espace des réponses possibles).'
+            }
+          ]
+        },
+        {
+          title: 'Le résultat central : reward model et juge de correction ne s\'accordent pas',
+          content: `Sur les 40 questions d'évaluation (20 à contexte fiable, 20 à contexte non fiable), jugées par le même juge de correction indépendant que celui utilisé pour le 20,4 % de référence du projet Multimodal (comparaison à la réponse de référence, pas au jugement du reward model) : DPO obtient 25,0 % d'incorrect sur contexte non fiable et 15,0 % de sur-refus sur contexte fiable — pire que la politique de base (20,0 % et 0,0 % respectivement) sur les deux fronts. PPO et GRPO, qui semblaient être des échecs au vu du reward model (quasiment aucun changement de comportement mesurable), font légèrement mieux que la base sur ce juge indépendant (15,0 % d'incorrect, 0,0 % de sur-refus chacun).
+
+La cause a été vérifiée, pas supposée : en croisant le score du reward model avec le verdict du juge indépendant sur les mêmes 160 générations, le reward model note en moyenne les réponses jugées incorrectes ou refusées plus haut que les réponses jugées correctes — pour les trois modèles entraînés, pas seulement DPO. DPO n'a donc pas de défaut spécifique ; il a simplement été le seul, avec la norme de mise à jour LoRA la plus élevée des trois méthodes, à optimiser assez fort contre ce reward model imparfait pour convertir sa miscalibration latente en dégradation de comportement mesurable. Une hypothèse alternative (une simple formule de "grounding" apprise comme raccourci reconnu par le reward model, indépendamment du contenu réel) a été testée puis explicitement écartée — la présence de cette formule n'est corrélée à un score plus élevé pour aucun des quatre modèles, y compris DPO.`
+        }
+      ]
+    },
+    code: {
+      highlights: [
+        {
+          title: 'Diagnostic quantitatif : la norme des poids LoRA révèle l\'ampleur réelle de l\'apprentissage',
+          language: 'python',
+          snippet: `# Les matrices LoRA B sont initialisees a zero par construction (PEFT) --
+# leur norme apres entrainement mesure directement l'ampleur reelle de la
+# mise a jour, sans avoir besoin de comparer a un etat "avant" (trivialement 0).
+b_norm_sq = 0.0
+for name, p in trainer.model.named_parameters():
+    if "lora_B" in name:
+        b_norm_sq += p.detach().float().pow(2).sum().item()
+print(f"Norme totale des matrices LoRA B : {b_norm_sq ** 0.5:.6f}")
+
+# Resultat : GRPO a budget x4 = 0.14, GRPO a LR x5 = 0.40, DPO = 0.90 --
+# le LR etait un vrai frein, mais DPO reste ~2x plus loin meme a LR egal.`,
+          description: 'Ce diagnostic a permis de distinguer deux hypothèses concurrentes : "aucune mise à jour effective n\'a eu lieu" contre "des mises à jour ont eu lieu mais se sont annulées" — la norme confirme la première pour PPO/GRPO à faible LR, et exclut un simple problème de budget d\'itérations.'
+        },
+        {
+          title: 'Reconstruire un juge de correction identique pour rester comparable à la référence',
+          language: 'python',
+          snippet: `# Meme juge, meme prompt que celui utilise pour le 20,4% de reference
+# du projet Multimodal -- pas le reward model qui a entraine les politiques.
+def judge(question, reference, generated):
+    messages = [{"role": "system", "content": JUDGE_SYSTEM},
+                {"role": "user", "content": f"Question: {question}\\n\\n"
+                    f"Reponse de reference: {reference}\\n\\n"
+                    f"Reponse generee a evaluer: {generated}\\n\\nVerdict JSON:"}]
+    output = judge_model.generate(**tokenize(messages), max_new_tokens=150)
+    return json.loads(re.search(r"\\{.*\\}", decode(output), re.DOTALL).group(0))
+
+# Applique aux memes 40 questions x 4 modeles (base, PPO, GRPO, DPO)
+# pour un classement independant du reward model d'entrainement.`,
+          description: 'Réutiliser le reward model d\'entraînement pour évaluer les modèles qu\'il a lui-même entraînés aurait mesuré sa propre cohérence interne, pas la vraie performance sur la tâche — exactement le biais que ce juge indépendant a révélé.'
+        },
+        {
+          title: 'Perte DPO : chosen/rejected comme un ratio de log-probabilités',
+          language: 'python',
+          snippet: `# system prompt PARAMETRE PAR LANGUE de la question (fix du Piege 11) --
+# pas toujours en francais independamment de la langue posee.
+def to_dpo_format(row):
+    system_prompt = system_prompt_for(row["query"])  # detection de langue
+    user_content = f"Extraits de documents :\\n{row['context_text']}\\n\\nQuestion : {row['query']}"
+    return {
+        "prompt": [{"role": "system", "content": system_prompt},
+                   {"role": "user", "content": user_content}],
+        "chosen": [{"role": "assistant", "content": row["chosen"]}],
+        "rejected": [{"role": "assistant", "content": row["rejected"]}],
+    }
+
+trainer = DPOTrainer(model=model, args=config, train_dataset=train_ds, peft_config=lora_config)`,
+          description: 'Le system prompt était initialement fixe en français pour toutes les langues du dataset — un biais qui persistait même après avoir corrigé la langue des complétions elles-mêmes, révélé seulement en isolant cette variable spécifique.'
+        }
+      ]
+    },
+    transmission: {
+      liveUrl: null,
+      hostLabel: 'Démo Gradio (code source sur GitHub, à relancer localement)',
+      visualDescription: `La démo compare les 4 politiques (base, PPO, GRPO, DPO) sur les 40 questions de l'évaluation finale, avec le score du reward model et le verdict du juge de correction indépendant affichés côte à côte pour chaque réponse. Une bannière d'alerte se déclenche automatiquement quand le modèle le mieux noté par le reward model sur un exemple donné est aussi celui jugé incorrect ou refusé par le juge indépendant — la première image en montre un déclenchement réel, sur une question où DPO obtient le meilleur score du reward model (-0,33) mais est classé incorrect.`,
+      images: [
+        {
+          src: '/images/projects/rlhf-demo-reward-hacking.jpg',
+          caption: 'Signal de reward hacking détecté automatiquement par la démo : DPO obtient le meilleur score du reward model sur cet exemple, mais le juge de correction indépendant le classe incorrect.'
+        },
+        {
+          src: '/images/projects/rlhf-demo-overview.jpg',
+          caption: 'Vue d\'ensemble de la démo — comparaison des 4 politiques sur une question à contexte fiable, avec verdict et score du reward model pour chacune.'
+        }
+      ]
+    }
   }
 ];
 
