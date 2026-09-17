@@ -19,10 +19,10 @@ const customStyle = {
 
 function CodeBlock({ title, language = 'python', snippet, description }) {
   return (
-    <div className="border border-primary-500/20 rounded-xl overflow-hidden">
-      <div className="px-5 py-3 bg-dark-lighter border-b border-primary-500/10 flex items-center justify-between">
+    <div className="border border-white/10 rounded-xl overflow-hidden">
+      <div className="px-5 py-3 bg-dark-lighter border-b border-white/5 flex items-center justify-between">
         <span className="text-white text-sm font-semibold">{title}</span>
-        <span className="text-xs font-mono bg-primary-600/20 text-primary-400 px-2 py-0.5 rounded">
+        <span className="text-xs font-mono bg-white/5 text-gray-300 px-2 py-0.5 rounded">
           {language}
         </span>
       </div>
@@ -38,7 +38,7 @@ function CodeBlock({ title, language = 'python', snippet, description }) {
         </SyntaxHighlighter>
       </div>
       {description && (
-        <div className="px-5 py-4 bg-dark-lighter border-t border-primary-500/10">
+        <div className="px-5 py-4 bg-dark-lighter border-t border-white/5">
           <p className="text-gray-400 text-sm leading-relaxed">{description}</p>
         </div>
       )}

@@ -73,7 +73,7 @@ function ProjectDetail({ project, onBack }) {
               {project.title}
             </h1>
 
-            <span className="flex-shrink-0 bg-primary-600/20 text-primary-400 text-xs px-3 py-1 rounded-full border border-primary-500/20">
+            <span className="flex-shrink-0 bg-white/5 text-gray-300 text-xs px-3 py-1 rounded-full border border-white/10">
               {project.category}
             </span>
           </div>
@@ -90,7 +90,7 @@ function ProjectDetail({ project, onBack }) {
                     : 'text-gray-500 border-transparent hover:text-gray-300'
                 }`}
               >
-                <span className="hidden sm:inline">{section.num} — </span>
+                <span className="hidden sm:inline">{section.num} </span>
                 {section.label}
               </button>
             ))}

@@ -1,14 +1,12 @@
-import Card from '../common/Card';
-
 function ProjectCard({ project, onClick }) {
   return (
-    <Card hoverable onClick={() => onClick(project)}>
-      {/* Project Image */}
-      <div className="relative h-48 mb-4 rounded-lg overflow-hidden bg-dark-lighter">
+    <div onClick={() => onClick(project)} className="group cursor-pointer">
+      {/* Full-bleed project image */}
+      <div className="relative aspect-[4/3] mb-4 rounded-xl overflow-hidden bg-dark-lighter">
         <img
           src={project.image}
           alt={project.title}
-          className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           onError={(e) => {
             e.target.style.display = 'none';
             const fallback = e.target.nextSibling;
@@ -35,48 +33,35 @@ function ProjectCard({ project, onClick }) {
           </div>
         </div>
         {project.featured && (
-          <div className="absolute top-2 right-2 bg-primary-600 text-white text-xs px-2 py-1 rounded">
+          <div className="absolute top-3 right-3 bg-white text-dark text-[10px] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full">
             Featured
           </div>
         )}
       </div>
 
-      {/* Category Badge */}
-      <div className="mb-3">
-        <span className="inline-block bg-primary-600/20 text-primary-400 text-xs px-3 py-1 rounded-full">
-          {project.category}
-        </span>
-      </div>
+      {/* Category label neutral, not a blue pill */}
+      <p className="text-gray-500 text-xs font-medium uppercase tracking-wider mb-2">
+        {project.category}
+      </p>
 
-      {/* Title */}
-      <h3 className="text-xl font-bold text-white mb-2 line-clamp-2">
+      {/* Title blue only on hover, as an interactive signal */}
+      <h3 className="text-xl font-bold text-white mb-2 line-clamp-2 group-hover:text-primary-400 transition-colors">
         {project.title}
       </h3>
 
       {/* Short Description */}
-      <p className="text-gray-400 text-sm mb-4 line-clamp-3">
+      <p className="text-gray-400 text-sm mb-4 line-clamp-2 leading-relaxed">
         {project.shortDescription}
       </p>
 
-      {/* Technologies */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        {project.technologies.slice(0, 4).map((tech, index) => (
-          <span
-            key={index}
-            className="text-xs bg-dark-lighter text-gray-300 px-2 py-1 rounded"
-          >
-            {tech}
-          </span>
-        ))}
-        {project.technologies.length > 4 && (
-          <span className="text-xs text-gray-500 px-2 py-1">
-            +{project.technologies.length - 4}
-          </span>
-        )}
-      </div>
+      {/* Technologies plain text, no pill chrome */}
+      <p className="text-xs text-gray-500 mb-4">
+        {project.technologies.slice(0, 4).join(' · ')}
+        {project.technologies.length > 4 && ` +${project.technologies.length - 4}`}
+      </p>
 
       {/* Links */}
-      <div className="flex gap-3 mt-auto">
+      <div className="flex gap-4">
         {project.githubUrl && (
           <a
             href={project.githubUrl}
@@ -106,7 +91,7 @@ function ProjectCard({ project, onClick }) {
           </a>
         )}
       </div>
-    </Card>
+    </div>
   );
 }
 

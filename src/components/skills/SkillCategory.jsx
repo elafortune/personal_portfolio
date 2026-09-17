@@ -14,7 +14,7 @@ function SkillCategory({ category }) {
                 <span className="text-lg">{skill.icon}</span>
                 <span className="text-gray-300 font-medium">{skill.name}</span>
               </div>
-              <span className="text-primary-400 text-sm font-medium">
+              <span className="text-gray-300 text-sm font-medium">
                 {skill.proficiency}%
               </span>
             </div>

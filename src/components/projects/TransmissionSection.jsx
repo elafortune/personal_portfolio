@@ -24,20 +24,20 @@ function TransmissionSection({ project }) {
   return (
     <section id="resultats" className="mb-16 scroll-mt-32">
       <div className="flex items-center gap-4 mb-8">
-        <div className="w-10 h-10 rounded-lg bg-primary-600/20 border border-primary-500/30 flex items-center justify-center flex-shrink-0">
-          <svg className="w-5 h-5 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0">
+          <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0H3" />
           </svg>
         </div>
         <div>
-          <p className="text-primary-400 text-xs font-mono uppercase tracking-widest mb-0.5">03</p>
+          <p className="text-gray-500 text-xs font-mono uppercase tracking-widest mb-0.5">03</p>
           <h2 className="text-2xl md:text-3xl font-bold text-white">Résultats</h2>
         </div>
-        <div className="flex-1 h-px bg-gradient-to-r from-primary-500/30 to-transparent ml-4" />
+        <div className="flex-1 h-px bg-gradient-to-r from-white/10 to-transparent ml-4" />
       </div>
 
       {transmission.liveUrl ? (
-        <div className="rounded-2xl border border-primary-500/20 overflow-hidden">
+        <div className="rounded-2xl border border-white/10 overflow-hidden">
           <div className={`bg-gradient-to-br ${gradient} p-10 md:p-14 flex flex-col items-center text-center gap-6`}>
             <div className="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center">
               <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -63,15 +63,15 @@ function TransmissionSection({ project }) {
               Voir le projet en direct
             </a>
           </div>
-          <div className="bg-dark-lighter px-6 py-4 flex items-center gap-2 border-t border-primary-500/10">
+          <div className="bg-dark-lighter px-6 py-4 flex items-center gap-2 border-t border-white/5">
             <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
             <span className="text-gray-400 text-xs">{transmission.hostLabel || 'Déployé sur Render'}</span>
           </div>
         </div>
       ) : (
-        <div className="rounded-2xl border border-primary-500/20 bg-dark-lighter overflow-hidden">
-          <div className="px-6 py-5 border-b border-primary-500/10 flex items-center gap-3">
-            <svg className="w-4 h-4 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="rounded-2xl border border-white/10 bg-dark-lighter overflow-hidden">
+          <div className="px-6 py-5 border-b border-white/5 flex items-center gap-3">
+            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
             </svg>
             <span className="text-sm font-semibold text-white">Livrables & Visualisations</span>
@@ -92,7 +92,7 @@ function TransmissionSection({ project }) {
             {transmission.images.map((img, i) => (
               <figure
                 key={i}
-                className="rounded-2xl border border-primary-500/20 bg-dark-lighter overflow-hidden"
+                className="rounded-2xl border border-white/10 bg-dark-lighter overflow-hidden"
               >
                 <button
                   type="button"
@@ -112,7 +112,7 @@ function TransmissionSection({ project }) {
                     </svg>
                   </div>
                 </button>
-                <figcaption className="px-5 py-4 text-gray-400 text-sm leading-relaxed border-t border-primary-500/10">
+                <figcaption className="px-5 py-4 text-gray-400 text-sm leading-relaxed border-t border-white/5">
                   {img.caption}
                 </figcaption>
               </figure>
@@ -122,9 +122,9 @@ function TransmissionSection({ project }) {
       )}
 
       {transmission.liveUrl && (
-        <div className={`mt-10 rounded-2xl border border-primary-500/20 bg-gradient-to-br ${gradient} p-8 md:p-12 flex flex-col items-center text-center gap-5`}>
+        <div className={`mt-10 rounded-2xl border border-white/10 bg-gradient-to-br ${gradient} p-8 md:p-12 flex flex-col items-center text-center gap-5`}>
           <p className="text-white/70 text-sm md:text-base max-w-xl">
-            Le pipeline complet, pas une simulation — à tester directement.
+            Le pipeline complet, pas une simulation à tester directement.
           </p>
           <a
             href={transmission.liveUrl}

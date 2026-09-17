@@ -28,7 +28,7 @@ function ExperienceDetail({ experience, onBack }) {
     <ul className="space-y-2.5">
       {points.map((point, i) => (
         <li key={i} className="flex items-start gap-2.5 text-gray-300">
-          <svg className="w-4 h-4 text-primary-400 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+          <svg className="w-4 h-4 text-gray-500 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
           </svg>
           <span className="leading-relaxed">{point}</span>
@@ -57,7 +57,7 @@ function ExperienceDetail({ experience, onBack }) {
               {experience.organization}
             </h1>
 
-            <span className="flex-shrink-0 bg-primary-600/20 text-primary-400 text-xs px-3 py-1 rounded-full border border-primary-500/20">
+            <span className="flex-shrink-0 bg-white/5 text-gray-300 text-xs px-3 py-1 rounded-full border border-white/10">
               {experience.type === 'experience' ? 'Stage' : 'Formation'}
             </span>
           </div>
@@ -80,7 +80,7 @@ function ExperienceDetail({ experience, onBack }) {
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 leading-tight">
               {experience.title}
             </h2>
-            <p className="text-primary-400 font-medium mb-6">
+            <p className="text-gray-400 font-medium mb-6">
               {experience.organization}
             </p>
             <p className="text-gray-400 leading-relaxed mb-6">
@@ -102,26 +102,26 @@ function ExperienceDetail({ experience, onBack }) {
         {caseStudy ? (
           <>
             <section>
-              <h3 className="text-xs font-mono font-semibold tracking-wider uppercase text-primary-400 mb-3">
-                01 — Contexte &amp; Mission
+              <h3 className="text-xs font-mono font-semibold tracking-wider uppercase text-gray-500 mb-3">
+                01 Contexte &amp; Mission
               </h3>
               <p className="text-gray-300 leading-relaxed">{caseStudy.context}</p>
             </section>
             <section>
-              <h3 className="text-xs font-mono font-semibold tracking-wider uppercase text-primary-400 mb-3">
-                02 — Ma Contribution
+              <h3 className="text-xs font-mono font-semibold tracking-wider uppercase text-gray-500 mb-3">
+                02 Ma Contribution
               </h3>
               <p className="text-gray-300 leading-relaxed">{caseStudy.contribution}</p>
             </section>
             <section>
-              <h3 className="text-xs font-mono font-semibold tracking-wider uppercase text-primary-400 mb-3">
-                03 — Défi Technique
+              <h3 className="text-xs font-mono font-semibold tracking-wider uppercase text-gray-500 mb-3">
+                03 Défi Technique
               </h3>
               <p className="text-gray-300 leading-relaxed">{caseStudy.challenge}</p>
             </section>
             <section>
-              <h3 className="text-xs font-mono font-semibold tracking-wider uppercase text-primary-400 mb-3">
-                04 — Résultats &amp; Impact
+              <h3 className="text-xs font-mono font-semibold tracking-wider uppercase text-gray-500 mb-3">
+                04 Résultats &amp; Impact
               </h3>
               {renderBullets(caseStudy.impact)}
             </section>
@@ -129,7 +129,7 @@ function ExperienceDetail({ experience, onBack }) {
         ) : (
           experience.achievements && experience.achievements.length > 0 && (
             <section>
-              <h3 className="text-xs font-mono font-semibold tracking-wider uppercase text-primary-400 mb-3">
+              <h3 className="text-xs font-mono font-semibold tracking-wider uppercase text-gray-500 mb-3">
                 Points clés
               </h3>
               {renderBullets(experience.achievements)}

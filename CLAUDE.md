@@ -20,7 +20,7 @@ This is a **professional Data Scientist portfolio** built with a modular archite
 - 5 main sections: Hero, Projects, Skills, About, Contact
 - Project filtering and modal details
 - Responsive design (mobile-first)
-- Sober color scheme (blue, black, white)
+- Professional color scheme (blue, black, white) — blue is a deliberate, reserved accent (CTAs, active/hover states, single highlights), not a default applied everywhere
 
 ## Project Architecture
 
@@ -180,9 +180,10 @@ This is a **professional Data Scientist portfolio** built with a modular archite
 
 ### Color Usage
 - **Background**: `bg-dark`, `bg-dark-light`, `bg-dark-lighter`
-- **Text**: `text-white` (primary), `text-gray-300/400` (secondary), `text-primary-400` (accent)
-- **Borders**: `border-primary-500/30` (subtle), `border-primary-600` (prominent)
+- **Text**: `text-white` (primary), `text-gray-300/400/500` (secondary/neutral), `text-primary-400` (accent — reserved, see below)
+- **Borders**: `border-white/5` or `border-white/10` (default, neutral) — `border-primary-500/30`+ only on a genuinely highlighted/active element
 - **Buttons**: Use `.btn-primary` or `.btn-secondary` classes
+- **Blue discipline**: `primary-*` is reserved for things that must stand out — the main CTA, a hover/active/selected state, a single per-section highlight. Badges, labels, icons, static borders, and repeated same-role elements (stat numbers, section markers, category tags) default to white/gray. Never apply `primary-*` to more than one instance of a repeated element at the same time — if you're coloring 3+ things blue simultaneously on screen, it should probably be neutral instead.
 
 ### Responsive Patterns
 ```jsx

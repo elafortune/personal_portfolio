@@ -42,13 +42,13 @@ function Timeline({ items, onSelect }) {
         <div key={item.id} className="relative">
           {/* Timeline Line */}
           {index !== items.length - 1 && (
-            <div className="absolute left-6 top-12 bottom-0 w-0.5 bg-primary-500/30" />
+            <div className="absolute left-6 top-12 bottom-0 w-0.5 bg-white/10" />
           )}
 
           {/* Timeline Item */}
           <div className="flex gap-4">
             {/* Icon */}
-            <div className="flex-shrink-0 w-12 h-12 bg-primary-600 rounded-full flex items-center justify-center text-white z-10">
+            <div className="flex-shrink-0 w-12 h-12 bg-dark-lighter border border-white/10 rounded-full flex items-center justify-center text-gray-400 z-10">
               {getIcon(item.type)}
             </div>
 
@@ -58,13 +58,13 @@ function Timeline({ items, onSelect }) {
               onClick={() => onSelect(item)}
               className="flex-1 pb-2 text-left group"
             >
-              <div className="bg-dark-light border border-primary-500/30 rounded-lg p-4 sm:p-6 hover:border-primary-400 hover:shadow-lg hover:shadow-primary-500/10 hover:-translate-y-0.5 transition-all duration-300">
+              <div className="bg-dark-light border border-white/10 rounded-lg p-4 sm:p-6 hover:border-white/20 hover:shadow-lg hover:shadow-black/20 hover:-translate-y-0.5 transition-all duration-300">
                 <div className="flex items-start justify-between gap-3 mb-2">
                   <div>
-                    <h3 className="text-lg sm:text-xl font-bold text-white mb-1 group-hover:text-primary-300 transition-colors">
+                    <h3 className="text-lg sm:text-xl font-bold text-white mb-1 group-hover:text-primary-400 transition-colors">
                       {item.title}
                     </h3>
-                    <p className="text-primary-400 font-medium text-sm">
+                    <p className="text-gray-400 font-medium text-sm">
                       {item.organization}
                     </p>
                   </div>

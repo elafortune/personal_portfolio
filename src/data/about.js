@@ -5,13 +5,13 @@ export const aboutInfo = {
   profileImage: '/images/profile.jpg',
   bio: [
     `Ingénieur diplômé de Télécom SudParis, spécialisé en Data Science et Intelligence Artificielle, je conçois
-    et je livre des systèmes intelligents de bout en bout — du modèle au déploiement en production. Ma formation
+    et je livre des systèmes intelligents de bout en bout du modèle au déploiement en production. Ma formation
     combine une base mathématique solide et une pratique concrète du machine learning, du deep learning et de
     l'IA générative.`,
 
     `Chez MBDA, Alten Labs et Air France KLM, j'ai travaillé aussi bien sur des systèmes de computer vision
     robustes à grande échelle que sur des pipelines Big Data et des interfaces full stack (Python/TypeScript).
-    Cette double casquette — data scientist et ingénieur logiciel — me permet de porter un projet du prototype
+    Cette double casquette data scientist et ingénieur logiciel me permet de porter un projet du prototype
     de recherche jusqu'à l'application en production.`,
 
     `Curieux et rigoureux, j'aime relever des défis techniques complexes et transformer des idées innovantes
@@ -56,7 +56,7 @@ export const timeline = [
     technologies: ['Python', 'TypeScript', 'Computer Vision', 'Gaussian Splatting', 'Unreal Engine', 'DINOv2', 'Multi-GPU'],
     caseStudy: {
       context: `Un acteur majeur de la défense entraîne ses modèles de vision en partie sur des données
-      synthétiques — moins coûteuses à produire que des données réelles annotées, mais dont la fidélité au monde
+      synthétiques moins coûteuses à produire que des données réelles annotées, mais dont la fidélité au monde
       réel n'est jamais garantie a priori. Sans méthode pour mesurer cet écart (domain gap) ni pour comparer les
       méthodes de génération entre elles, impossible de savoir quelles données de synthèse valent la peine d'être
       utilisées pour l'entraînement.`,
@@ -99,7 +99,7 @@ export const timeline = [
     technologies: ['Python', 'PyTorch', 'VLM', 'LoRA', 'RAG multimodal', 'Vision Transformers', 'Optical Flow', 'Computer Vision'],
     caseStudy: {
       context: `La détection de piétons pour les véhicules autonomes doit rester fiable en environnement urbain
-      dense, y compris pour anticiper l'intention de traversée — pas seulement détecter une présence — avec des
+      dense, y compris pour anticiper l'intention de traversée pas seulement détecter une présence avec des
       conséquences directes sur la sécurité routière.`,
       contribution: `J'ai comparé deux approches complémentaires : une approche générative (benchmark de modèles
       VLM puis fine-tuning LoRA, +11 % de recall) et une approche non générative par pipeline classique
@@ -107,7 +107,7 @@ export const timeline = [
       sur des vision transformers (Mask2Former, PixelFormer, Cotracker3) pour enrichir le contexte texte + image.`,
       challenge: `Faire tenir un pipeline de vision transformers multi-modèles sur le budget GPU disponible a
       demandé une optimisation fine à chaque étape du passage des images (offloading, checkpointing, transfert
-      NumPy CPU-GPU, downcasting) — puis évaluer les deux approches sur 3 contextes distincts (détection pure,
+      NumPy CPU-GPU, downcasting) puis évaluer les deux approches sur 3 contextes distincts (détection pure,
       occlusion, intention) plutôt qu'une seule métrique globale, pour ne pas masquer les cas d'échec spécifiques
       à chaque approche.`,
       impact: [
@@ -143,7 +143,7 @@ export const timeline = [
       représentatifs sans exposer les données de production complètes.`,
       contribution: `J'ai conçu et orchestré des pipelines ETL en PySpark, Hadoop, SQL et Shell pour récupérer des
       centaines de tables issues de services hétérogènes, et automatisé la création de bases de données
-      miniatures à partir des données de production pour les environnements de test — le tout intégré dans une
+      miniatures à partir des données de production pour les environnements de test le tout intégré dans une
       chaîne CI/CD (Jenkins, GitHub).`,
       challenge: `La difficulté n'était pas algorithmique mais d'échelle et d'hétérogénéité : des centaines de
       tables issues de systèmes différents, avec des schémas et volumétries incohérents, à industrialiser dans
@@ -179,8 +179,8 @@ export const timeline = [
   {
     id: 'edu-1',
     type: 'education',
-    title: 'Diplôme d\'Ingénieur — Mathématiques et statistiques appliquées : IA et Machine Learning',
-    organization: 'Télécom SudParis — Institut Polytechnique de Paris',
+    title: 'Diplôme d\'Ingénieur Mathématiques et statistiques appliquées : IA et Machine Learning',
+    organization: 'Télécom SudParis Institut Polytechnique de Paris',
     location: 'Évry, France',
     startDate: '2021-09',
     endDate: '2025-09',
@@ -204,7 +204,7 @@ export const timeline = [
     startDate: '2023-02',
     endDate: '2023-06',
     current: false,
-    summary: 'Semestre d\'échange académique — développement web full stack et cours de technologies financières.',
+    summary: 'Semestre d\'échange académique développement web full stack et cours de technologies financières.',
     description: `Semestre d'échange dans le cadre de la formation d'ingénieur à Télécom SudParis. Projet de
     développement web full stack et cours de programmation bas niveau et de finance.`,
     achievements: [
@@ -222,7 +222,7 @@ export const timeline = [
     startDate: '2018-09',
     endDate: '2021-06',
     current: false,
-    summary: 'Classes préparatoires scientifiques — rigueur mathématique et méthode d\'analyse.',
+    summary: 'Classes préparatoires scientifiques rigueur mathématique et méthode d\'analyse.',
     description: `Classes préparatoires aux grandes écoles en filière Mathématiques-Physique.
     Formation intensive en mathématiques, physique et informatique.`,
     achievements: [
@@ -237,7 +237,7 @@ export const timeline = [
 export const certifications = [
   {
     id: 'cert-toeic',
-    name: 'TOEIC — 965 / 990',
+    name: 'TOEIC 965 / 990',
     issuer: 'ETS Global'
   },
   {

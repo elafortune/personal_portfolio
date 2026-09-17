@@ -37,7 +37,7 @@ function Skills() {
               <div key={index}>
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-gray-300 font-medium">{lang.name}</span>
-                  <span className="text-primary-400 text-sm font-medium">{lang.level}</span>
+                  <span className="text-gray-300 text-sm font-medium">{lang.level}</span>
                 </div>
                 <div className="w-full bg-dark-lighter rounded-full h-2 overflow-hidden">
                   <div

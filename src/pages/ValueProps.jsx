@@ -28,7 +28,7 @@ const points = [
   {
     icon: '⚡',
     title: 'Réponse sous 24h',
-    desc: 'Questions, retours, évolutions — vous ne restez jamais sans réponse.',
+    desc: 'Questions, retours, évolutions vous ne restez jamais sans réponse.',
     color: 'bg-yellow-50 text-yellow-600 border-yellow-100',
   },
   {
@@ -114,7 +114,7 @@ function ValueProps() {
             Ce que nous apportons
           </h2>
           <p className="text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed">
-            Une expertise basée sur la compréhension du marché et des besoins de centaines de professionnels — coiffeurs, créateurs, artisans, petites entreprises.
+            Une expertise basée sur la compréhension du marché et des besoins de centaines de professionnels coiffeurs, créateurs, artisans, petites entreprises.
           </p>
         </div>
 

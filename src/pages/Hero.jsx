@@ -89,13 +89,13 @@ function Hero() {
               <div className="h-px w-4 sm:w-6 bg-primary-500/50" />
             </div>
 
-            {/* Name — subtle and natural */}
+            {/* Name bold and confident */}
             <div className="mb-4">
-              <h1 className="leading-tight tracking-tight">
-                <span className="block text-[34px] sm:text-[42px] md:text-[52px] font-semibold text-white">Emerick</span>
-                <span className="block text-[34px] sm:text-[42px] md:text-[52px] font-light text-slate-400 -mt-1">Lafortune</span>
+              <h1 className="leading-[0.95] tracking-tight">
+                <span className="block text-[44px] sm:text-[56px] md:text-[68px] font-bold text-white">Emerick</span>
+                <span className="block text-[44px] sm:text-[56px] md:text-[68px] font-light text-slate-400 -mt-1">Lafortune</span>
               </h1>
-              <div className="flex items-center gap-3 mt-3 justify-center lg:justify-start">
+              <div className="flex items-center gap-3 mt-4 justify-center lg:justify-start">
                 <span className="text-primary-400 text-base font-medium">Ingénieur IA</span>
                 <span className="w-1 h-1 rounded-full bg-slate-600" />
                 <span className="text-slate-500 text-base">Full Stack & Computer Vision</span>
@@ -104,24 +104,24 @@ function Hero() {
 
             {/* Description */}
             <p className="text-gray-400 leading-relaxed mb-8 max-w-lg mx-auto lg:mx-0">
-              Je développe des applications de computer vision robustes à grande échelle — conçues pour
+              Je développe des applications de computer vision robustes à grande échelle conçues pour
               tenir la charge de gros volumes de données et déployées en production.
             </p>
 
             {/* Stats */}
             <div className="flex justify-center lg:justify-start gap-4 sm:gap-8 mb-6 sm:mb-8 pb-6 sm:pb-8 border-b border-white/5">
               <div className="text-center lg:text-left">
-                <div className="text-2xl font-bold text-primary-400">{yearsOfExperience}+</div>
+                <div className="text-2xl font-bold text-white">{yearsOfExperience}+</div>
                 <div className="text-xs text-gray-500 mt-0.5">Ans d'expérience</div>
               </div>
               <div className="w-px bg-white/5" />
               <div className="text-center lg:text-left">
-                <div className="text-2xl font-bold text-primary-400">15+</div>
+                <div className="text-2xl font-bold text-white">15+</div>
                 <div className="text-xs text-gray-500 mt-0.5">Projets complétés</div>
               </div>
               <div className="w-px bg-white/5" />
               <div className="text-center lg:text-left">
-                <div className="text-2xl font-bold text-primary-400">8+</div>
+                <div className="text-2xl font-bold text-white">8+</div>
                 <div className="text-xs text-gray-500 mt-0.5">Technologies</div>
               </div>
             </div>

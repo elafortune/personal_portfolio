@@ -11,7 +11,7 @@ const vertexShader = /* glsl */ `
   }
 `;
 
-// Simplex 3D noise — Ashima Arts / Ian McEwan (MIT)
+// Simplex 3D noise Ashima Arts / Ian McEwan (MIT)
 const fragmentShader = /* glsl */ `
   uniform float uTime;
   uniform vec3 uColorA;

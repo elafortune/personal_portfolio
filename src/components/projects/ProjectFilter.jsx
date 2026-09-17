@@ -1,24 +1,29 @@
-import Button from '../common/Button';
-
 function ProjectFilter({ categories, activeFilter, onFilterChange }) {
+  const pillClass = (active) =>
+    `px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 ${
+      active
+        ? 'bg-primary-600 text-white'
+        : 'border border-white/10 text-gray-400 hover:text-white hover:border-white/30'
+    }`;
+
   return (
     <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8 md:mb-12">
-      <Button
-        variant={activeFilter === 'all' ? 'primary' : 'secondary'}
-        size="sm"
+      <button
+        type="button"
+        className={pillClass(activeFilter === 'all')}
         onClick={() => onFilterChange('all')}
       >
         Tous
-      </Button>
+      </button>
       {categories.map((category) => (
-        <Button
+        <button
           key={category}
-          variant={activeFilter === category ? 'primary' : 'secondary'}
-          size="sm"
+          type="button"
+          className={pillClass(activeFilter === category)}
           onClick={() => onFilterChange(category)}
         >
           {category}
-        </Button>
+        </button>
       ))}
     </div>
   );

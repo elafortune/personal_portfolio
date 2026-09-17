@@ -24,9 +24,9 @@ function FormulaBlock({ name, latex, description }) {
   const paragraphs = description ? description.split('\n\n') : [];
 
   return (
-    <div className="border border-primary-500/20 rounded-xl bg-dark-lighter overflow-hidden">
-      <div className="px-5 py-3 border-b border-primary-500/10 bg-primary-600/5">
-        <span className="text-primary-400 text-sm font-mono font-semibold tracking-wide">
+    <div className="border border-white/10 rounded-xl bg-dark-lighter overflow-hidden">
+      <div className="px-5 py-3 border-b border-white/5">
+        <span className="text-white text-sm font-mono font-semibold tracking-wide">
           {name}
         </span>
       </div>

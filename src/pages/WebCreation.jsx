@@ -45,7 +45,7 @@ function WebCreation() {
     <Section
       id="web-creation"
       title="Réalisations Web"
-      subtitle="Sites livrés en production pour des clients — preuve d'une capacité full stack à porter un projet du backend jusqu'à l'interface."
+      subtitle="Sites livrés en production pour des clients preuve d'une capacité full stack à porter un projet du backend jusqu'à l'interface."
       className="!py-8 md:!py-10"
     >
       <div className="flex gap-4 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory">
