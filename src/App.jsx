@@ -12,16 +12,22 @@ import WebCreation from './pages/WebCreation'
 import About from './pages/About'
 import ExperienceDetail from './pages/ExperienceDetail'
 import Contact from './pages/Contact'
+import { useLocalizedProjects, useLocalizedAbout } from './hooks/useLocalizedData'
 
 function App() {
-  const [selectedProject, setSelectedProject] = useState(null);
-  const [selectedExperience, setSelectedExperience] = useState(null);
+  const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [selectedExperienceId, setSelectedExperienceId] = useState(null);
+  const projects = useLocalizedProjects();
+  const { timeline } = useLocalizedAbout();
+
+  const selectedProject = selectedProjectId ? projects.find((p) => p.id === selectedProjectId) : null;
+  const selectedExperience = selectedExperienceId ? timeline.find((e) => e.id === selectedExperienceId) : null;
 
   if (selectedProject) {
     return (
       <ProjectDetail
         project={selectedProject}
-        onBack={() => setSelectedProject(null)}
+        onBack={() => setSelectedProjectId(null)}
       />
     );
   }
@@ -30,7 +36,7 @@ function App() {
     return (
       <ExperienceDetail
         experience={selectedExperience}
-        onBack={() => setSelectedExperience(null)}
+        onBack={() => setSelectedExperienceId(null)}
       />
     );
   }
@@ -42,9 +48,9 @@ function App() {
       <main>
         <Hero />
         <TrustedBy />
-        <Projects onSelectProject={setSelectedProject} />
+        <Projects onSelectProject={(project) => setSelectedProjectId(project.id)} />
         <Skills />
-        <About onSelectExperience={setSelectedExperience} />
+        <About onSelectExperience={(experience) => setSelectedExperienceId(experience.id)} />
         <Contact />
         <WebCreation />
       </main>

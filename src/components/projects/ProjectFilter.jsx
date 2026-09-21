@@ -1,4 +1,7 @@
+import { useLanguage } from '../../context/LanguageContext';
+
 function ProjectFilter({ categories, activeFilter, onFilterChange }) {
+  const { t } = useLanguage();
   const pillClass = (active) =>
     `px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 ${
       active
@@ -13,7 +16,7 @@ function ProjectFilter({ categories, activeFilter, onFilterChange }) {
         className={pillClass(activeFilter === 'all')}
         onClick={() => onFilterChange('all')}
       >
-        Tous
+        {t('projects_filter_all')}
       </button>
       {categories.map((category) => (
         <button

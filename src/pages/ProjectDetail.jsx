@@ -2,14 +2,17 @@ import { useEffect, useRef, useState } from 'react';
 import ResearchSection from '../components/projects/ResearchSection';
 import CodeSection from '../components/projects/CodeSection';
 import TransmissionSection from '../components/projects/TransmissionSection';
+import { useLanguage } from '../context/LanguageContext';
 
-const SECTIONS = [
-  { id: 'presentation', label: 'Présentation', num: '01' },
-  { id: 'code', label: 'Code', num: '02' },
-  { id: 'resultats', label: 'Résultats', num: '03' }
-];
+const SECTION_IDS = ['presentation', 'code', 'resultats'];
 
 function ProjectDetail({ project, onBack }) {
+  const { t, lang } = useLanguage();
+  const SECTIONS = [
+    { id: 'presentation', label: t('projectdetail_tab_presentation'), num: '01' },
+    { id: 'code', label: t('projectdetail_tab_code'), num: '02' },
+    { id: 'resultats', label: t('projectdetail_tab_results'), num: '03' }
+  ];
   const [activeSection, setActiveSection] = useState('presentation');
   const contentRef = useRef(null);
 
@@ -29,7 +32,7 @@ function ProjectDetail({ project, onBack }) {
       { rootMargin: '-30% 0px -60% 0px', threshold: 0 }
     );
 
-    SECTIONS.forEach(({ id }) => {
+    SECTION_IDS.forEach((id) => {
       const el = document.getElementById(id);
       if (el) observer.observe(el);
     });
@@ -66,7 +69,7 @@ function ProjectDetail({ project, onBack }) {
               <svg className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
-              <span className="hidden sm:inline">Projets</span>
+              <span className="hidden sm:inline">{t('projectdetail_back_short')}</span>
             </button>
 
             <h1 className="text-white font-bold text-sm sm:text-base truncate">
@@ -104,12 +107,12 @@ function ProjectDetail({ project, onBack }) {
           <div className="max-w-3xl">
             <div className="flex flex-wrap items-center gap-3 mb-5">
               <span className="text-gray-500 text-sm">
-                {new Date(project.date).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long' })}
+                {new Date(project.date).toLocaleDateString(lang === 'en' ? 'en-US' : 'fr-FR', { year: 'numeric', month: 'long' })}
               </span>
               {project.liveUrl && (
                 <span className="flex items-center gap-1.5 text-green-400 text-xs">
                   <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
-                  En ligne
+                  {t('projectdetail_online')}
                 </span>
               )}
             </div>
@@ -147,7 +150,7 @@ function ProjectDetail({ project, onBack }) {
             <svg className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            Retour aux projets
+            {t('projectdetail_back_full')}
           </button>
           {project.liveUrl && (
             <a
@@ -156,7 +159,7 @@ function ProjectDetail({ project, onBack }) {
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-primary-400 hover:text-primary-300 transition-colors text-sm"
             >
-              Voir le projet en direct
+              {t('projectdetail_view_live')}
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>

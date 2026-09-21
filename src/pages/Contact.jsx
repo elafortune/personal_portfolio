@@ -1,8 +1,12 @@
 import Section from '../components/common/Section';
 import Card from '../components/common/Card';
-import { aboutInfo } from '../data/about';
+import { useLanguage } from '../context/LanguageContext';
+import { useLocalizedAbout } from '../hooks/useLocalizedData';
 
 function Contact() {
+  const { t } = useLanguage();
+  const { aboutInfo } = useLocalizedAbout();
+
   const contactMethods = [
     {
       icon: (
@@ -13,7 +17,7 @@ function Contact() {
       title: 'Email',
       value: aboutInfo.email,
       link: `mailto:${aboutInfo.email}`,
-      description: 'Envoyez-moi un email'
+      description: t('contact_email_desc')
     },
     {
       icon: (
@@ -24,7 +28,7 @@ function Contact() {
       title: 'LinkedIn',
       value: aboutInfo.social.linkedin.replace('https://linkedin.com/in/', ''),
       link: aboutInfo.social.linkedin,
-      description: 'Connectons-nous'
+      description: t('contact_linkedin_desc')
     },
     {
       icon: (
@@ -33,10 +37,10 @@ function Contact() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
       ),
-      title: 'Localisation',
+      title: t('contact_location_title'),
       value: aboutInfo.location,
       link: null,
-      description: 'Où je me trouve'
+      description: t('contact_location_desc')
     }
   ];
 
@@ -61,8 +65,8 @@ function Contact() {
   return (
     <Section
       id="contact"
-      title="Contactez-moi"
-      subtitle="Vous avez un projet ou une opportunité ? N'hésitez pas à me contacter. Je suis toujours ouvert à de nouvelles collaborations."
+      title={t('contact_title')}
+      subtitle={t('contact_subtitle')}
       className="bg-dark-light"
     >
       {/* Main Contact Methods */}
@@ -95,7 +99,7 @@ function Contact() {
       {additionalLinks.length > 0 && (
         <div className="text-center">
           <h3 className="text-xl font-bold text-white mb-6">
-            Retrouvez-moi aussi sur
+            {t('contact_find_me_also')}
           </h3>
           <div className="flex justify-center gap-6">
             {additionalLinks.map((link) => (
@@ -137,11 +141,10 @@ function Contact() {
       <div className="mt-10 md:mt-16 text-center max-w-2xl mx-auto">
         <Card>
           <h3 className="text-2xl font-bold text-white mb-4">
-            Travaillons ensemble
+            {t('contact_cta_title')}
           </h3>
           <p className="text-gray-300 mb-6">
-            Que vous ayez un projet de data science, besoin d&apos;expertise en machine learning,
-            ou simplement envie d&apos;échanger sur les données, je serais ravi de discuter avec vous.
+            {t('contact_cta_desc')}
           </p>
           <a
             href={`mailto:${aboutInfo.email}`}
@@ -150,7 +153,7 @@ function Contact() {
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
-            Envoyer un email
+            {t('contact_cta_button')}
           </a>
         </Card>
       </div>

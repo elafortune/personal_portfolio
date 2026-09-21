@@ -2,14 +2,18 @@ import Section from '../components/common/Section';
 import Card from '../components/common/Card';
 import SkillCategory from '../components/skills/SkillCategory';
 import { skillCategories } from '../data/skills';
-import { languages } from '../data/about';
+import { useLanguage } from '../context/LanguageContext';
+import { useLocalizedAbout } from '../hooks/useLocalizedData';
 
 function Skills() {
+  const { t } = useLanguage();
+  const { languages } = useLocalizedAbout();
+
   return (
     <Section
       id="skills"
-      title="Compétences"
-      subtitle="Un éventail de compétences techniques couvrant le machine learning, l'analyse de données, la visualisation et les technologies modernes de data science."
+      title={t('skills_title')}
+      subtitle={t('skills_subtitle')}
       className="bg-dark-light"
     >
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -21,17 +25,14 @@ function Skills() {
       {/* Optional: Top Skills Summary */}
       <div className="mt-8 md:mt-12 text-center">
         <p className="text-gray-400 max-w-2xl mx-auto">
-          Ces compétences ont été développées à travers {skillCategories.reduce(
-            (acc, cat) => acc + cat.skills.length,
-            0
-          )} technologies et outils, appliqués dans de nombreux projets professionnels et personnels.
+          {t('skills_summary', skillCategories.reduce((acc, cat) => acc + cat.skills.length, 0))}
         </p>
       </div>
 
-      {/* Langues */}
+      {/* Languages */}
       <div className="max-w-md mx-auto mt-8 md:mt-12">
         <Card>
-          <h3 className="text-xl font-bold text-white mb-4">Langues</h3>
+          <h3 className="text-xl font-bold text-white mb-4">{t('skills_languages_title')}</h3>
           <div className="space-y-3">
             {languages.map((lang, index) => (
               <div key={index}>

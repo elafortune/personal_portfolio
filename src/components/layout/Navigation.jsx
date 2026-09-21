@@ -2,11 +2,14 @@ import { useState, useEffect } from 'react';
 import { NAV_LINKS } from '../../data/constants';
 import { useScrollSpy } from '../../hooks/useScrollSpy';
 import { useSmoothScroll } from '../../hooks/useSmoothScroll';
+import { useLanguage } from '../../context/LanguageContext';
 import Button from '../common/Button';
+import LanguageSwitcher from '../common/LanguageSwitcher';
 
 function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const { t } = useLanguage();
 
   const sectionIds = NAV_LINKS.map(link => link.id);
   const activeSectionId = useScrollSpy(sectionIds);
@@ -59,11 +62,12 @@ function Navigation() {
                     : 'text-gray-300'
                 }`}
               >
-                {link.label}
+                {t(link.labelKey)}
               </a>
             ))}
+            <LanguageSwitcher />
             <Button variant="primary" size="sm" href="/documents/CV_Emerick_Lafortune.pdf">
-              Télécharger CV
+              {t('nav_download_cv')}
             </Button>
           </div>
 
@@ -99,12 +103,15 @@ function Navigation() {
                     : 'text-gray-300 hover:bg-dark-lighter'
                 }`}
               >
-                {link.label}
+                {t(link.labelKey)}
               </a>
             ))}
+            <div className="flex items-center justify-center pt-2 pb-1">
+              <LanguageSwitcher />
+            </div>
             <div className="pt-2">
               <Button variant="primary" size="sm" href="/documents/CV_Emerick_Lafortune.pdf" className="w-full">
-                Télécharger CV
+                {t('nav_download_cv')}
               </Button>
             </div>
           </div>

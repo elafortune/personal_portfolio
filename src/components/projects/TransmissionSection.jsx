@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
+import { useLanguage } from '../../context/LanguageContext';
 
 function TransmissionSection({ project }) {
+  const { t } = useLanguage();
   const { transmission, title, category } = project;
   const [lightbox, setLightbox] = useState(null);
 
@@ -31,7 +33,7 @@ function TransmissionSection({ project }) {
         </div>
         <div>
           <p className="text-gray-500 text-xs font-mono uppercase tracking-widest mb-0.5">03</p>
-          <h2 className="text-2xl md:text-3xl font-bold text-white">Résultats</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-white">{t('projectdetail_tab_results')}</h2>
         </div>
         <div className="flex-1 h-px bg-gradient-to-r from-white/10 to-transparent ml-4" />
       </div>
@@ -60,12 +62,12 @@ function TransmissionSection({ project }) {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>
-              Voir le projet en direct
+              {t('projectdetail_view_live')}
             </a>
           </div>
           <div className="bg-dark-lighter px-6 py-4 flex items-center gap-2 border-t border-white/5">
             <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-            <span className="text-gray-400 text-xs">{transmission.hostLabel || 'Déployé sur Render'}</span>
+            <span className="text-gray-400 text-xs">{transmission.hostLabel || t('transmission_deployed_default')}</span>
           </div>
         </div>
       ) : (
@@ -74,7 +76,7 @@ function TransmissionSection({ project }) {
             <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
             </svg>
-            <span className="text-sm font-semibold text-white">Livrables & Visualisations</span>
+            <span className="text-sm font-semibold text-white">{t('transmission_deliverables_title')}</span>
           </div>
           <div className="p-6">
             <div className="text-gray-300 leading-relaxed space-y-4">
@@ -98,7 +100,7 @@ function TransmissionSection({ project }) {
                   type="button"
                   onClick={() => setLightbox(img)}
                   className="block w-full group relative cursor-zoom-in"
-                  aria-label={`Agrandir : ${img.caption}`}
+                  aria-label={`${t('transmission_enlarge_alt')}: ${img.caption}`}
                 >
                   <img
                     src={img.src}
@@ -124,7 +126,7 @@ function TransmissionSection({ project }) {
       {transmission.liveUrl && (
         <div className={`mt-10 rounded-2xl border border-white/10 bg-gradient-to-br ${gradient} p-8 md:p-12 flex flex-col items-center text-center gap-5`}>
           <p className="text-white/70 text-sm md:text-base max-w-xl">
-            Le pipeline complet, pas une simulation à tester directement.
+            {t('transmission_pipeline_note')}
           </p>
           <a
             href={transmission.liveUrl}
@@ -135,7 +137,7 @@ function TransmissionSection({ project }) {
             <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
             </svg>
-            Voir le projet en direct
+            {t('projectdetail_view_live')}
           </a>
         </div>
       )}
@@ -148,7 +150,7 @@ function TransmissionSection({ project }) {
           <button
             type="button"
             onClick={() => setLightbox(null)}
-            aria-label="Fermer"
+            aria-label={t('transmission_close_alt')}
             className="absolute top-5 right-5 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

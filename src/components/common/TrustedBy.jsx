@@ -1,15 +1,19 @@
-const companies = [
-  { name: 'MBDA', detail: 'Computer Vision & Full Stack' },
-  { name: 'Alten Labs', detail: 'IA générative & Computer Vision' },
-  { name: 'Air France KLM', detail: 'Big Data Engineering' }
-];
+import { useLanguage } from '../../context/LanguageContext';
 
 function TrustedBy() {
+  const { t } = useLanguage();
+
+  const companies = [
+    { name: 'MBDA', detail: 'Computer Vision & Full Stack' },
+    { name: 'Alten Labs', detail: t('trustedby_alten_detail') },
+    { name: 'Air France KLM', detail: 'Big Data Engineering' }
+  ];
+
   return (
     <section className="py-10 px-4 sm:px-6 bg-dark-light border-y border-white/5">
       <div className="max-w-5xl mx-auto">
         <p className="text-center text-[11px] uppercase tracking-widest text-gray-500 mb-6">
-          Expériences chez
+          {t('trustedby_title')}
         </p>
         <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-6 sm:gap-x-16">
           {companies.map((company) => (

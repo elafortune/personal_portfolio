@@ -1,6 +1,8 @@
 import CodeBlock from './CodeBlock';
+import { useLanguage } from '../../context/LanguageContext';
 
 function CodeSection({ project }) {
+  const { t } = useLanguage();
   const { code, githubUrl } = project;
   if (!code) return null;
 
@@ -14,7 +16,7 @@ function CodeSection({ project }) {
         </div>
         <div>
           <p className="text-gray-500 text-xs font-mono uppercase tracking-widest mb-0.5">02</p>
-          <h2 className="text-2xl md:text-3xl font-bold text-white">Code</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-white">{t('projectdetail_tab_code')}</h2>
         </div>
         <div className="flex-1 h-px bg-gradient-to-r from-white/10 to-transparent ml-4" />
       </div>
@@ -31,7 +33,7 @@ function CodeSection({ project }) {
           </svg>
           <div>
             <p className="text-white text-sm font-semibold group-hover:text-primary-300 transition-colors">
-              Voir le code source complet
+              {t('code_view_source')}
             </p>
             <p className="text-gray-500 text-xs">{githubUrl.replace('https://github.com/', '')}</p>
           </div>

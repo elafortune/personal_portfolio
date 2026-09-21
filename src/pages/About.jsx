@@ -1,14 +1,18 @@
 import Section from '../components/common/Section';
 import Timeline from '../components/about/Timeline';
 import Card from '../components/common/Card';
-import { aboutInfo, timeline, certifications, interests } from '../data/about';
+import { useLanguage } from '../context/LanguageContext';
+import { useLocalizedAbout } from '../hooks/useLocalizedData';
 
 function About({ onSelectExperience }) {
+  const { t, lang } = useLanguage();
+  const { aboutInfo, timeline, certifications, interests } = useLocalizedAbout();
+
   return (
     <Section
       id="about"
-      title="À Propos"
-      subtitle="Mon parcours, mes expériences et ce qui me passionne dans la data science."
+      title={t('about_title')}
+      subtitle={t('about_subtitle')}
     >
       {/* Bio Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10 md:mb-16">
@@ -82,7 +86,7 @@ function About({ onSelectExperience }) {
         <div className="lg:col-span-2">
           <Card>
             <h3 className="text-2xl font-bold text-white mb-4">
-              Qui suis-je ?
+              {t('about_who_am_i')}
             </h3>
             <div className="space-y-4 text-gray-300 leading-relaxed">
               {aboutInfo.bio.map((paragraph, index) => (
@@ -96,7 +100,7 @@ function About({ onSelectExperience }) {
       {/* Timeline Section */}
       <div className="mb-10 md:mb-16">
         <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-6 md:mb-8 text-center">
-          Parcours Professionnel & Académique
+          {t('about_timeline_title')}
         </h3>
         <Timeline items={timeline} onSelect={onSelectExperience} />
       </div>
@@ -105,7 +109,7 @@ function About({ onSelectExperience }) {
       {certifications && certifications.length > 0 && (
         <div className="mb-10 md:mb-16">
           <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-6 md:mb-8 text-center">
-            Certifications
+            {t('about_certifications_title')}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {certifications.map((cert) => (
@@ -140,7 +144,7 @@ function About({ onSelectExperience }) {
                     </p>
                     {cert.date && (
                       <p className="text-xs text-gray-500">
-                        {new Date(cert.date).toLocaleDateString('fr-FR', {
+                        {new Date(cert.date).toLocaleDateString(lang === 'en' ? 'en-US' : 'fr-FR', {
                           year: 'numeric',
                           month: 'short'
                         })}
@@ -158,7 +162,7 @@ function About({ onSelectExperience }) {
       {interests && interests.length > 0 && (
         <div>
           <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-6 md:mb-8 text-center">
-            Centres d&apos;Intérêt
+            {t('about_interests_title')}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {interests.map((interest, index) => (

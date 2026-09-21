@@ -1,215 +1,209 @@
 export const translations = {
-  FR: {
+  fr: {
     // Navigation
     nav_home: 'Accueil',
-    nav_projects: 'Réalisations',
-    nav_process: 'Démarche',
+    nav_projects: 'Projets',
+    nav_skills: 'Compétences',
     nav_about: 'À propos',
     nav_contact: 'Contact',
-    nav_cta: 'Discuter sur WhatsApp',
-
-    // Hero
-    hero_intro: '✦ Disponible pour nouveaux projets',
-    hero_headline_1: 'Je crée des sites',
-    hero_headline_2: 'qui vous rendent visibles.',
-    hero_name: 'Emerick Lafortune',
-    hero_title: 'Développeur web freelance',
-    hero_tagline: 'Je crée des sites qui donnent à votre business un aspect professionnel et moderne.',
-    hero_sub: 'Pas de template générique. Un site taillé pour votre business, livré en quelques semaines.',
-    hero_cta_primary: 'Voir mes réalisations',
-    hero_cta_whatsapp: 'Discuter sur WhatsApp',
-
-    // Stats
-    stat_sites: '100%',
-    stat_sites_label: 'satisfaction clients',
-    stat_clients: '< 24h',
-    stat_clients_label: 'réponse garantie',
-    stat_response: 'Offert',
-    stat_response_label: 'premier échange & devis sur mesure',
-
-    // Personas
-    personas_title: 'Vous vous reconnaissez ?',
-    personas_sub: "Je travaille avec des professionnels qui savent ce qu'ils veulent, mais n'ont pas encore le site qui le montre.",
-    personas_cta: 'Voir des exemples →',
-
-    persona_1_icon: '✂️',
-    persona_1_title: 'Salon de coiffure & beauté',
-    persona_1_desc: "Vous avez du talent et une clientèle fidèle, mais pas de site pour attirer de nouveaux clients ou prendre des réservations en ligne.",
-
-    persona_2_icon: '📱',
-    persona_2_title: 'Créateur de contenu',
-    persona_2_desc: "Vous créez du contenu sur les réseaux, mais vous manquez d'un hub central pour présenter vos services et collaborations.",
-
-    persona_3_icon: '🏪',
-    persona_3_title: 'Petite entreprise & artisan',
-    persona_3_desc: "Votre business tourne, mais sans site professionnel, difficile de convaincre de nouveaux clients de vous faire confiance.",
-
-    // Projects
-    projects_title: 'Mes Réalisations',
-    projects_sub: 'Des sites conçus sur mesure pour des clients réels, avec de vrais résultats.',
-    projects_before: 'AVANT',
-    projects_after: 'APRÈS',
-    projects_visit: 'visites / mois',
-    projects_cta: 'Voir le site ↗',
-    projects_seo: 'SEO',
-
-    // Process
-    process_title: 'Comment ça marche ?',
-    process_sub: 'Un processus simple et transparent, de votre idée à votre site en ligne.',
-    process_step: 'Étape',
-
-    process_1_title: 'On discute de votre projet',
-    process_1_desc: "Un premier échange gratuit pour comprendre votre activité, vos besoins et vos objectifs. Aucun engagement.",
-    process_1_icon: '💬',
-
-    process_2_title: 'Je crée votre site sur mesure',
-    process_2_desc: "Je conçois et développe votre site. Vous êtes impliqué à chaque étape, avec des retours réguliers.",
-    process_2_icon: '🎨',
-
-    process_3_title: 'Vous lancez et vous conquérez',
-    process_3_desc: "Votre site est mis en ligne, optimisé pour le SEO. Je reste disponible pour les évolutions futures.",
-    process_3_icon: '🚀',
-
-    // Testimonials
-    testimonials_title: 'Ce que disent mes clients',
-    testimonials_sub: 'Des avis authentiques de clients satisfaits.',
-
-    // About
-    about_title: 'Qui suis-je ?',
-    about_sub: 'Un développeur web freelance passionné par les belles interfaces et les résultats concrets.',
-    about_bio: "Basé à Paris, je crée des sites web complets du design à la mise en ligne. Mon objectif : que votre business soit représenté avec élégance et que votre site travaille pour vous 24h/24. Disponible en remote partout en France et à l'étranger.",
-    about_location: 'Paris · Remote',
-    about_availability: 'Disponible pour de nouveaux projets',
-    about_skills_title: 'Technologies maîtrisées',
-
-    // Contact
-    contact_title: 'Parlons de votre projet',
-    contact_sub: 'Premier échange gratuit. Réponse garantie sous 24h.',
-    contact_name: 'Votre nom',
-    contact_email: 'Votre email',
-    contact_message: 'Votre projet',
-    contact_placeholder: 'Décrivez votre activité et ce que vous attendez de votre site...',
-    contact_whatsapp_cta: '💬 Envoyer via WhatsApp',
-    contact_email_cta: 'Envoyer par email',
-    contact_or: 'ou',
-    contact_whatsapp_label: 'WhatsApp',
-    contact_email_label: 'Email',
-    contact_location_label: 'Localisation',
-    contact_location_value: 'Paris · Remote France & International',
-    contact_response: '⚡ Réponse sous 24h garantie',
+    nav_web_creation: 'Sites Web',
+    nav_download_cv: 'Télécharger CV',
 
     // Footer
-    footer_tagline: 'Des sites web qui vous rendent visibles.',
-    footer_nav: 'Navigation',
-    footer_contact: 'Contact',
+    footer_navigation: 'Navigation',
+    footer_find_me: 'Retrouvez-moi',
     footer_rights: 'Tous droits réservés.',
-    footer_made: 'Conçu et développé par Emerick Lafortune',
+    footer_built_with: 'Développé avec React & Tailwind CSS',
+
+    // TrustedBy
+    trustedby_title: 'Expériences chez',
+    trustedby_alten_detail: 'IA générative & Computer Vision',
+
+    // Hero
+    hero_badge_school: 'Télécom SudParis · Ingénieur IA',
+    hero_role: 'Ingénieur IA',
+    hero_role_sub: 'Full Stack & Computer Vision',
+    hero_description: "Je développe des applications de computer vision robustes à grande échelle conçues pour tenir la charge de gros volumes de données et déployées en production.",
+    hero_available: 'Disponible · Paris',
+    hero_stat_experience: "Ans d'expérience",
+    hero_stat_projects: 'Projets complétés',
+    hero_stat_tech: 'Technologies',
+    hero_cta_projects: 'Voir mes projets',
+    hero_cta_contact: 'Me contacter',
+
+    // Projects section
+    projects_title: 'Mes Projets',
+    projects_subtitle: "Une sélection de projets data science qui démontrent mon expertise en machine learning, analyse de données et développement de solutions impactantes.",
+    projects_filter_all: 'Tous',
+    projects_empty: 'Aucun projet trouvé',
+    projects_count_shown: (n) => `${n} projet${n > 1 ? 's' : ''} affiché${n > 1 ? 's' : ''}`,
+
+    // Skills section
+    skills_title: 'Compétences',
+    skills_subtitle: "Un éventail de compétences techniques couvrant le machine learning, l'analyse de données, la visualisation et les technologies modernes de data science.",
+    skills_summary: (n) => `Ces compétences ont été développées à travers ${n} technologies et outils, appliqués dans de nombreux projets professionnels et personnels.`,
+    skills_languages_title: 'Langues',
+
+    // About section
+    about_title: 'À Propos',
+    about_subtitle: 'Mon parcours, mes expériences et ce qui me passionne dans la data science.',
+    about_who_am_i: 'Qui suis-je ?',
+    about_timeline_title: 'Parcours Professionnel & Académique',
+    about_certifications_title: 'Certifications',
+    about_interests_title: "Centres d'Intérêt",
+
+    // Timeline
+    timeline_today: "Aujourd'hui",
+    timeline_view_detail: 'Voir le détail',
+
+    // Contact section
+    contact_title: 'Contactez-moi',
+    contact_subtitle: "Vous avez un projet ou une opportunité ? N'hésitez pas à me contacter. Je suis toujours ouvert à de nouvelles collaborations.",
+    contact_email_desc: 'Envoyez-moi un email',
+    contact_linkedin_desc: 'Connectons-nous',
+    contact_location_title: 'Localisation',
+    contact_location_desc: 'Où je me trouve',
+    contact_find_me_also: 'Retrouvez-moi aussi sur',
+    contact_cta_title: 'Travaillons ensemble',
+    contact_cta_desc: "Que vous ayez un projet de data science, besoin d'expertise en machine learning, ou simplement envie d'échanger sur les données, je serais ravi de discuter avec vous.",
+    contact_cta_button: 'Envoyer un email',
+
+    // Web creation section
+    webcreation_title: 'Réalisations Web',
+    webcreation_subtitle: "Sites livrés en production pour des clients, preuve d'une capacité full stack à porter un projet du backend jusqu'à l'interface.",
+
+    // Project detail page
+    projectdetail_tab_presentation: 'Présentation',
+    projectdetail_tab_code: 'Code',
+    projectdetail_tab_results: 'Résultats',
+    projectdetail_back_short: 'Projets',
+    projectdetail_online: 'En ligne',
+    projectdetail_back_full: 'Retour aux projets',
+    projectdetail_view_live: 'Voir le projet en direct',
+
+    // Research / code / transmission sections
+    research_objective_title: "Objectif & plan d'attaque",
+    research_math_title: 'Formalisation mathématique',
+    code_view_source: 'Voir le code source complet',
+    transmission_deliverables_title: 'Livrables & Visualisations',
+    transmission_deployed_default: 'Déployé sur Render',
+    transmission_pipeline_note: 'Le pipeline complet, pas une simulation à tester directement.',
+    transmission_enlarge_alt: 'Agrandir',
+    transmission_close_alt: 'Fermer',
+
+    // Experience detail page
+    experiencedetail_back_short: 'Parcours',
+    experiencedetail_type_experience: 'Stage',
+    experiencedetail_type_education: 'Formation',
+    experiencedetail_context_title: '01 Contexte & Mission',
+    experiencedetail_contribution_title: '02 Ma Contribution',
+    experiencedetail_challenge_title: '03 Défi Technique',
+    experiencedetail_impact_title: '04 Résultats & Impact',
+    experiencedetail_keypoints_title: 'Points clés',
+    experiencedetail_back_full: 'Retour au parcours',
   },
 
-  EN: {
+  en: {
     // Navigation
     nav_home: 'Home',
-    nav_projects: 'Portfolio',
-    nav_process: 'How it works',
+    nav_projects: 'Projects',
+    nav_skills: 'Skills',
     nav_about: 'About',
     nav_contact: 'Contact',
-    nav_cta: 'Chat on WhatsApp',
-
-    // Hero
-    hero_intro: '✦ Available for new projects',
-    hero_headline_1: 'I build websites',
-    hero_headline_2: 'that make you visible.',
-    hero_name: 'Emerick Lafortune',
-    hero_title: 'Freelance web developer',
-    hero_tagline: 'I build websites that give your business a professional and modern look.',
-    hero_sub: 'No generic template. A website tailored to your business, delivered in a few weeks.',
-    hero_cta_primary: 'See my work',
-    hero_cta_whatsapp: 'Chat on WhatsApp',
-
-    // Stats
-    stat_sites: '100%',
-    stat_sites_label: 'client satisfaction',
-    stat_clients: '< 24h',
-    stat_clients_label: 'guaranteed response',
-    stat_response: 'Free',
-    stat_response_label: 'first call & custom quote',
-
-    // Personas
-    personas_title: 'Do you recognise yourself?',
-    personas_sub: "I work with professionals who know what they want, but don't yet have the website to show it.",
-    personas_cta: 'See similar examples →',
-
-    persona_1_icon: '✂️',
-    persona_1_title: 'Hair salon & beauty',
-    persona_1_desc: "You have talent and loyal clients, but no website to attract new customers or accept online bookings.",
-
-    persona_2_icon: '📱',
-    persona_2_title: 'Content creator',
-    persona_2_desc: "You create content on social media, but you lack a central hub to showcase your services and collaborations.",
-
-    persona_3_icon: '🏪',
-    persona_3_title: 'Small business & artisan',
-    persona_3_desc: "Your business is running, but without a professional website, it's hard to convince new clients to trust you.",
-
-    // Projects
-    projects_title: 'My Work',
-    projects_sub: 'Custom websites built for real clients, with real results.',
-    projects_before: 'BEFORE',
-    projects_after: 'AFTER',
-    projects_visit: 'visits / month',
-    projects_cta: 'Visit website ↗',
-    projects_seo: 'SEO',
-
-    // Process
-    process_title: 'How does it work?',
-    process_sub: 'A simple and transparent process, from your idea to your website going live.',
-    process_step: 'Step',
-
-    process_1_title: 'We discuss your project',
-    process_1_desc: "A free first conversation to understand your business, needs and goals. No commitment.",
-    process_1_icon: '💬',
-
-    process_2_title: 'I build your custom website',
-    process_2_desc: "I design and develop your website. You're involved at every step, with regular updates.",
-    process_2_icon: '🎨',
-
-    process_3_title: 'You launch and conquer',
-    process_3_desc: "Your website goes live, SEO optimised. I stay available for future updates.",
-    process_3_icon: '🚀',
-
-    // Testimonials
-    testimonials_title: 'What my clients say',
-    testimonials_sub: 'Genuine reviews from satisfied clients.',
-
-    // About
-    about_title: 'Who am I?',
-    about_sub: 'A freelance web developer passionate about beautiful interfaces and tangible results.',
-    about_bio: 'Based in Paris, I build complete websites from design to launch. My goal: your business looks elegant and your website works for you 24/7. Available remotely across France and internationally.',
-    about_location: 'Paris · Remote',
-    about_availability: 'Available for new projects',
-    about_skills_title: 'Technologies I use',
-
-    // Contact
-    contact_title: "Let's talk about your project",
-    contact_sub: 'Free first conversation. Guaranteed response within 24h.',
-    contact_name: 'Your name',
-    contact_email: 'Your email',
-    contact_message: 'Your project',
-    contact_placeholder: 'Describe your business and what you expect from your website...',
-    contact_whatsapp_cta: '💬 Send via WhatsApp',
-    contact_email_cta: 'Send by email',
-    contact_or: 'or',
-    contact_whatsapp_label: 'WhatsApp',
-    contact_email_label: 'Email',
-    contact_location_label: 'Location',
-    contact_location_value: 'Paris · Remote France & International',
-    contact_response: '⚡ I respond within 24h',
+    nav_web_creation: 'Web Projects',
+    nav_download_cv: 'Download CV',
 
     // Footer
-    footer_tagline: 'Websites that sell.',
-    footer_nav: 'Navigation',
-    footer_contact: 'Contact',
+    footer_navigation: 'Navigation',
+    footer_find_me: 'Find me on',
     footer_rights: 'All rights reserved.',
-    footer_made: 'Designed and developed by Emerick Lafortune',
+    footer_built_with: 'Built with React & Tailwind CSS',
+
+    // TrustedBy
+    trustedby_title: 'Experience at',
+    trustedby_alten_detail: 'Generative AI & Computer Vision',
+
+    // Hero
+    hero_badge_school: 'Télécom SudParis · AI Engineer',
+    hero_role: 'AI Engineer',
+    hero_role_sub: 'Full Stack & Computer Vision',
+    hero_description: "I build robust, large-scale computer vision applications designed to handle heavy data volumes and deployed in production.",
+    hero_available: 'Available · Paris',
+    hero_stat_experience: 'Years of experience',
+    hero_stat_projects: 'Completed projects',
+    hero_stat_tech: 'Technologies',
+    hero_cta_projects: 'View my projects',
+    hero_cta_contact: 'Contact me',
+
+    // Projects section
+    projects_title: 'My Projects',
+    projects_subtitle: 'A selection of data science projects demonstrating my expertise in machine learning, data analysis and impactful solution development.',
+    projects_filter_all: 'All',
+    projects_empty: 'No projects found',
+    projects_count_shown: (n) => `${n} project${n > 1 ? 's' : ''} shown`,
+
+    // Skills section
+    skills_title: 'Skills',
+    skills_subtitle: 'A range of technical skills covering machine learning, data analysis, visualization and modern data science technologies.',
+    skills_summary: (n) => `These skills were developed across ${n} technologies and tools, applied in numerous professional and personal projects.`,
+    skills_languages_title: 'Languages',
+
+    // About section
+    about_title: 'About',
+    about_subtitle: 'My background, my experience, and what drives my passion for data science.',
+    about_who_am_i: 'Who am I?',
+    about_timeline_title: 'Professional & Academic Background',
+    about_certifications_title: 'Certifications',
+    about_interests_title: 'Interests',
+
+    // Timeline
+    timeline_today: 'Today',
+    timeline_view_detail: 'View details',
+
+    // Contact section
+    contact_title: 'Get in Touch',
+    contact_subtitle: "Have a project or an opportunity? Feel free to reach out. I'm always open to new collaborations.",
+    contact_email_desc: 'Send me an email',
+    contact_linkedin_desc: "Let's connect",
+    contact_location_title: 'Location',
+    contact_location_desc: 'Where I am based',
+    contact_find_me_also: 'Find me also on',
+    contact_cta_title: "Let's work together",
+    contact_cta_desc: "Whether you have a data science project, need machine learning expertise, or just want to talk about data, I'd be glad to chat with you.",
+    contact_cta_button: 'Send an email',
+
+    // Web creation section
+    webcreation_title: 'Web Projects',
+    webcreation_subtitle: 'Sites shipped to production for real clients, proof of a full-stack ability to carry a project from backend to interface.',
+
+    // Project detail page
+    projectdetail_tab_presentation: 'Overview',
+    projectdetail_tab_code: 'Code',
+    projectdetail_tab_results: 'Results',
+    projectdetail_back_short: 'Projects',
+    projectdetail_online: 'Live',
+    projectdetail_back_full: 'Back to projects',
+    projectdetail_view_live: 'View the live project',
+
+    // Research / code / transmission sections
+    research_objective_title: 'Objective & plan of attack',
+    research_math_title: 'Mathematical formalization',
+    code_view_source: 'View the full source code',
+    transmission_deliverables_title: 'Deliverables & Visualizations',
+    transmission_deployed_default: 'Deployed on Render',
+    transmission_pipeline_note: 'The complete pipeline, not a simulation, try it directly.',
+    transmission_enlarge_alt: 'Enlarge',
+    transmission_close_alt: 'Close',
+
+    // Experience detail page
+    experiencedetail_back_short: 'Background',
+    experiencedetail_type_experience: 'Internship',
+    experiencedetail_type_education: 'Education',
+    experiencedetail_context_title: '01 Context & Mission',
+    experiencedetail_contribution_title: '02 My Contribution',
+    experiencedetail_challenge_title: '03 Technical Challenge',
+    experiencedetail_impact_title: '04 Results & Impact',
+    experiencedetail_keypoints_title: 'Key points',
+    experiencedetail_back_full: 'Back to background',
   },
 };

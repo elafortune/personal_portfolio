@@ -1,10 +1,14 @@
-import { aboutInfo, getYearsOfExperience } from '../data/about';
+import { getYearsOfExperience } from '../data/about';
 import { useSmoothScroll } from '../hooks/useSmoothScroll';
+import { useLanguage } from '../context/LanguageContext';
+import { useLocalizedAbout } from '../hooks/useLocalizedData';
 import Button from '../components/common/Button';
 import AuroraBackground from '../components/common/AuroraBackground';
 
 function Hero() {
   const scrollTo = useSmoothScroll();
+  const { t } = useLanguage();
+  const { aboutInfo } = useLocalizedAbout();
   const yearsOfExperience = getYearsOfExperience();
 
   const handleScrollToProjects = (e) => {
@@ -74,7 +78,7 @@ function Hero() {
                 style={{ background: 'rgba(30,41,59,0.95)', border: '1px solid rgba(255,255,255,0.08)' }}
               >
                 <div className="w-1.5 h-1.5 bg-green-400 rounded-full" style={{ boxShadow: '0 0 6px #4ade80', animation: 'pulse 2s infinite' }} />
-                <span className="text-slate-400 text-xs font-medium">Disponible · Paris</span>
+                <span className="text-slate-400 text-xs font-medium">{t('hero_available')}</span>
               </div>
             </div>
           </div>
@@ -85,7 +89,7 @@ function Hero() {
             {/* School/institution label */}
             <div className="inline-flex items-center gap-2 mb-4 sm:mb-6">
               <div className="h-px w-4 sm:w-6 bg-primary-500/50" />
-              <span className="text-slate-500 text-[10px] sm:text-xs font-medium tracking-widest uppercase">Télécom SudParis · Ingénieur IA</span>
+              <span className="text-slate-500 text-[10px] sm:text-xs font-medium tracking-widest uppercase">{t('hero_badge_school')}</span>
               <div className="h-px w-4 sm:w-6 bg-primary-500/50" />
             </div>
 
@@ -96,43 +100,42 @@ function Hero() {
                 <span className="block text-[44px] sm:text-[56px] md:text-[68px] font-light text-slate-400 -mt-1">Lafortune</span>
               </h1>
               <div className="flex items-center gap-3 mt-4 justify-center lg:justify-start">
-                <span className="text-primary-400 text-base font-medium">Ingénieur IA</span>
+                <span className="text-primary-400 text-base font-medium">{t('hero_role')}</span>
                 <span className="w-1 h-1 rounded-full bg-slate-600" />
-                <span className="text-slate-500 text-base">Full Stack & Computer Vision</span>
+                <span className="text-slate-500 text-base">{t('hero_role_sub')}</span>
               </div>
             </div>
 
             {/* Description */}
             <p className="text-gray-400 leading-relaxed mb-8 max-w-lg mx-auto lg:mx-0">
-              Je développe des applications de computer vision robustes à grande échelle conçues pour
-              tenir la charge de gros volumes de données et déployées en production.
+              {t('hero_description')}
             </p>
 
             {/* Stats */}
             <div className="flex justify-center lg:justify-start gap-4 sm:gap-8 mb-6 sm:mb-8 pb-6 sm:pb-8 border-b border-white/5">
               <div className="text-center lg:text-left">
                 <div className="text-2xl font-bold text-white">{yearsOfExperience}+</div>
-                <div className="text-xs text-gray-500 mt-0.5">Ans d'expérience</div>
+                <div className="text-xs text-gray-500 mt-0.5">{t('hero_stat_experience')}</div>
               </div>
               <div className="w-px bg-white/5" />
               <div className="text-center lg:text-left">
                 <div className="text-2xl font-bold text-white">15+</div>
-                <div className="text-xs text-gray-500 mt-0.5">Projets complétés</div>
+                <div className="text-xs text-gray-500 mt-0.5">{t('hero_stat_projects')}</div>
               </div>
               <div className="w-px bg-white/5" />
               <div className="text-center lg:text-left">
                 <div className="text-2xl font-bold text-white">8+</div>
-                <div className="text-xs text-gray-500 mt-0.5">Technologies</div>
+                <div className="text-xs text-gray-500 mt-0.5">{t('hero_stat_tech')}</div>
               </div>
             </div>
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
               <Button variant="primary" size="lg" onClick={handleScrollToProjects}>
-                Voir mes projets
+                {t('hero_cta_projects')}
               </Button>
               <Button variant="secondary" size="lg" onClick={handleScrollToContact}>
-                Me contacter
+                {t('hero_cta_contact')}
               </Button>
             </div>
           </div>

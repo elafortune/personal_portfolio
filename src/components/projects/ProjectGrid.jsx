@@ -1,10 +1,13 @@
 import ProjectCard from './ProjectCard';
+import { useLanguage } from '../../context/LanguageContext';
 
 function ProjectGrid({ projects, onProjectClick }) {
+  const { t } = useLanguage();
+
   if (!projects || projects.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-400 text-lg">Aucun projet trouvé</p>
+        <p className="text-gray-400 text-lg">{t('projects_empty')}</p>
       </div>
     );
   }

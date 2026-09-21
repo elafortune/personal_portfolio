@@ -1,6 +1,8 @@
 import FormulaBlock from './FormulaBlock';
+import { useLanguage } from '../../context/LanguageContext';
 
 function ResearchSection({ project }) {
+  const { t } = useLanguage();
   const { research } = project;
   if (!research) return null;
 
@@ -14,7 +16,7 @@ function ResearchSection({ project }) {
         </div>
         <div>
           <p className="text-gray-500 text-xs font-mono uppercase tracking-widest mb-0.5">01</p>
-          <h2 className="text-2xl md:text-3xl font-bold text-white">Présentation</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-white">{t('projectdetail_tab_presentation')}</h2>
         </div>
         <div className="flex-1 h-px bg-gradient-to-r from-white/10 to-transparent ml-4" />
       </div>
@@ -22,7 +24,7 @@ function ResearchSection({ project }) {
       {research.objective && (
         <div className="mb-12 max-w-3xl">
           <h3 className="text-sm font-mono text-gray-500 uppercase tracking-widest mb-4">
-            Objectif &amp; plan d&apos;attaque
+            {t('research_objective_title')}
           </h3>
           <div className="text-gray-300 leading-relaxed space-y-4 border-l-2 border-white/10 pl-5">
             {research.objective.split('\n\n').map((paragraph, i) => (
@@ -43,7 +45,7 @@ function ResearchSection({ project }) {
       {research.formulas && research.formulas.length > 0 && (
         <div className="mb-4">
           <h3 className="text-sm font-mono text-gray-500 uppercase tracking-widest mb-5">
-            Formalisation mathématique
+            {t('research_math_title')}
           </h3>
           <div className="space-y-4">
             {research.formulas.map((formula, i) => (

@@ -1,6 +1,10 @@
 import { useEffect } from 'react';
+import { useLanguage } from '../context/LanguageContext';
 
 function ExperienceDetail({ experience, onBack }) {
+  const { t, lang } = useLanguage();
+  const locale = lang === 'en' ? 'en-US' : 'fr-FR';
+
   useEffect(() => {
     window.scrollTo({ top: 0 });
   }, []);
@@ -13,10 +17,10 @@ function ExperienceDetail({ experience, onBack }) {
   };
 
   const formatDate = (startDate, endDate, current) => {
-    const start = new Date(startDate).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long' });
-    if (current) return `${start} - Aujourd'hui`;
+    const start = new Date(startDate).toLocaleDateString(locale, { year: 'numeric', month: 'long' });
+    if (current) return `${start} - ${t('timeline_today')}`;
     if (endDate) {
-      const end = new Date(endDate).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long' });
+      const end = new Date(endDate).toLocaleDateString(locale, { year: 'numeric', month: 'long' });
       return `${start} - ${end}`;
     }
     return start;
@@ -50,7 +54,7 @@ function ExperienceDetail({ experience, onBack }) {
               <svg className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
-              <span className="hidden sm:inline">Parcours</span>
+              <span className="hidden sm:inline">{t('experiencedetail_back_short')}</span>
             </button>
 
             <h1 className="text-white font-bold text-sm sm:text-base truncate">
@@ -58,7 +62,7 @@ function ExperienceDetail({ experience, onBack }) {
             </h1>
 
             <span className="flex-shrink-0 bg-white/5 text-gray-300 text-xs px-3 py-1 rounded-full border border-white/10">
-              {experience.type === 'experience' ? 'Stage' : 'Formation'}
+              {experience.type === 'experience' ? t('experiencedetail_type_experience') : t('experiencedetail_type_education')}
             </span>
           </div>
         </div>
@@ -103,25 +107,25 @@ function ExperienceDetail({ experience, onBack }) {
           <>
             <section>
               <h3 className="text-xs font-mono font-semibold tracking-wider uppercase text-gray-500 mb-3">
-                01 Contexte &amp; Mission
+                {t('experiencedetail_context_title')}
               </h3>
               <p className="text-gray-300 leading-relaxed">{caseStudy.context}</p>
             </section>
             <section>
               <h3 className="text-xs font-mono font-semibold tracking-wider uppercase text-gray-500 mb-3">
-                02 Ma Contribution
+                {t('experiencedetail_contribution_title')}
               </h3>
               <p className="text-gray-300 leading-relaxed">{caseStudy.contribution}</p>
             </section>
             <section>
               <h3 className="text-xs font-mono font-semibold tracking-wider uppercase text-gray-500 mb-3">
-                03 Défi Technique
+                {t('experiencedetail_challenge_title')}
               </h3>
               <p className="text-gray-300 leading-relaxed">{caseStudy.challenge}</p>
             </section>
             <section>
               <h3 className="text-xs font-mono font-semibold tracking-wider uppercase text-gray-500 mb-3">
-                04 Résultats &amp; Impact
+                {t('experiencedetail_impact_title')}
               </h3>
               {renderBullets(caseStudy.impact)}
             </section>
@@ -130,7 +134,7 @@ function ExperienceDetail({ experience, onBack }) {
           experience.achievements && experience.achievements.length > 0 && (
             <section>
               <h3 className="text-xs font-mono font-semibold tracking-wider uppercase text-gray-500 mb-3">
-                Points clés
+                {t('experiencedetail_keypoints_title')}
               </h3>
               {renderBullets(experience.achievements)}
             </section>
@@ -148,7 +152,7 @@ function ExperienceDetail({ experience, onBack }) {
             <svg className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            Retour au parcours
+            {t('experiencedetail_back_full')}
           </button>
         </div>
       </div>

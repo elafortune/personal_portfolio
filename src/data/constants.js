@@ -1,11 +1,11 @@
 // Navigation links
 export const NAV_LINKS = [
-  { id: 'home', label: 'Accueil', href: '#home' },
-  { id: 'projects', label: 'Projets', href: '#projects' },
-  { id: 'skills', label: 'Compétences', href: '#skills' },
-  { id: 'about', label: 'À propos', href: '#about' },
-  { id: 'contact', label: 'Contact', href: '#contact' },
-  { id: 'web-creation', label: 'Sites Web', href: '#web-creation' }
+  { id: 'home', labelKey: 'nav_home', href: '#home' },
+  { id: 'projects', labelKey: 'nav_projects', href: '#projects' },
+  { id: 'skills', labelKey: 'nav_skills', href: '#skills' },
+  { id: 'about', labelKey: 'nav_about', href: '#about' },
+  { id: 'contact', labelKey: 'nav_contact', href: '#contact' },
+  { id: 'web-creation', labelKey: 'nav_web_creation', href: '#web-creation' }
 ];
 
 // Animation durations (in milliseconds)

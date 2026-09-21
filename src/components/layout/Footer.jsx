@@ -1,9 +1,12 @@
 import { NAV_LINKS } from '../../data/constants';
-import { aboutInfo } from '../../data/about';
 import { useSmoothScroll } from '../../hooks/useSmoothScroll';
+import { useLanguage } from '../../context/LanguageContext';
+import { useLocalizedAbout } from '../../hooks/useLocalizedData';
 
 function Footer() {
   const scrollTo = useSmoothScroll();
+  const { t } = useLanguage();
+  const { aboutInfo } = useLocalizedAbout();
 
   const handleNavClick = (e, sectionId) => {
     e.preventDefault();
@@ -33,7 +36,7 @@ function Footer() {
 
           {/* Quick Links Column */}
           <div>
-            <h3 className="text-xl font-bold text-white mb-4">Navigation</h3>
+            <h3 className="text-xl font-bold text-white mb-4">{t('footer_navigation')}</h3>
             <ul className="space-y-2">
               {NAV_LINKS.map((link) => (
                 <li key={link.id}>
@@ -42,7 +45,7 @@ function Footer() {
                     onClick={(e) => handleNavClick(e, link.id)}
                     className="text-gray-400 hover:text-primary-400 transition-colors"
                   >
-                    {link.label}
+                    {t(link.labelKey)}
                   </a>
                 </li>
               ))}
@@ -51,7 +54,7 @@ function Footer() {
 
           {/* Social Links Column */}
           <div>
-            <h3 className="text-xl font-bold text-white mb-4">Retrouvez-moi</h3>
+            <h3 className="text-xl font-bold text-white mb-4">{t('footer_find_me')}</h3>
             <div className="flex space-x-4">
               {socialLinks.map((social) => (
                 <a
@@ -93,10 +96,10 @@ function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-gray-700 pt-8 text-center">
           <p className="text-sm text-gray-500">
-            &copy; {new Date().getFullYear()} {aboutInfo.name}. Tous droits réservés.
+            &copy; {new Date().getFullYear()} {aboutInfo.name}. {t('footer_rights')}
           </p>
           <p className="text-xs text-gray-600 mt-2">
-            Développé avec React & Tailwind CSS
+            {t('footer_built_with')}
           </p>
         </div>
       </div>

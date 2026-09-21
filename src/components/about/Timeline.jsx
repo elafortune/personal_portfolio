@@ -1,4 +1,9 @@
+import { useLanguage } from '../../context/LanguageContext';
+
 function Timeline({ items, onSelect }) {
+  const { t, lang } = useLanguage();
+  const locale = lang === 'en' ? 'en-US' : 'fr-FR';
+
   const getIcon = (type) => {
     if (type === 'experience') {
       return (
@@ -16,17 +21,17 @@ function Timeline({ items, onSelect }) {
   };
 
   const formatDate = (startDate, endDate, current) => {
-    const start = new Date(startDate).toLocaleDateString('fr-FR', {
+    const start = new Date(startDate).toLocaleDateString(locale, {
       year: 'numeric',
       month: 'short'
     });
 
     if (current) {
-      return `${start} - Aujourd'hui`;
+      return `${start} - ${t('timeline_today')}`;
     }
 
     if (endDate) {
-      const end = new Date(endDate).toLocaleDateString('fr-FR', {
+      const end = new Date(endDate).toLocaleDateString(locale, {
         year: 'numeric',
         month: 'short'
       });
@@ -93,7 +98,7 @@ function Timeline({ items, onSelect }) {
                 </p>
 
                 <span className="inline-flex items-center gap-1 text-xs font-medium text-primary-400 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                  Voir le détail
+                  {t('timeline_view_detail')}
                 </span>
               </div>
             </button>
