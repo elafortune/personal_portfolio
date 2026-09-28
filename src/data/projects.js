@@ -1250,6 +1250,142 @@ trainer = DPOTrainer(model=model, args=config, train_dataset=train_ds, peft_conf
         }
       ]
     }
+  },
+  {
+    id: 'swe-bench-coding-agent',
+    title: 'Agent de Résolution de Bugs Autonome — SWE-bench',
+    shortDescription: 'Agent LangGraph (Gemini API, sandbox Docker via le harnais officiel SWE-bench) qui explore un dépôt, corrige un bug et vérifie son propre correctif, sans jamais voir les tests qui le noteront. 5/27 instances résolues (18,5 %) sur SWE-bench Lite. Le vrai résultat n\'est pas ce chiffre : un bug de faux positif trouvé dans mon propre garde-fou de non-régression, et la conclusion méthodologique qui en découle un seul tirage par instance ne suffit pas à juger un agent face au non-déterminisme du LLM.',
+    fullDescription: `Un agent de code autonome, pas une boucle ReAct fragile : il explore un dépôt réel (recherche de code, lecture de fichiers), écrit un diff, et vérifie lui-même son changement dans un conteneur Docker isolé construit à partir des images officielles du harnais SWE-bench le même que celui du leaderboard public. Il ne connaît jamais les tests qui serviront à le noter (FAIL_TO_PASS/test_patch restent hors de sa vue), exactement les conditions d'une vraie revue de code. Choisi comme catégorie de projet plutôt qu'un 6e projet CV/NLP pour combler le seul trou complet du portfolio à ce moment, et pour tester un axe de compétence inédit : génie logiciel (sandbox, machine à états, protocole d'outils) plutôt qu'entraînement de modèle.
+
+Le graphe LangGraph (\`agent ↔ tools\`) est renforcé par trois nœuds déterministes plutôt qu'un séquencement rigide de phases : \`baseline\`/\`verify\` capturent et comparent l'état des tests déjà existants du dépôt avant/après chaque patch (jamais les tests cachés), \`submit_blocked\` bloque une soumission non vérifiée une première fois, \`checkpoint\` rappelle explicitement le budget restant. En mesurant l'effet de ce durcissement sur les 27 instances, un vrai bug a été trouvé et corrigé par inspection directe de transcription de conversation, pas supposé : un identifiant de test paramétré du dataset SWE-bench lui-même est mal formé, pytest échoue à le collecter indépendamment de tout patch, et mon garde-fou accusait l'agent d'avoir cassé quelque chose qu'il n'avait pas touché le poussant à corrompre ses propres tentatives de correction jusqu'à soumettre vide.
+
+Le résultat le plus intéressant du projet n'était pas prévu au plan initial : en comparant trois versions (sans garde-fous, garde-fous avec bug, garde-fous corrigés), l'écart de résolues n'était que de 1 instance sur 27 alors que rejouer la même instance avec un code strictement identique donne parfois une issue différente (vérifié à plusieurs reprises, pas supposé). Conclusion assumée plutôt que maquillée en amélioration nette : un seul tirage par instance ne suffit pas à juger un changement d'architecture d'agent, ce qui justifie directement l'intérêt du best-of-N pour une itération future.`,
+    image: '/images/projects/swe-bench-agent-github.jpg',
+    technologies: ['Python', 'LangGraph', 'Docker', 'Gemini API', 'SWE-bench', 'WSL2'],
+    category: 'IA Agentique',
+    githubUrl: 'https://github.com/elafortune/coding_agent',
+    liveUrl: null,
+    date: '2026-09',
+    featured: true,
+    outcomes: [
+      '5/27 instances SWE-bench Lite résolues (18,5 %) avec gemini-2.5-flash (API gratuite, aucun fine-tuning), notées par le harnais officiel SWE-bench le même que celui du leaderboard public, pas une notation maison',
+      'Architecture délibérée : boucle LangGraph contrôlée (jeu d\'outils fermé, routage géré par le graphe) avec 3 nœuds déterministes de garde-fou (baseline/verify, submit_blocked, checkpoint) plutôt qu\'un séquencement rigide de phases ou une boucle ReAct libre',
+      'Bug de faux positif trouvé et corrigé, diagnostiqué par inspection directe de transcription (pas supposé) : un id de test paramétré mal formé dans le dataset SWE-bench lui-même faisait accuser l\'agent de régressions qu\'il n\'avait pas causées',
+      'Conclusion méthodologique assumée plutôt que maquillée : la comparaison de 3 versions (sans garde-fous / garde-fous+bug / garde-fous corrigés) montre un écart de résolues dans la marge de bruit déjà mesurée sur ce projet (non-déterminisme du LLM confirmé à plusieurs reprises par rejeu à l\'identique) un seul tirage par instance ne suffit pas à juger un changement d\'architecture',
+      'Migration complète Windows → WSL2 en cours de projet après diagnostic précis d\'un bug de fin de ligne CRLF dans le harnais officiel (Path.write_text traduit \\n en \\r\\n sous Windows, casse les scripts bash copiés dans les conteneurs Linux)',
+      'Sous-ensemble de 27 instances sélectionné par échantillonnage stratifié par dépôt (seed fixe, script versionné, reproductible), sur les 12 dépôts de SWE-bench Lite (Django, Sympy, Matplotlib, scikit-learn, etc.)'
+    ],
+    challenges: `Le premier blocage n'était pas dans l'agent lui-même mais dans l'infrastructure : le harnais officiel SWE-bench, exécuté sur Windows natif, donnait un taux de résolution de 0 % même avec les patchs de référence normalement toujours corrects par définition. Diagnostic par lecture du log de test brut plutôt que supposition : chaque commande du script d'évaluation portait un \\r fantôme en fin d'argument, provenant de \`Path.write_text()\` qui traduit silencieusement \\n en \\r\\n sous Windows avant de copier le script dans le conteneur Linux. Plutôt qu'un patch chirurgical sur le package installé, décision de migrer tout l'environnement de travail vers WSL2/Ubuntu éliminer la classe de bug plutôt que la contourner instance par instance.
+
+Le blocage le plus révélateur est arrivé après coup, en essayant d'améliorer le taux de résolution avec des garde-fous déterministes. Après avoir ajouté un nœud de vérification de non-régression, le taux de patchs vides a triplé (4/27 → 11/27) au lieu de s'améliorer. Investigation par inspection directe de la transcription de conversation d'une instance passée de "non-vide" à "vide" : le garde-fou traitait tout code de sortie pytest non-nul comme une régression causée par le patch, sans distinguer une vraie casse d'une erreur de collecte pytest préexistante (un id de test paramétré du dataset SWE-bench contenant un guillemet non échappé). L'agent, croyant à tort avoir cassé quelque chose, tentait en boucle de corriger un problème fantôme jusqu'à corrompre ses propres patchs. Fix : capturer une référence de l'état des tests avant tout patch (nœud \`baseline\`), et ne signaler que les tests passés à la référence et cassés après coup.
+
+Après correction du bug, la tentation aurait été de présenter le résultat comme une amélioration nette. Vérification plus rigoureuse : la même instance rejouée deux fois avec un code strictement identique donnait parfois une issue différente (patch vide vs. patch produit, résolu vs. non résolu). Avec un seul tirage par instance sur les 27, l'écart mesuré entre versions (6 → 5 → 5 résolues) était dans cette marge de bruit une conclusion moins spectaculaire mais plus honnête que d'affirmer une amélioration ou une régression nette.`,
+    research: {
+      objective: `L'objectif n'était pas de faire tourner un énième wrapper autour d'un LLM avec des outils, mais de construire un agent dont le contrôle de flux est réellement géré par un graphe d'états (LangGraph) plutôt que par la seule bonne volonté d'un system prompt et de mesurer honnêtement l'effet de garde-fous déterministes ajoutés après coup, y compris quand cette mesure oblige à remettre en question une conclusion qui semblait positive au premier abord.
+
+Le plan : (1) construire un sandbox Docker réutilisant le harnais officiel SWE-bench plutôt qu'un système maison ; (2) doter l'agent d'un jeu d'outils fermé (recherche, lecture, patch, commande) sans jamais lui exposer les tests cachés qui le noteront ; (3) mesurer un taux de résolution de référence sur un harnais reconnu, pas une notation maison ; (4) identifier les modes d'échec par inspection de transcription plutôt que par supposition ; (5) durcir le graphe avec des garde-fous déterministes et mesurer l'effet isolé plutôt que de l'assumer.`,
+      subsections: [
+        {
+          title: 'Garde-fous déterministes plutôt que boucle ReAct ou phases rigides',
+          content: `Deux écueils à éviter, identifiés avant d'écrire la première ligne du graphe. Le premier : une boucle ReAct libre (\`while True: appelle un outil\`) sans structure de contrôle, ce que la littérature identifie comme le piège le plus commun des agents de code peu convaincants. Le second, à l'opposé : forcer un séquencement rigide en 5 phases (Planning → Exploration → Edit → Test → Reflection) dans cet ordre exact un agent réel alterne naturellement exploration et édition sans respecter un ordre de phases fixe, et l'imposer artificiellement n'ajoute pas de contrôle réel au-delà de ce qu'un graphe avec routage conditionnel fournit déjà.
+
+La solution retenue : une boucle \`agent ↔ tools\` à 3 nœuds, avec des garde-fous déterministes ajoutés aux points de passage à risque plutôt que sur tout le flux de raisonnement \`baseline\`/\`verify\` (vérification de non-régression automatique après chaque patch réussi, sans appel LLM), \`submit_blocked\` (bloque une soumission non vérifiée une première fois, laisse l'agent forcer une seconde fois), \`checkpoint\` (rappel explicite à 70 % du budget d'itérations). Le contrôle vient du routage LangGraph et d'un jeu d'outils fermé, pas d'un ordre de phases imposé sur le raisonnement libre.`
+        },
+        {
+          title: 'Le sandbox : réutiliser le harnais officiel plutôt que réinventer',
+          content: `Plutôt que d'écrire un système de sandbox Docker à partir de zéro (cloner un dépôt, deviner les commandes d'installation par dépôt/version), le projet s'appuie sur le harnais officiel \`swebench\` (le même outil que le leaderboard public) : une classe \`Sandbox\` démarre un conteneur par instance depuis une image pré-construite (dépôt déjà cloné au bon commit, dépendances installées, environnement conda \`testbed\` activé), sans jamais monter le système de fichiers réel.
+
+Premier smoke-test sur Windows natif : les patchs de référence normalement toujours corrects par définition donnaient 0 % de résolution. Diagnostic par lecture du log brut : chaque commande du script d'évaluation portait un \\r fantôme en fin d'argument (chemins, hash de commit corrompus). Cause racine trouvée dans le code source du harnais : \`Path.write_text()\` traduit silencieusement \\n en \\r\\n sous Windows avant de copier le script bash dans le conteneur Linux. Décision : migrer tout l'environnement de travail vers WSL2/Ubuntu plutôt qu'un patch chirurgical sur le package installé éliminer la classe de bug plutôt que la contourner instance par instance. Découverte accessoire en cours de migration : c'est l'OS de l'interpréteur Python qui déterminait le bug, pas l'emplacement des fichiers seul l'environnement virtuel Python exige un système de fichiers Linux natif (\`venv\` échoue silencieusement sur un chemin Windows monté, drvfs ne supportant pas correctement les liens symboliques qu'il utilise).`
+        },
+        {
+          title: 'Le faux positif : quand le garde-fou lui-même a un bug',
+          content: `Après avoir ajouté le nœud \`verify\` (rejoue les tests \`PASS_TO_PASS\` après chaque patch, sans jamais exposer les tests cachés qui notent la vraie correction), le taux de patchs vides a triplé (4/27 → 11/27) au lieu de s'améliorer une régression contraire à l'effet recherché.
+
+Investigation par inspection directe de la transcription de conversation d'une instance passée de "patch produit" à "patch vide" (\`matplotlib__matplotlib-22835\`) plutôt que par supposition : le message de \`verify\` contenait \`(no match in any of [...]\`, signature caractéristique d'une erreur de collecte pytest, pas d'un vrai échec de test. Vérification directe sur les données brutes du dataset : un identifiant de test paramétré contient un guillemet non échappé (\`test_artist_inspector_get_valid_values[ACCEPTS:'\`), que pytest ne peut pas collecter indépendamment de tout patch. Mon garde-fou traitait tout code de sortie pytest non-nul comme une régression causée par l'agent, sans distinguer une casse réelle d'un problème de collecte préexistant dans le dataset lui-même. L'agent, croyant à tort avoir cassé quelque chose, a tenté en boucle de corriger un problème fantôme jusqu'à corrompre ses propres tentatives de patch.
+
+Fix : un nouveau nœud \`baseline\`, point d'entrée du graphe exécuté avant tout patch, capture le statut réel de chaque test \`PASS_TO_PASS\` sur le dépôt vierge. \`verify\` compare ensuite au statut de référence seul un test passé à la référence et cassé après coup compte comme régression ; un test déjà en échec ou non collectable au départ est ignoré quel que soit son statut ensuite, quel que soit le patch de l'agent.`
+        },
+        {
+          title: 'Ce que le non-déterminisme révèle sur l\'évaluation d\'un agent',
+          content: `Une fois le bug de \`verify\` corrigé, la tentation aurait été de présenter le résultat comme une amélioration nette. Vérification plus poussée avant de conclure : plusieurs instances rejouées deux fois avec un code strictement identique donnaient parfois une issue différente sur la même instance (patch vide vs. patch produit, résolu vs. non résolu, jusqu'à un facteur 3 sur le nombre de tokens consommés selon le tirage).
+
+Sur les 3 versions comparées (sans garde-fous / garde-fous avec bug / garde-fous corrigés), le nombre d'instances résolues variait de 6 à 5 sur 27 un écart d'une seule instance, dans la marge de bruit déjà mesurée par rejeu direct sur ce même projet. Deux effets positifs sont malgré tout confirmés indépendamment du bruit sur le taux global : 3 instances vides redevenues non-vides après la troncature de \`read_file\` (effet mesuré et reproduit, pas supposé), et un coût moyen en tokens en baisse nette (155 835 → 114 532 par instance). Conclusion assumée plutôt que maquillée : un seul tirage par instance ne suffit pas à juger proprement un changement d'architecture d'agent un vrai ablation nécessiterait plusieurs tirages par instance et par version (l'idée de best-of-N envisagée mais non implémentée, faute de budget), ce qui est en soi un résultat méthodologique transférable au-delà de ce projet précis.`
+        }
+      ]
+    },
+    code: {
+      highlights: [
+        {
+          title: 'verify : comparer à une référence plutôt qu\'à un code de sortie brut',
+          language: 'python',
+          snippet: `# baseline_node (point d'entree du graphe, avant tout patch) capture le
+# statut reel de chaque test PASS_TO_PASS sur le depot vierge -- necessaire
+# car certains ids parametres du dataset sont eux-memes mal formes.
+def baseline_node(state):
+    _, output = tool_impl.run_tests(sandbox, checked)
+    return {"baseline_status": _parse_pytest_summary(output)}
+
+# verify_node (apres chaque apply_patch reussi) ne compare plus a un simple
+# exit_code global -- seul un test PASSE a la reference et CASSE apres coup
+# compte comme regression. Un test deja en echec/non collectable au depart
+# est ignore, quel que soit son statut ensuite.
+regressions = [
+    test_id for test_id, before in baseline.items()
+    if before == "PASSED" and current.get(test_id) in ("FAILED", "ERROR")
+]`,
+          description: 'Le fix qui a suivi le bug de faux positif : sans référence avant/après, un identifiant de test déjà cassé dans le dataset (indépendamment de tout patch) fait accuser l\'agent d\'une régression qu\'il n\'a pas causée.'
+        },
+        {
+          title: 'read_file : tronquer plutôt que dumper le fichier entier',
+          language: 'python',
+          snippet: `# Sans plage explicite, un seul fichier volumineux dumpe integralement
+# (observe : 60937 caracteres en un appel) gonfle l'historique complet de
+# la conversation a chaque tour suivant -- cause principale des runs a
+# 500K+ tokens (Etape 6).
+if total_lines is not None and total_lines > MAX_LINES_DEFAULT:
+    exit_code, output = sandbox.exec(f"head -n {MAX_LINES_DEFAULT} {quoted} | cat -n")
+    return (
+        f"{output}\\n[TRONQUE -- fichier de {total_lines} lignes au total, "
+        f"seules les {MAX_LINES_DEFAULT} premieres sont affichees. "
+        f"Precise start/end pour lire une autre plage.]"
+    )`,
+          description: 'Effet mesuré et reproduit sur le re-run complet : 3 instances vides sans cette troncature sont redevenues non-vides avec, coût moyen en tokens en baisse nette.'
+        },
+        {
+          title: 'Routage conditionnel : garde-fous sur les transitions à risque, pas sur le raisonnement libre',
+          language: 'python',
+          snippet: `def route_after_agent(state):
+    fn_calls = [p.function_call for p in state["contents"][-1].parts if p.function_call]
+    budget_exhausted = state["iterations"] >= state["max_iterations"]
+    if any(fc.name == "submit" for fc in fn_calls):
+        # budget epuise : jamais un tour de plus pour une confirmation
+        if budget_exhausted or state["verified"] or state["submit_warned"]:
+            return "finish"
+        return "submit_blocked"  # 1re soumission non verifiee -- bloquee, pas silencieuse
+    if budget_exhausted:
+        return "finish"
+    if not state["checkpoint_fired"] and state["iterations"] >= 0.7 * state["max_iterations"]:
+        return "checkpoint"
+    return "tools" if fn_calls else "nudge"`,
+          description: 'Pas de séquence de phases imposée sur l\'exploration/l\'édition -- seuls les points de passage à risque (soumission, budget) sont verrouillés par le graphe plutôt que confiés au system prompt.'
+        }
+      ]
+    },
+    transmission: {
+      liveUrl: null,
+      hostLabel: 'Pas de démo en ligne — agent backend/CLI, pas d\'interface web (code source complet sur GitHub)',
+      visualDescription: `Ce projet n'a pas de démo web contrairement aux autres projets du portfolio, c'est un agent qui s'exécute en ligne de commande contre un sandbox Docker. La première image montre le dépôt GitHub public (architecture, tableau comparatif des 3 versions). La seconde reconstitue le moment de diagnostic le plus révélateur du projet : le faux positif du garde-fou de non-régression, retrouvé par inspection directe de la transcription de conversation de l'agent plutôt que supposé.`,
+      images: [
+        {
+          src: '/images/projects/swe-bench-agent-github.jpg',
+          caption: 'Dépôt GitHub public : architecture du graphe LangGraph et tableau comparatif des 3 versions (sans garde-fous / garde-fous avec bug / garde-fous corrigés).'
+        },
+        {
+          src: '/images/projects/swe-bench-agent-debug.jpg',
+          caption: 'Diagnostic du bug de faux positif — un id de test mal formé dans le dataset SWE-bench faisait accuser l\'agent d\'une régression qu\'il n\'avait pas causée, jusqu\'à la correction dans src/agent.py.'
+        }
+      ]
+    }
   }
 ];
 

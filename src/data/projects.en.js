@@ -1254,6 +1254,142 @@ trainer = DPOTrainer(model=model, args=config, train_dataset=train_ds, peft_conf
         }
       ]
     }
+  },
+  {
+    id: 'swe-bench-coding-agent',
+    title: 'Autonomous Bug-Fixing Agent — SWE-bench',
+    shortDescription: 'A LangGraph agent (Gemini API, Docker sandbox via the official SWE-bench harness) that explores a repo, fixes a bug, and verifies its own patch without ever seeing the tests that will grade it. 5/27 instances resolved (18.5%) on SWE-bench Lite. The real result isn\'t that number: a false-positive bug found in my own regression-check guardrail, and the methodological conclusion that follows — a single run per instance isn\'t enough to judge an agent against LLM non-determinism.',
+    fullDescription: `An autonomous code agent, not a fragile ReAct loop: it explores a real repository (code search, file reads), writes a diff, and verifies its own change inside an isolated Docker container built from the official SWE-bench harness images — the same ones behind the public leaderboard. It never sees the tests that will grade it (FAIL_TO_PASS/test_patch stay out of view), exactly the conditions of a real code review. Chosen as a project category over a 6th CV/NLP project to fill the one complete gap in the portfolio at the time, and to test a genuinely new skill axis: software engineering (sandboxing, state machines, tool protocols) rather than model training.
+
+The LangGraph loop (\`agent ↔ tools\`) is hardened with three deterministic nodes rather than a rigid phase sequence: \`baseline\`/\`verify\` capture and compare the state of the repo's existing tests before/after each patch (never the hidden tests), \`submit_blocked\` blocks an unverified submission once, \`checkpoint\` explicitly flags the remaining budget. While measuring the effect of this hardening across the 27 instances, a real bug was found and fixed through direct transcript inspection, not guesswork: a parametrized test id in the SWE-bench dataset itself is malformed, pytest fails to collect it regardless of any patch, and my guardrail was accusing the agent of breaking something it never touched — pushing it to corrupt its own patch attempts until it submitted empty.
+
+The most interesting result of the project wasn't in the original plan: comparing three versions (no guardrails, guardrails with the bug, guardrails fixed), the gap in resolved instances was only 1 out of 27 — while replaying the very same instance with strictly identical code sometimes produces a different outcome (verified repeatedly, not assumed). Conclusion owned rather than dressed up as a clean improvement: a single run per instance isn't enough to judge an agent architecture change, which directly motivates best-of-N sampling as a next iteration.`,
+    image: '/images/projects/swe-bench-agent-github.jpg',
+    technologies: ['Python', 'LangGraph', 'Docker', 'Gemini API', 'SWE-bench', 'WSL2'],
+    category: 'Agentic AI',
+    githubUrl: 'https://github.com/elafortune/coding_agent',
+    liveUrl: null,
+    date: '2026-09',
+    featured: true,
+    outcomes: [
+      '5/27 SWE-bench Lite instances resolved (18.5%) with gemini-2.5-flash (free-tier API, no fine-tuning), graded by the official SWE-bench harness — the same one behind the public leaderboard, not a home-grown scorer',
+      'Deliberate architecture: a controlled LangGraph loop (closed tool set, routing owned by the graph) with 3 deterministic guardrail nodes (baseline/verify, submit_blocked, checkpoint) rather than a rigid phase sequence or a free ReAct loop',
+      'A false-positive bug found and fixed, diagnosed by direct transcript inspection (not assumed): a malformed parametrized test id in the SWE-bench dataset itself was causing the agent to be accused of regressions it never caused',
+      'Methodological conclusion owned rather than dressed up: comparing 3 versions (no guardrails / guardrails+bug / guardrails fixed) shows a gap in resolved instances within the noise margin already measured on this same project (LLM non-determinism confirmed repeatedly by replaying identical code) — a single run per instance isn\'t enough to judge an architecture change',
+      'Full Windows → WSL2 migration mid-project after precisely diagnosing a CRLF line-ending bug in the official harness (Path.write_text silently translates \\n to \\r\\n on Windows, breaking bash scripts copied into Linux containers)',
+      '27-instance subset selected by repo-stratified sampling (fixed seed, versioned script, reproducible), across all 12 repos in SWE-bench Lite (Django, Sympy, Matplotlib, scikit-learn, etc.)'
+    ],
+    challenges: `The first blocker wasn't in the agent itself but in the infrastructure: the official SWE-bench harness, run on native Windows, gave a 0% resolution rate even with the reference patches — which are correct by definition. Diagnosed by reading the raw test log rather than guessing: every command in the evaluation script carried a phantom \\r at the end of its argument, traced to \`Path.write_text()\` silently translating \\n to \\r\\n on Windows before copying the script into the Linux container. Rather than a surgical patch on the installed package, the decision was to migrate the whole working environment to WSL2/Ubuntu — eliminating the bug class instead of working around it instance by instance.
+
+The most revealing blocker came later, while trying to improve the resolution rate with deterministic guardrails. After adding a regression-check node, the empty-patch rate tripled (4/27 → 11/27) instead of improving. Investigated by directly inspecting the conversation transcript of an instance that flipped from "non-empty" to "empty": the guardrail treated any non-zero pytest exit code as a regression caused by the patch, without distinguishing a real break from a pre-existing pytest collection error (a parametrized test id in the SWE-bench dataset containing an unescaped quote). The agent, wrongly believing it had broken something, kept looping trying to fix a phantom problem until it corrupted its own patches. Fix: capture a reference of the test state before any patch (a \`baseline\` node), and only flag tests that passed at the reference and broke afterward.
+
+After fixing the bug, the temptation would have been to present the result as a clean improvement. A more rigorous check first: the same instance, replayed twice with strictly identical code, sometimes gave a different outcome (empty patch vs. produced patch, resolved vs. unresolved). With only one run per instance across the 27, the measured gap between versions (6 → 5 → 5 resolved) fell within that same noise margin — a less spectacular but more honest conclusion than claiming a clean improvement or regression.`,
+    research: {
+      objective: `The goal wasn't to run yet another LLM-plus-tools wrapper, but to build an agent whose control flow is genuinely owned by a state graph (LangGraph) rather than by a system prompt's good will alone — and to honestly measure the effect of guardrails added afterward, including when that measurement forces walking back a conclusion that looked positive at first glance.
+
+The plan: (1) build a Docker sandbox reusing the official SWE-bench harness rather than a home-grown system; (2) give the agent a closed tool set (search, read, patch, command) while never exposing the hidden tests that will grade it; (3) measure a baseline resolution rate on a recognized harness, not a home-grown scorer; (4) identify failure modes by transcript inspection rather than assumption; (5) harden the graph with deterministic guardrails and measure the isolated effect rather than assuming it.`,
+      subsections: [
+        {
+          title: 'Deterministic guardrails, not a ReAct loop or rigid phases',
+          content: `Two pitfalls to avoid, identified before writing the first line of the graph. The first: a free ReAct loop (\`while True: call a tool\`) with no control structure — widely recognized as the most common trap behind unconvincing code agents. The second, at the opposite extreme: forcing a rigid 5-phase sequence (Planning → Exploration → Edit → Test → Reflection) in that exact order — a real agent naturally alternates exploration and editing without respecting a fixed phase order, and imposing one artificially adds no real control beyond what a graph with conditional routing already provides.
+
+The design settled on: a 3-node \`agent ↔ tools\` loop, with deterministic guardrails added at risky transition points rather than across the whole reasoning flow — \`baseline\`/\`verify\` (automatic regression check after every successful patch, no LLM call involved), \`submit_blocked\` (blocks an unverified submission once, lets the agent force it a second time), \`checkpoint\` (explicit reminder at 70% of the iteration budget). Control comes from LangGraph's routing and a closed tool set, not from an imposed phase order on free reasoning.`
+        },
+        {
+          title: 'The sandbox: reusing the official harness instead of reinventing it',
+          content: `Rather than writing a Docker sandbox system from scratch (cloning a repo, guessing install commands per repo/version), the project relies on the official \`swebench\` harness — the same tool behind the public leaderboard: a \`Sandbox\` class starts one container per instance from a pre-built image (repo already cloned at the right commit, dependencies installed, \`testbed\` conda environment active), never mounting the real filesystem.
+
+First smoke test on native Windows: reference patches — correct by definition — gave 0% resolution. Diagnosed by reading the raw log: every command in the evaluation script carried a phantom \\r at the end of its argument (corrupted paths, commit hashes). Root cause found in the harness's own source: \`Path.write_text()\` silently translates \\n to \\r\\n on Windows before copying the bash script into the Linux container. Decision: migrate the whole working environment to WSL2/Ubuntu rather than a surgical patch on the installed package — eliminating the bug class instead of working around it instance by instance. A side discovery during the migration: it was the Python interpreter's OS that determined the bug, not the files' location alone — only the Python virtual environment truly needs a native Linux filesystem (\`venv\` silently fails on a mounted Windows path, since drvfs doesn't properly support the symlinks it relies on).`
+        },
+        {
+          title: 'The false positive: when the guardrail itself has a bug',
+          content: `After adding the \`verify\` node (replays \`PASS_TO_PASS\` tests after each patch, never exposing the hidden tests that grade the real fix), the empty-patch rate tripled (4/27 → 11/27) instead of improving — a regression in the opposite direction from the one intended.
+
+Investigated by directly inspecting the conversation transcript of an instance that flipped from "patch produced" to "empty patch" (\`matplotlib__matplotlib-22835\`) rather than by guessing: the \`verify\` message contained \`(no match in any of [...]\`, a telltale signature of a pytest collection error, not a real test failure. Confirmed directly against the raw dataset: a parametrized test id contains an unescaped quote (\`test_artist_inspector_get_valid_values[ACCEPTS:'\`), which pytest cannot collect regardless of any patch. My guardrail treated any non-zero pytest exit code as a regression caused by the agent, without distinguishing a real break from a pre-existing collection issue in the dataset itself. The agent, wrongly believing it had broken something, kept looping to fix a phantom problem until it corrupted its own patch attempts.
+
+Fix: a new \`baseline\` node, the graph's entry point run before any patch, captures the real status of every \`PASS_TO_PASS\` test on the untouched repo. \`verify\` then compares against that reference — only a test that passed at the reference and broke afterward counts as a regression; a test already failing or uncollectable from the start is ignored regardless of its later status, whatever the agent's patch does.`
+        },
+        {
+          title: 'What non-determinism reveals about evaluating an agent',
+          content: `Once the \`verify\` bug was fixed, the temptation would have been to present the result as a clean improvement. A closer check first: several instances, replayed twice with strictly identical code, sometimes gave a different outcome on the very same instance (empty patch vs. produced patch, resolved vs. unresolved, up to a 3x difference in tokens consumed depending on the run).
+
+Across the 3 versions compared (no guardrails / guardrails with the bug / guardrails fixed), the number of resolved instances ranged from 6 to 5 out of 27 — a gap of just one instance, within the noise margin already measured by direct replay on this same project. Two positive effects are nonetheless confirmed independently of the noise on the headline rate: 3 instances empty in v1 became non-empty again after \`read_file\` truncation (measured and reproduced, not assumed), and average token cost dropped meaningfully (155,835 → 114,532 per instance). Conclusion owned rather than dressed up: a single run per instance isn't enough to properly judge an agent architecture change — a real ablation would need multiple runs per instance and per version (the best-of-N idea considered but not implemented, for lack of budget), which is itself a methodological finding transferable beyond this specific project.`
+        }
+      ]
+    },
+    code: {
+      highlights: [
+        {
+          title: 'verify: comparing against a baseline instead of a raw exit code',
+          language: 'python',
+          snippet: `# baseline_node (graph entry point, before any patch) captures the real
+# status of every PASS_TO_PASS test on the untouched repo -- necessary
+# because some parametrized ids in the dataset are themselves malformed.
+def baseline_node(state):
+    _, output = tool_impl.run_tests(sandbox, checked)
+    return {"baseline_status": _parse_pytest_summary(output)}
+
+# verify_node (after every successful apply_patch) no longer compares
+# against a raw global exit_code -- only a test that PASSED at baseline
+# and is now BROKEN counts as a regression. A test already failing or
+# uncollectible at baseline is ignored, whatever its status afterward.
+regressions = [
+    test_id for test_id, before in baseline.items()
+    if before == "PASSED" and current.get(test_id) in ("FAILED", "ERROR")
+]`,
+          description: 'The fix that followed the false-positive bug: without a before/after baseline, a test id already broken in the dataset (regardless of any patch) causes the agent to be blamed for a regression it never caused.'
+        },
+        {
+          title: 'read_file: truncate instead of dumping the whole file',
+          language: 'python',
+          snippet: `# Without an explicit range, a single large file dumped in full
+# (observed: 60,937 characters in one call) bloats the entire
+# conversation history on every following turn -- the main cause
+# of the 500K+ token runs (Step 6).
+if total_lines is not None and total_lines > MAX_LINES_DEFAULT:
+    exit_code, output = sandbox.exec(f"head -n {MAX_LINES_DEFAULT} {quoted} | cat -n")
+    return (
+        f"{output}\\n[TRUNCATED -- {total_lines} lines total, "
+        f"only the first {MAX_LINES_DEFAULT} shown. "
+        f"Specify start/end to read another range.]"
+    )`,
+          description: 'Measured and reproduced effect on the full re-run: 3 instances empty without this truncation became non-empty with it, and average token cost dropped meaningfully.'
+        },
+        {
+          title: 'Conditional routing: guardrails on risky transitions, not on free reasoning',
+          language: 'python',
+          snippet: `def route_after_agent(state):
+    fn_calls = [p.function_call for p in state["contents"][-1].parts if p.function_call]
+    budget_exhausted = state["iterations"] >= state["max_iterations"]
+    if any(fc.name == "submit" for fc in fn_calls):
+        # budget exhausted: never one more turn just for a confirmation
+        if budget_exhausted or state["verified"] or state["submit_warned"]:
+            return "finish"
+        return "submit_blocked"  # 1st unverified submission -- blocked, not silent
+    if budget_exhausted:
+        return "finish"
+    if not state["checkpoint_fired"] and state["iterations"] >= 0.7 * state["max_iterations"]:
+        return "checkpoint"
+    return "tools" if fn_calls else "nudge"`,
+          description: 'No imposed phase sequence over exploration/editing -- only the risky transition points (submission, budget) are locked down by the graph rather than left to the system prompt.'
+        }
+      ]
+    },
+    transmission: {
+      liveUrl: null,
+      hostLabel: 'No live demo — backend/CLI agent, no web interface (full source on GitHub)',
+      visualDescription: `Unlike other projects in this portfolio, this one has no web demo — it's an agent that runs from the command line against a Docker sandbox. The first image shows the public GitHub repo (architecture, comparative table across the 3 versions). The second reconstructs the project's most revealing diagnostic moment: the false positive in the regression-check guardrail, found by directly inspecting the agent's conversation transcript rather than assumed.`,
+      images: [
+        {
+          src: '/images/projects/swe-bench-agent-github.jpg',
+          caption: 'Public GitHub repository: LangGraph architecture and comparative table across the 3 versions (no guardrails / guardrails with bug / guardrails fixed).'
+        },
+        {
+          src: '/images/projects/swe-bench-agent-debug.jpg',
+          caption: 'Diagnosing the false-positive bug — a malformed test id in the SWE-bench dataset was causing the agent to be blamed for a regression it never caused, up to the fix in src/agent.py.'
+        }
+      ]
+    }
   }
 ];
 
