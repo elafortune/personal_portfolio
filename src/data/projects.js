@@ -1396,7 +1396,7 @@ if total_lines is not None and total_lines > MAX_LINES_DEFAULT:
 Le principe qui structure tout le code : le modèle interprète les preuves et choisit ses actions, mais tout ce qui doit être exact est calculé ou imposé par le code. Les montants, les zones touchées, les sinistres cités et les scores de similarité du rapport final sont copiés depuis les observations des outils, jamais retranscrits par le modèle, donc impossibles à halluciner. La soumission finale est elle-même un outil : si elle contredit la dernière estimation ou cite un sinistre jamais retrouvé, l'agent reçoit la liste des erreurs et se corrige dans la boucle.
 
 Le résultat le plus utile n'était pas un score mais un diagnostic : en journalisant les verdicts du juge de sécurité, j'ai découvert qu'il réécrivait des rapports parfaitement sains à cause de mes propres résumés de citation ("Historical outcome: accepted" lu comme une promesse de couverture). Une fois corrigé, les réécritures sont passées d'environ 21 à 0 sur 35 sinistres, et la latence médiane a baissé de 4 secondes.`,
-    image: '/images/projects/claim-triage-architecture.jpg',
+    image: '/images/projects/claim-triage-output.jpg',
     technologies: ['Python', 'FastAPI', 'Qdrant', 'fastembed', 'GPT-5.5', 'Docker', 'pytest'],
     category: 'IA Agentique',
     githubUrl: null,
@@ -1518,8 +1518,22 @@ def _model_text(assessment):
     transmission: {
       liveUrl: null,
       hostLabel: 'Pas de démo en ligne : système Docker (UI, API, Qdrant) exécuté localement, appels modèle via une passerelle',
-      visualDescription: `Ce système tourne localement en trois conteneurs Docker et appelle le modèle via une passerelle API à budget limité, il n'a donc pas de démo publique. La première image résume l'architecture : les trois agents, les outils de la boucle ReAct et le code HTTP renvoyé à chaque point d'échec. La seconde montre une vraie trace d'exécution enregistrée par le système, puis le diagnostic qui a le plus changé ses performances : le juge de sécurité qui prenait mes propres résumés de citation pour des promesses de couverture.`,
+      visualDescription: `Ce système tourne localement en trois conteneurs Docker et appelle le modèle via une passerelle API à budget limité, il n'a donc pas de démo publique. Les trois premières images suivent un vrai sinistre de bout en bout dans l'application : l'interface web avec le formulaire rempli (photo, description, rapport d'inspection PDF, type de contrat), la photo envoyée en entrée, puis la sortie, c'est-à-dire le rapport de tri structuré et la trace ReAct affichée à l'expert. Le PDF d'inspection fait passer le périmètre de la seule cuisine visible sur la photo à cuisine et salle à manger, et la revue de sécurité passe du premier coup, sans réécriture.
+
+Les deux dernières images résument l'architecture (les trois agents, les outils de la boucle ReAct et le code HTTP renvoyé à chaque point d'échec), puis le diagnostic qui a le plus changé les performances : le juge de sécurité qui prenait mes propres résumés de citation pour des promesses de couverture.`,
       images: [
+        {
+          src: '/images/projects/claim-triage-frontend.jpg',
+          caption: 'Interface web : formulaire de dépôt d\'un sinistre avec photo, description, PDF d\'inspection optionnel et type de contrat.'
+        },
+        {
+          src: '/images/projects/claim-triage-inputs.jpg',
+          caption: 'Entrée : la photo du sinistre envoyée par l\'interface (fuite sous l\'évier de la cuisine), accompagnée de la description et du rapport d\'inspection.'
+        },
+        {
+          src: '/images/projects/claim-triage-output.jpg',
+          caption: 'Sortie : rapport de tri structuré (dégât des eaux modéré, cuisine et salle à manger, fourchette de coût issue de la table, sinistres similaires cités) et trace ReAct complète affichée dans l\'interface.'
+        },
         {
           src: '/images/projects/claim-triage-architecture.jpg',
           caption: 'Architecture : validation des entrées, intakeValidator, boucle ReAct du triageAgent avec ses 4 outils, safetyChecker, et code HTTP renvoyé à chaque étape.'

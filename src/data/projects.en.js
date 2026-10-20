@@ -1400,7 +1400,7 @@ if total_lines is not None and total_lines > MAX_LINES_DEFAULT:
 The principle behind the whole codebase: the model interprets the evidence and chooses its actions, but everything that must be exact is computed or enforced by code. The amounts, affected areas, cited claims and similarity scores in the final report are copied from tool observations, never transcribed by the model, so they cannot be hallucinated. The final submission is itself a tool: if it contradicts the latest estimate or cites a claim that was never retrieved, the agent receives the list of errors and fixes them inside the loop.
 
 The most useful result was not a score but a diagnosis: by logging the safety judge's verdicts, I found it was rewriting perfectly sound reports because of my own citation summaries ("Historical outcome: accepted" read as a coverage promise). Once fixed, rewrites dropped from about 21 to 0 over 35 claims, and median latency fell by 4 seconds.`,
-    image: '/images/projects/claim-triage-architecture.jpg',
+    image: '/images/projects/claim-triage-output.jpg',
     technologies: ['Python', 'FastAPI', 'Qdrant', 'fastembed', 'GPT-5.5', 'Docker', 'pytest'],
     category: 'Agentic AI',
     githubUrl: null,
@@ -1522,8 +1522,22 @@ def _model_text(assessment):
     transmission: {
       liveUrl: null,
       hostLabel: 'No live demo: Docker system (UI, API, Qdrant) run locally, model calls through a gateway',
-      visualDescription: `This system runs locally as three Docker containers and calls the model through a budget-capped API gateway, so there is no public demo. The first image summarises the architecture: the three agents, the ReAct loop's tools and the HTTP code returned at each failure point. The second shows a real execution trace recorded by the system, then the diagnosis that changed its performance the most: the safety judge mistaking my own citation summaries for coverage promises.`,
+      visualDescription: `This system runs locally as three Docker containers and calls the model through a budget-capped API gateway, so there is no public demo. The first three images follow a real claim end to end through the application: the web interface with the filled-in form (photo, description, PDF inspection report, policy type), the photo sent as input, then the output, i.e. the structured triage report and the ReAct trace shown to the adjuster. The inspection PDF widens the scope from the kitchen visible in the photo to the kitchen and dining room, and the safety review passes on the first try, with no rewrite.
+
+The last two images summarise the architecture (the three agents, the ReAct loop's tools and the HTTP code returned at each failure point), then the diagnosis that changed performance the most: the safety judge mistaking my own citation summaries for coverage promises.`,
       images: [
+        {
+          src: '/images/projects/claim-triage-frontend.jpg',
+          caption: 'Web interface: claim submission form with photo, description, optional inspection PDF and policy type.'
+        },
+        {
+          src: '/images/projects/claim-triage-inputs.jpg',
+          caption: 'Input: the claim photo sent through the interface (leak under the kitchen sink), along with the description and the inspection report.'
+        },
+        {
+          src: '/images/projects/claim-triage-output.jpg',
+          caption: 'Output: structured triage report (moderate water damage, kitchen and dining room, cost range from the table, similar past claims cited) and the full ReAct trace shown in the interface.'
+        },
         {
           src: '/images/projects/claim-triage-architecture.jpg',
           caption: 'Architecture: input validation, intakeValidator, the triageAgent ReAct loop with its 4 tools, safetyChecker, and the HTTP code returned at each stage.'
